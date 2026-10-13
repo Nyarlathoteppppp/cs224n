@@ -176,3 +176,29 @@
 .od-bar { width: 70%; background: var(--c-teal); border-radius: 3px 3px 0 0; min-height: 0; }
 .od-bar.neg { background: var(--c-red); }
 .od-sum { margin-top: 6px; font-size: .92rem; }
+
+/* skipgram-window: word2vec 的训练样本 */
+.sg-sentence { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.sg-word { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 10px 4px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); cursor: pointer; font: inherit; color: var(--text); min-width: 52px; }
+.sg-word:hover { border-color: var(--border-strong); }
+.sg-word.center { border-color: var(--c-blue); background: color-mix(in srgb, var(--c-blue) 12%, var(--surface)); color: var(--c-blue); font-weight: 650; }
+.sg-word.ctx { border-color: var(--c-orange); background: color-mix(in srgb, var(--c-orange) 10%, var(--surface)); color: var(--c-orange); }
+.sg-tag { font-size: .72rem; min-height: 1.2em; color: inherit; opacity: .9; }
+.sg-pairs { display: flex; flex-direction: column; gap: 4px; }
+.sg-pair { display: grid; grid-template-columns: 90px 20px 90px minmax(0, 1fr); align-items: center; gap: 6px; font-size: .92rem; }
+.sg-c { color: var(--c-blue); font-weight: 600; text-align: right; } .sg-o { color: var(--c-orange); font-weight: 600; }
+.sg-arrow { color: var(--muted); text-align: center; } .sg-p { color: var(--text-2); }
+
+/* softmax: softmax 的三步 */
+.sm-sliders { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 8px; }
+.sm-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.sm-head { font-weight: 650; font-size: .9rem; margin-bottom: 4px; }
+.sm-row { display: grid; grid-template-columns: 62px minmax(0, 1fr) 46px; align-items: center; gap: 6px; margin: 3px 0; font-size: .82rem; }
+.sm-word { color: var(--text-2); text-align: right; }
+.sm-track { position: relative; height: 14px; background: var(--surface-2); border-radius: 3px; overflow: hidden; }
+.sm-track.signed::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border-strong); }
+.sm-bar { position: absolute; top: 0; bottom: 0; background: var(--c-blue); transition: width .15s; }
+.sm-bar.neg { background: var(--c-red); }
+.sm-bar.exp { background: var(--c-orange); }
+.sm-bar.prob { background: var(--c-green); }
+.sm-val { font-variant-numeric: tabular-nums; text-align: right; }

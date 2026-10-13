@@ -120,6 +120,21 @@ test('word2vec negative sampling: gradients match numerical gradients, repeated 
   ok(C.maxRelError(r.gradOutside, numOutside) < 1e-6, 'outside');
 });
 
+test('Chapter 1.3 numbers: 18 window pairs, toy softmax table, −log terms, quiz answers', () => {
+  eq(W2V.windowPairs('problems turning into banking crises as'.split(' '), 2).length, 18);
+  eq(W2V.windowPairs('problems turning into banking crises as'.split(' '), 2).filter((p) => p.center === 'into').map((p) => p.outside), ['problems', 'turning', 'banking', 'crises']);
+  const v = [1, 0.5], U = [[1, 1], [0.8, 0.6], [0.5, 0.2], [0, 0.1], [-1, 0.3]];
+  const scores = U.map((u) => L.dot(u, v));
+  nearAll(scores, [1.5, 1.1, 0.6, 0.05, -0.85], 1e-12);
+  nearAll(scores.map(Math.exp), [4.482, 3.004, 1.822, 1.051, 0.427], 5e-4);
+  near(scores.map(Math.exp).reduce((a, b) => a + b, 0), 10.787, 5e-4);
+  const p = P.softmax(scores);
+  nearAll(p, [0.415, 0.279, 0.169, 0.097, 0.040], 5e-4);
+  near(-Math.log(p[0]), 0.88, 5e-3); near(-Math.log(0.415), 0.88, 5e-3); near(-Math.log(p[4]), 3.2, 0.05); near(-Math.log(0.04), 3.2, 0.05);
+  near(P.softmax([2, 1, 0])[0], 0.665, 5e-4);
+  eq(2 * 100 * 10000, 2000000);
+});
+
 test('L02 p27: the 3/4 power gives rare words a larger share', () => {
   const counts = [900, 90, 10];
   const p1 = W2V.unigramPower(counts, 1), p34 = W2V.unigramPower(counts, 0.75);

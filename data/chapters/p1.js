@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c1-3', part: 'p1', seq: 3, num: '1.3', stub: true, lectures: '第 2 讲',
-      title: 'word2vec：任务、softmax 与目标函数', en: 'word2vec: task, softmax, objective',
-      hook: '怎么让计算机自己学出词向量？word2vec 的办法是：给它一个“猜周围是什么词”的练习题。',
-      goals: ['说出 skip-gram 的训练样本是什么', '写出 $P(o\\mid c)$ 的 softmax 公式，并解释三步各自的作用', '从似然一步步推到平均负对数似然 $J(\\theta)$'],
-      prereq: [{ text: '点积', ch: 'c0-1' }, { text: '条件概率、exp 与 log', ch: 'c0-2' }],
-      topics: [
-        { id: 'task', title: '训练任务：用中心词猜上下文', question: '在一句话上滑动一个窗口，能得到哪些 (中心词, 上下文词) 对？', visuals: [{ id: 'skipgram-window' }] },
-        { id: 'softmax', title: 'softmax：把点积变成概率', question: '点积可正可负，怎么把它变成一个合法的概率分布？', visuals: [{ id: 'softmax' }] },
-        { id: 'objective', title: '目标函数：似然与平均负对数似然', question: '“让所有真实的上下文词概率都高”怎么写成一个要最小化的数？' },
-      ],
-      source: 'CS224N 第 2 讲；官方 notes（词向量）。',
-    },
-    {
       id: 'c1-4', part: 'p1', seq: 4, num: '1.4', stub: true, lectures: '第 2 讲',
       title: '训练 word2vec：梯度、SGD 与负采样', en: 'Training word2vec: gradients, SGD, negative sampling',
       hook: '目标函数写好了。每一个词向量该往哪边挪？语料有几十亿个窗口，算得过来吗？',
