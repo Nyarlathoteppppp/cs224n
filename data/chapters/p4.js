@@ -3,18 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c4-4', part: 'p4', seq: 4, num: '4.4', stub: true, lectures: '第 4–5 讲',
-      title: '梯度消失与梯度爆炸', en: 'Vanishing and exploding gradients',
-      hook: '“…she finally printed her ___”，答案 tickets 在 7 步之前出现过。为什么 RNN 很难学会这种远距离的联系？',
-      goals: ['用链式法则说明梯度为什么会指数级变小或变大', '解释梯度消失为什么比爆炸更危险', '说出梯度裁剪怎么做'],
-      prereq: [{ text: 'BPTT', ch: 'c4-3' }, { text: '向量长度（范数）', ch: 'c0-1' }],
-      topics: [
-        { id: 'vanish', title: '梯度消失', question: '一串小于 1 的数连乘，会变成什么？', visuals: [{ id: 'vanishing' }, { id: 'rnn-vanishing', type: 'video' }] },
-        { id: 'explode', title: '梯度爆炸与裁剪', question: '梯度太大会发生什么？怎么补救？' },
-      ],
-      source: 'CS224N 第 4–5 讲；官方 notes（语言模型与 RNN）。',
-    },
-    {
       id: 'c4-5', part: 'p4', seq: 5, num: '4.5', stub: true, lectures: '第 5 讲（只点名）',
       title: 'LSTM、GRU 与双向、多层 RNN', en: 'LSTMs, GRUs, bidirectional and multi-layer RNNs',
       hook: '普通 RNN 每一步都把隐状态整个重写一遍，所以记不久。能不能给它一块“只往上加、不轻易擦掉”的记忆？',

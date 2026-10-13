@@ -438,3 +438,23 @@
 .pp-sum { display: grid; gap: 4px; margin: 6px 0; }
 .pp-die { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; }
 .pp-die-icon { font-size: 1.6rem; }
+
+/* 梯度消失与爆炸 */
+.vg-grid { stroke: var(--border); stroke-width: 1; }
+.vg-grid.is-one { stroke: var(--border-strong); stroke-dasharray: 4 3; }
+.vg-tick { font: 11.5px var(--font); fill: var(--muted); text-anchor: end; }
+.vg-bar { fill: var(--c-blue); transition: y .3s, height .3s; }
+.vg-bar.is-tiny { fill: var(--border-strong); }
+.vg-bar.is-huge { fill: var(--c-red); }
+.vg-step { font: 12px var(--font); text-anchor: middle; fill: var(--text-2); }
+.vg-val { font: 600 11px var(--font); text-anchor: middle; fill: var(--text); font-variant-numeric: tabular-nums; }
+.vg-axis { font: 12px var(--font); text-anchor: end; fill: var(--muted); }
+.vg-note { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; font-size: .94rem; margin-top: 4px; }
+.vg-h { margin: 16px 0 4px; font-size: 1rem; }
+.vg-clipwrap { display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: 16px; align-items: center; }
+.vg-circle { fill: none; stroke: var(--c-green); stroke-width: 1.6; stroke-dasharray: 5 4; }
+.vg-raw { stroke: var(--c-red); stroke-width: 3; }
+.vg-clipped { stroke: var(--c-green); stroke-width: 4; }
+.vg-head-raw { fill: var(--c-red); } .vg-head-clip { fill: var(--c-green); }
+.vg-origin { fill: var(--text); }
+.vg-tick.mid { text-anchor: middle; fill: var(--c-green); }

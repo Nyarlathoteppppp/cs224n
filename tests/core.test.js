@@ -594,6 +594,13 @@ test('L04 p40–p46: with small recurrent weights the gradient reaching early st
   ok(norms[0] < norms[norms.length - 1] * 1e-3, 'many orders of magnitude smaller');
 });
 
+test('Chapter 4.4 numbers: powers of a per-step factor, and clipping [3, 4] to length 1', () => {
+  near(Math.pow(0.5, 10), 0.000977, 5e-7); near(Math.pow(1.5, 10), 57.67, 5e-3);
+  near(Math.pow(0.9, 20), 0.1216, 5e-5); near(Math.pow(0.25, 7), 0.000061, 5e-7);
+  const r = OPT.clipByNorm([3, 4], 1); nearAll(r.grad, [0.6, 0.8], 1e-12); near(r.norm, 5);
+  ok(!OPT.clipByNorm([3, 4], 10).clipped, 'norm 5 is below threshold 10: unchanged');
+});
+
 test('N06 p13: an LSTM with all-zero weights halves the cell (gates σ(0) = 0.5, c̃ = 0)', () => {
   const Z = (r, c) => L.zerosMat(r, c);
   const p = { Wi: Z(2, 3), Ui: Z(2, 2), Wf: Z(2, 3), Uf: Z(2, 2), Wo: Z(2, 3), Uo: Z(2, 2), Wc: Z(2, 3), Uc: Z(2, 2) };
