@@ -663,6 +663,27 @@ test('L05 p50: causal mask on [START] The chef who: future weights are 0, rows s
   nearAll(r.weights[0], [1, 0, 0, 0], 0, 'the first word can only look at itself');
 });
 
+test('Chapter 5.3 example: masked softmax on [START] The chef who (made-up scores)', () => {
+  const S = [[1.2, 0.3, -0.5, 0.8], [0.4, 1.0, 0.2, -0.3], [0.1, 0.9, 1.5, 0.6], [0.3, 0.5, 1.1, 0.9]];
+  const M = ATT.causalMask(4);
+  const W = S.map((row, i) => P.softmax(row.map((v, j) => v + M[i][j])));
+  nearAll(W[0], [1, 0, 0, 0], 1e-12);
+  nearAll(W[1], [0.354, 0.646, 0, 0], 5e-4);
+  nearAll(W[2], [0.137, 0.306, 0.557, 0], 5e-4);
+  nearAll(W[3], [0.160, 0.195, 0.355, 0.291], 5e-4);
+  W.forEach((row) => near(row.reduce((a, b) => a + b, 0), 1, 1e-12));
+  // without positions, swapping word order only swaps the output rows (L05 p43)
+  const E = { Zuko: [1, 0, 0.5], made: [0, 1, 0], his: [0.8, 0.2, 0.4], uncle: [0.3, 0, 1] };
+  const Q = [[1, 0.5, 0], [0, 1, 0.5], [0.5, 0, 1]], K = [[1, 0, 0.5], [0.5, 1, 0], [0, 0.5, 1]];
+  const a = ATT.selfAttention(['Zuko', 'made', 'his', 'uncle'].map((w) => E[w]), Q, K, L.identity(3)).output;
+  const b = ATT.selfAttention(['his', 'uncle', 'made', 'Zuko'].map((w) => E[w]), Q, K, L.identity(3)).output;
+  nearAll(a[0], b[3], 1e-12, 'Zuko gets the same output in both orders');
+  const P4 = [[0.6, 0, 0], [0, 0.6, 0], [0, 0, 0.6], [0.4, 0.4, 0]];
+  const ap = ATT.selfAttention(['Zuko', 'made', 'his', 'uncle'].map((w, i) => L.add(E[w], P4[i])), Q, K, L.identity(3)).output;
+  const bp = ATT.selfAttention(['his', 'uncle', 'made', 'Zuko'].map((w, i) => L.add(E[w], P4[i])), Q, K, L.identity(3)).output;
+  ok(Math.abs(ap[0][0] - bp[3][0]) > 1e-3, 'with position vectors the outputs differ');
+});
+
 test('A3 Q1(a): when one key matches the query much better, attention copies that value', () => {
   const keys = [[1, 0, 0], [0, 1, 0], [0, 0, 1]], values = [[1, 2], [3, 4], [5, 6]];
   const r = ATT.attend([0, 30, 0], keys, values);

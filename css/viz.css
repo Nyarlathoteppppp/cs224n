@@ -566,3 +566,11 @@
 .sa-mat.is-q td.is-sel { outline-color: var(--c-pink); } .sa-mat.is-k td.is-sel { outline-color: var(--c-teal); }
 .sa-mat.is-big td { cursor: pointer; min-width: 3.2em; }
 .sa-note { display: grid; gap: 4px; background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; font-size: .93rem; }
+
+/* 位置与掩码 */
+.om-table, .om-mask { border-collapse: collapse; margin: 6px 0; font-variant-numeric: tabular-nums; font-size: .88rem; }
+.om-table th, .om-table td, .om-mask th, .om-mask td { border: 1px solid var(--border); padding: 4px 10px; text-align: center; }
+.om-table th, .om-mask th { color: var(--text-2); background: var(--surface-2); font-weight: 600; }
+.om-table td.is-same { color: var(--c-red); font-weight: 650; }
+.om-table td.is-diff { color: var(--c-green); font-weight: 650; }
+.om-mask td.is-masked { background: var(--surface-2); color: var(--muted); }

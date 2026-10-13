@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c5-3', part: 'p5', seq: 3, num: '5.3', stub: true, lectures: '第 5 讲',
-      title: '从自注意力到 Transformer block：三道坎', en: 'From self-attention to a Transformer block',
-      hook: '光有自注意力，还不能当积木用：它分不清词序，全是加权平均，还会偷看未来。三道坎，各配一个补丁。',
-      goals: ['说明为什么自注意力对词序没感觉，以及位置向量怎么补上', '解释为什么要在每个位置后面接一个 MLP', '写出因果掩码，并说明 −∞ 经过 softmax 变成 0'],
-      prereq: [{ text: '自注意力', ch: 'c5-2' }, { text: '激活函数与非线性', ch: 'c2-2' }],
-      topics: [
-        { id: 'order', title: '第一道坎：词序', question: '“Zuko made his uncle” 和 “his uncle made Zuko” 的自注意力输出有什么区别？', visuals: [{ id: 'order-mask' }] },
-        { id: 'mlp', title: '第二道坎：非线性', question: '全是加权平均，叠多少层会怎样？' },
-        { id: 'mask', title: '第三道坎：不能偷看未来', question: '预测下一个词时，怎么让模型看不到后面的词，又不牺牲并行？', visuals: [{ id: 'transformer-assemble', type: 'video' }] },
-      ],
-      source: 'CS224N 第 5 讲；官方 notes（自注意力与 Transformer）。',
-    },
-    {
       id: 'c5-4', part: 'p5', seq: 4, num: '5.4', stub: true, lectures: '第 5 讲',
       title: '多头、缩放、残差与 LayerNorm', en: 'Multi-head attention, scaling, residuals, LayerNorm',
       hook: '真正的 Transformer 在最小可用的版本上还多了四样东西。每一样各在解决什么问题？',
