@@ -25,7 +25,7 @@
     const keep = h('div.lc-sliders',
       slider('LSTM 的遗忘门 f', { min: 0.5, max: 1, step: 0.01, value: keepF, format: (v) => fmt(v, 2), onInput: (v) => { keepF = v; renderChart(); } }),
       slider('普通 RNN 的权重 w', { min: 0.5, max: 2.5, step: 0.05, value: w, format: (v) => fmt(v, 2), onInput: (v) => { w = v; renderChart(); } }));
-    el.append(svg, gates, eq, h('h4.vg-h', '一条信息能保存多少步'), h('p.viz-note', '第 1 步写进一条信息（值为 1），之后不再有新输入。LSTM 每一步只乘遗忘门 f；普通 RNN 每一步都要整个重写：h ← tanh(w · h)。'), keep, chart, chartNote);
+    el.append(svg, gates, eq, h('h4.vg-h', '一条信息能保存多少步'), h('p.viz-note', '第 1 步写进一条信息（值为 1），之后不再有新输入。LSTM 每一步只乘遗忘门 f；普通 RNN 每一步都要整个重写：h ← tanh(w · h)（只看一个分量、用 tanh 代替 sigmoid，是为了好看的简化，课件外）。'), keep, chart, chartNote);
 
     function wire(x1, y1, x2, y2, cls) { return s('line', { x1, y1, x2, y2, class: 'lc-wire ' + (cls || '') }); }
     function node(x, y, label, cls) {
