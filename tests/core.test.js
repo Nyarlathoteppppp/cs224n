@@ -272,6 +272,18 @@ test('A2 Q1(f)(g): Leaky ReLU and sigmoid derivatives', () => {
   });
 });
 
+test('Chapter 2.1 numbers: window sizes, parameter counts, the hand-made window classifier', () => {
+  eq(5 * 50, 250); eq(8 * 20, 160); eq(8 * 20 + 8 + 8, 176);
+  const SENT = ['the', 'museums', 'in', 'Paris', 'are', 'amazing', 'to', 'see', '.'];
+  const VEC = { the: [0, 1], museums: [0.3, 0], in: [0, 1], Paris: [1, 0], are: [0, 0.6], amazing: [0, 0], to: [0, 1], see: [0, 0.3], '.': [0, 0.5], '<pad>': [0, 0] };
+  const params = { W: [[0, 0, 0, 0, 7, 0, 0, 0, 0, 0], [0, 0, 0, 6, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, -7, 0, 0, 0, 0, 0]], b: [-4.5, -3, 3], u: [4, 1.5, -4] };
+  const prob = (c) => NN.windowForward(params, [].concat(...[-2, -1, 0, 1, 2].map((j) => VEC[SENT[c + j] || '<pad>'])), 'sigmoid').prob;
+  ok(prob(3) > 0.99, 'Paris after "in" is a place');
+  ok(prob(1) < 0.3 && prob(2) < 0.05, 'museums and in are not');
+  const oneHot = [0, 0, 1], Lmat = [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]];
+  eq(L.matvec(Lmat, oneHot), [0.3, 0.6], 'x = Le picks the column');
+});
+
 test('L03 p15–p16: tanh = 2·sigmoid(2z) − 1; GELU ≈ x·σ(1.702x)', () => {
   [-2, -0.5, 0, 1.3].forEach((z) => near(Math.tanh(z), 2 * P.sigmoid(2 * z) - 1, 1e-12));
   [-2, -0.5, 0.5, 2].forEach((z) => near(NN.activations.gelu.f(z), NN.activations.geluLogistic.f(z), 0.03));

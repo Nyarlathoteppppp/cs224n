@@ -159,7 +159,10 @@ content.chapters.filter((c) => !c.stub).forEach((c) => {
   const text = chapterText(c);
   Object.entries(TAUGHT).forEach(([term, where]) => {
     if (where === c.id || (where && order(where) <= order(c.id))) return;
-    const i = text.indexOf(term);
+    // first occurrence that is not part of a longer listed term (自监督学习 is not 监督学习)
+    const longer = Object.keys(TAUGHT).filter((t) => t !== term && t.includes(term));
+    let i = text.indexOf(term);
+    while (i >= 0 && longer.some((t) => { const k = t.indexOf(term); return text.slice(i - k, i - k + t.length) === t; })) i = text.indexOf(term, i + 1);
     if (i < 0) return;
     const after = text.slice(i + term.length).replace(/^\*+/, '');
     const start = Math.max(text.lastIndexOf('。', i), text.lastIndexOf('\n', i), text.lastIndexOf('？', i)) + 1;

@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c2-1', part: 'p2', seq: 1, num: '2.1', stub: true, lectures: '第 3 讲',
-      title: '从窗口分类到神经网络', en: 'From window classification to neural networks',
-      hook: '“the museums in Paris are amazing” 里的 Paris 是地名吗？只看 Paris 这一个词不够，还得看它周围的词。',
-      goals: ['说出命名实体识别要做什么', '把一个窗口里的词向量拼成输入', '解释神经网络比线性分类器多了什么'],
-      prereq: [{ text: '词向量', ch: 'c1-2' }, { text: '矩阵乘向量', ch: 'c0-1' }, { text: 'sigmoid', ch: 'c1-4' }],
-      topics: [
-        { id: 'ner', title: '命名实体识别与窗口', question: '怎么把“判断一个词是不是地名”变成一个分类问题？', visuals: [{ id: 'window-ner' }] },
-        { id: 'linear', title: '线性分类器为什么不够', question: '只学一组权重，分界线只能是直的，这有什么问题？' },
-        { id: 'layer', title: '神经元与层', question: '“一层”到底是什么运算？' },
-      ],
-      source: 'CS224N 第 3 讲；官方 notes（神经网络）。',
-    },
-    {
       id: 'c2-2', part: 'p2', seq: 2, num: '2.2', stub: true, lectures: '第 3 讲',
       title: '激活函数、非线性与交叉熵', en: 'Activations, nonlinearity, cross-entropy',
       hook: '网络里每一层后面都要过一个“弯一下”的函数。为什么非弯不可？又为什么是这几种形状？',
