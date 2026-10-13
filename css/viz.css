@@ -488,3 +488,30 @@
 .lc-legend { font: 600 12px var(--font); text-anchor: end; }
 .lc-legend.is-lstm { fill: var(--c-blue); } .lc-legend.is-rnn { fill: var(--c-red); }
 .lc-note { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; font-size: .94rem; }
+
+/* 编码器-解码器 */
+.s2-title { font: 650 13px var(--font); }
+.s2-title.is-enc { fill: var(--c-red); } .s2-title.is-dec { fill: var(--c-green); }
+.s2-cell { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.4; transition: fill .3s, stroke .3s; }
+.s2-cell.is-enc.is-on { fill: color-mix(in srgb, var(--c-red) 22%, var(--surface)); stroke: var(--c-red); }
+.s2-cell.is-dec.is-on { fill: color-mix(in srgb, var(--c-green) 22%, var(--surface)); stroke: var(--c-green); }
+.s2-cell.is-last.is-on { stroke: var(--c-orange); stroke-width: 3.2; }
+.s2-cell.is-cur { stroke-width: 3; }
+.s2-arrow { stroke-width: 1.8; fill: none; transition: opacity .3s; }
+.s2-arrow.enc { stroke: var(--c-red); } .s2-arrow.dec { stroke: var(--c-green); }
+.s2-arrow.bot { stroke: var(--c-orange); stroke-width: 3.5; }
+.s2-arrow.feed { stroke: var(--c-pink, #e64980); stroke-dasharray: 3 3; stroke-width: 1.4; }
+.s2-arrow.back { stroke: var(--c-purple); stroke-width: 2; stroke-dasharray: 6 4; }
+.s2-arrow.is-off, .s2-word.is-off, .s2-out.is-off, .s2-bot-label.is-off { opacity: .15; }
+.s2-headp-enc { fill: var(--c-red); } .s2-headp-dec { fill: var(--c-green); } .s2-headp-bot { fill: var(--c-orange); }
+.s2-headp-feed { fill: var(--c-pink, #e64980); } .s2-headp-back { fill: var(--c-purple); }
+.s2-word { font: 600 13px var(--font); text-anchor: middle; fill: var(--text); }
+.s2-word.is-fed { fill: var(--c-pink, #e64980); }
+.s2-out { font: 650 13px var(--font); text-anchor: middle; fill: var(--c-green); }
+.s2-bot-label { font: 600 12px var(--font); text-anchor: middle; fill: var(--c-orange); }
+.s2-loss { font: italic 600 12px var(--font); text-anchor: middle; fill: var(--c-purple); }
+.s2-note-t { font: 11.5px var(--font); text-anchor: end; fill: var(--muted); }
+.s2-back-label { font: 12px var(--font); text-anchor: middle; fill: var(--c-purple); }
+.s2-cap { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; margin-top: 6px; min-height: 70px; }
+.s2-cap-title { font-weight: 650; }
+.s2-cap-text { font-size: .93rem; color: var(--text-2); margin-top: 2px; }
