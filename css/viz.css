@@ -125,3 +125,23 @@
 .mv-cell.dim { opacity: .35; }
 .mv-work { background: var(--surface-2); border-radius: 6px; padding: 8px 12px; font-variant-numeric: tabular-nums; }
 .mv-c1 { color: var(--c-blue); } .mv-c2 { color: var(--c-orange); }
+
+/* exp-log: 为什么要取对数 */
+.el-section { margin: 4px 0 14px; min-width: 0; }
+.el-title { font-weight: 650; margin-bottom: 4px; }
+.el-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.el-big { display: flex; flex-direction: column; background: var(--surface-2); border-radius: 6px; padding: 8px 12px; }
+.el-k { font-size: .8rem; color: var(--muted); }
+.el-v { font-size: 1.25rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+.el-v.under { color: var(--c-red); }
+.el-verdict { margin: 6px 0 0; }
+.el-two { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.el-axis { stroke: var(--border-strong); stroke-width: 1.2; }
+.el-tick { font: 11.5px var(--font); fill: var(--muted); text-anchor: middle; }
+.el-curve { fill: none; stroke-width: 2.4; }
+.el-curve.exp, .el-dot.exp { stroke: var(--c-blue); fill: none; }
+.el-curve.nll { stroke: var(--c-red); }
+.el-dot.exp { fill: var(--c-blue); } .el-dot.nll { fill: var(--c-red); }
+.el-guide { stroke: var(--text-2); stroke-width: 1; stroke-dasharray: 3 3; }
+.el-val { font: 600 13px var(--font); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.el-val.exp { fill: var(--c-blue); } .el-val.nll { fill: var(--c-red); }

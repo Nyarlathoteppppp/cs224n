@@ -52,6 +52,19 @@ test('Chapter 0.1 numbers: [3,1]·[1,2] = 5 at 45°, Wx = [4,1,5], quiz answers 
   eq(L.shape(L.matmul(L.zerosMat(4, 3), L.zerosMat(3, 5))), [4, 5]);
 });
 
+test('Chapter 0.2 numbers: 0.02·0.1·0.3·0.4 = 0.00024, log-sum −8.335, J ≈ 2.084, softmax [2,0,−2] and [1,0,0]', () => {
+  const p = [0.02, 0.1, 0.3, 0.4];
+  near(p.reduce((a, b) => a * b, 1), 0.00024, 1e-15);
+  const logs = p.map(Math.log), sum = logs.reduce((a, b) => a + b, 0);
+  nearAll(logs, [-3.912, -2.303, -1.204, -0.916], 5e-4);
+  near(sum, Math.log(0.00024), 1e-12); near(sum, -8.335, 5e-4); near(-sum / 4, 2.084, 5e-4);
+  nearAll([0.9, 0.5, 0.1, 0.01].map((x) => -Math.log(x)), [0.105, 0.693, 2.303, 4.605], 5e-4);
+  nearAll([2, 0, -2].map(Math.exp), [7.389, 1, 0.135], 5e-4);
+  nearAll(P.softmax([2, 0, -2]), [0.867, 0.117, 0.016], 5e-4);
+  near(P.softmax([1, 0, 0])[0], 0.576, 5e-4);
+  near(400 / 1000, 0.4); near(100 / 1000, 0.1);
+});
+
 test('L02 p10: banking · monetary = 1.031696, cosine ≈ 0.857', () => {
   const banking = [0.286, 0.792, -0.177, -0.107, 0.109, -0.542, 0.349, 0.271];
   const monetary = [0.413, 0.582, -0.007, 0.247, 0.216, -0.718, 0.147, 0.051];
