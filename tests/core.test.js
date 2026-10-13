@@ -601,6 +601,18 @@ test('Chapter 4.4 numbers: powers of a per-step factor, and clipping [3, 4] to l
   ok(!OPT.clipByNorm([3, 4], 10).clipped, 'norm 5 is below threshold 10: unchanged');
 });
 
+test('Chapter 4.5 example: gates f = 0.9, i = 0.3, o = 0.8, candidate 0.6, old cell 1 → c = 1.08, h ≈ 0.635', () => {
+  const logit = (q) => Math.log(q / (1 - q));
+  const p = { Wf: [[logit(0.9)]], Uf: [[0]], Wi: [[logit(0.3)]], Ui: [[0]], Wo: [[logit(0.8)]], Uo: [[0]], Wc: [[Math.atanh(0.6)]], Uc: [[0]] };
+  const r = G.lstmStep(p, [1], [0], [1]);
+  nearAll([r.f[0], r.i[0], r.o[0], r.cTilde[0]], [0.9, 0.3, 0.8, 0.6], 1e-12);
+  near(r.c[0], 1.08, 1e-12); near(r.h[0], 0.8 * Math.tanh(1.08), 1e-12); near(r.h[0], 0.635, 5e-4);
+  near(Math.pow(0.95, 19), 0.377, 5e-4, 'forget gate 0.95 kept for 19 steps');
+  const gp = { Wz: [[logit(0.9)]], Uz: [[0]], Wr: [[0]], Ur: [[0]], W: [[Math.atanh(0.5)]], U: [[0]] };
+  const g = G.gruStep(gp, [1], [-0.4]);
+  near(g.h[0], 0.1 * 0.5 + 0.9 * -0.4, 1e-12, 'GRU: h = (1 − z) h̃ + z h_prev = −0.31');
+});
+
 test('N06 p13: an LSTM with all-zero weights halves the cell (gates σ(0) = 0.5, c̃ = 0)', () => {
   const Z = (r, c) => L.zerosMat(r, c);
   const p = { Wi: Z(2, 3), Ui: Z(2, 2), Wf: Z(2, 3), Uf: Z(2, 2), Wo: Z(2, 3), Uo: Z(2, 2), Wc: Z(2, 3), Uc: Z(2, 2) };

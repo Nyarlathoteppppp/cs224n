@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c4-5', part: 'p4', seq: 5, num: '4.5', stub: true, lectures: '第 5 讲（只点名）',
-      title: 'LSTM、GRU 与双向、多层 RNN', en: 'LSTMs, GRUs, bidirectional and multi-layer RNNs',
-      hook: '普通 RNN 每一步都把隐状态整个重写一遍，所以记不久。能不能给它一块“只往上加、不轻易擦掉”的记忆？',
-      goals: ['写出 LSTM 的门和 cell 的更新', '解释那个“加号”为什么能缓解梯度消失', '说出 GRU 和 LSTM 的区别', '说出双向 RNN 和多层 RNN 各在解决什么'],
-      prereq: [{ text: '梯度消失', ch: 'c4-4' }, { text: 'sigmoid 与 tanh', ch: 'c2-2' }, { text: '逐元素乘法', ch: 'c2-4' }],
-      topics: [
-        { id: 'lstm', title: 'LSTM', question: 'cell、遗忘门、输入门、输出门分别在管什么？', visuals: [{ id: 'lstm-cell' }, { id: 'lstm-plus', type: 'video' }] },
-        { id: 'gru', title: 'GRU', question: '只用两个门，能不能达到类似的效果？' },
-        { id: 'bidir', title: '双向与多层', question: '怎么同时利用左右两边的信息？怎么把 RNN 叠深？' },
-      ],
-      source: '官方 notes（语言模型与 RNN，GRU 与 LSTM 部分）；2024 年 CS224N 第 6 讲字幕。W26 第 5 讲只提到了 LSTM 的名字。',
-    },
-    {
       id: 'c4-6', part: 'p4', seq: 6, num: '4.6', stub: true, lectures: '第 4–5 讲',
       title: '机器翻译与 seq2seq', en: 'Machine translation and seq2seq',
       hook: '把 “il m\' a entarté” 翻成 “he hit me with a pie”。一个网络读，另一个网络写，中间只通过一个向量交接。',

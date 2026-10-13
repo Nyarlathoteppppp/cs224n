@@ -458,3 +458,33 @@
 .vg-head-raw { fill: var(--c-red); } .vg-head-clip { fill: var(--c-green); }
 .vg-origin { fill: var(--text); }
 .vg-tick.mid { text-anchor: middle; fill: var(--c-green); }
+
+/* LSTM 的三个门 */
+.lc-wire { stroke: var(--border-strong); stroke-width: 2; }
+.lc-wire.is-cell { stroke: var(--c-blue); stroke-width: 4; }
+.lc-wire.is-f { stroke: var(--c-red); } .lc-wire.is-i { stroke: var(--c-green); } .lc-wire.is-c { stroke: var(--c-teal); }
+.lc-wire.is-o { stroke: var(--c-orange); } .lc-wire.is-h { stroke: var(--c-purple); stroke-width: 3; }
+.lc-node circle { fill: var(--surface); stroke: var(--text-2); stroke-width: 1.8; }
+.lc-node text { font: 700 15px var(--font); text-anchor: middle; fill: var(--text); }
+.lc-node.is-tanh text { font-size: 10px; }
+.lc-node.is-plus circle { stroke: var(--c-blue); stroke-width: 2.6; }
+.lc-gate rect:first-child { fill: var(--surface-2); stroke: var(--border-strong); }
+.lc-gate text { font: 600 12px var(--font); text-anchor: middle; fill: var(--text); }
+.lc-gate .lc-fill { stroke: none; }
+.lc-gate.is-f .lc-fill { fill: var(--c-red); } .lc-gate.is-i .lc-fill { fill: var(--c-green); }
+.lc-gate.is-o .lc-fill { fill: var(--c-orange); } .lc-gate.is-c .lc-fill { fill: var(--c-teal); }
+.lc-name { font: italic 13px var(--font); fill: var(--text-2); }
+.lc-name.end { text-anchor: end; }
+.lc-val { font: 700 13px var(--font); fill: var(--text); font-variant-numeric: tabular-nums; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.lc-val.end { text-anchor: end; }
+.lc-val.is-cell { fill: var(--c-blue); } .lc-val.is-h { fill: var(--c-purple); }
+.lc-sliders { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 6px 0; }
+.lc-sliders .slider input[type="range"] { width: 110px; }
+.lc-eq { display: grid; gap: 4px; background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; }
+.lc-tf { color: var(--c-red); } .lc-ti { color: var(--c-green); } .lc-to { color: var(--c-orange); }
+.lc-line { fill: none; stroke-width: 2.4; }
+.lc-line.is-lstm { stroke: var(--c-blue); } .lc-line.is-rnn { stroke: var(--c-red); stroke-dasharray: 6 4; }
+.lc-dot.is-lstm { fill: var(--c-blue); } .lc-dot.is-rnn { fill: var(--c-red); }
+.lc-legend { font: 600 12px var(--font); text-anchor: end; }
+.lc-legend.is-lstm { fill: var(--c-blue); } .lc-legend.is-rnn { fill: var(--c-red); }
+.lc-note { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; font-size: .94rem; }
