@@ -522,7 +522,7 @@ L18（Tinker 与 LoRA）没有任何材料，不写。
 | 自注意力的置换等变性 | 打乱输入 ⇒ 输出按同样方式打乱 | L05 p43；A3 Q2 |
 | LayerNorm 输出 | 均值 0，方差 1（γ=1，β=0 时） | L05 p62 |
 | 转移系统："He has good control ." 的转移序列 | 中间状态与 N08 图 3 一致（栈 ROOT has good，缓冲区 control .，He 已以 nsubj 挂上）；最终的树与补全的树一致 | N08 p3 |
-| A2 Q3(a) 的转移表 | 由 oracle 按作业给出的依存树自动生成，与作业思路里的表一致 | A2 p5 |
+| A2 Q3(a) 的转移表 | oracle 按作业给出的依存树重现作业已给出的前三步，并走到 [ROOT]；完整的表只在测试里，作业思路章不展示 | A2 p5 |
 | BPE："Peter Piper picked a peck of pickled peppers" | 合并顺序依次为 _+p、c+k、e+r、_p+e、_p+i…，每一步的词表、语料切分与课件一致；"_pier" 的切分与课件一致 | L14 p26–p54 |
 | Scaling law | L = 2.57·C^{−0.048} 在若干 C 处的值 | L07 p50 |
 | 尾部概率 | 0.95³⁰ ≈ 0.2146 | L12 p15 |

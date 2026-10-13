@@ -60,7 +60,8 @@ function checkMath(where, text) {
     try { katex.renderToString(t, Object.assign({ displayMode: display }, KATEX)); }
     catch (e) { bad(where, 'KaTeX: ' + e.message.split('\n')[0] + ' in «' + t.slice(0, 60) + '»'); }
   });
-  if (/[一-鿿][^\n]*"|"[^\n]*[一-鿿]/.test(text.replace(/\$[^$]*\$/g, ''))) warn(where, 'straight double quote in Chinese text (use “ ”)');
+  // code spans (`"ROOT"`) keep their straight quotes
+  if (/[一-鿿][^\n]*"|"[^\n]*[一-鿿]/.test(text.replace(/\$[^$]*\$/g, '').replace(/`[^`\n]*`/g, ''))) warn(where, 'straight double quote in Chinese text (use “ ”)');
 }
 const TEXT_FIELDS = ['hook', 'background', 'usedIn', 'compare', 'source', 'extNote'];
 const TOPIC_FIELDS = ['question', 'intuition', 'math', 'example', 'extra', 'story', 'takeaway'];
