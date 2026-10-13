@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c1-2', part: 'p1', seq: 2, num: '1.2', stub: true, lectures: '第 2 讲',
-      title: '计算机里怎么放“词义”', en: 'Representing word meaning',
-      hook: '搜索 “Seattle motel” 时，我们也想找到写着 “Seattle hotel” 的网页。计算机怎么知道 motel 和 hotel 意思相近？',
-      goals: ['说出 WordNet 这类人工词典的问题', '解释为什么 one-hot 向量之间没有“相似”的概念', '用一句话说清分布式语义的想法'],
-      prereq: [{ text: '向量与点积', ch: 'c0-1' }],
-      topics: [
-        { id: 'wordnet', title: 'WordNet 为什么不够用', question: '人工整理的同义词词典，缺了什么？' },
-        { id: 'onehot', title: 'one-hot 为什么不行', question: '给每个词一个只有一个 1 的向量，motel 和 hotel 的点积是多少？', visuals: [{ id: 'onehot-dense' }] },
-        { id: 'distributional', title: '分布式语义', question: '一个词的意思，能不能从它周围经常出现的词里看出来？', visuals: [{ id: 'distributional', type: 'video' }] },
-      ],
-      source: 'CS224N 第 2 讲；官方 notes（词向量）。',
-    },
-    {
       id: 'c1-3', part: 'p1', seq: 3, num: '1.3', stub: true, lectures: '第 2 讲',
       title: 'word2vec：任务、softmax 与目标函数', en: 'word2vec: task, softmax, objective',
       hook: '怎么让计算机自己学出词向量？word2vec 的办法是：给它一个“猜周围是什么词”的练习题。',
