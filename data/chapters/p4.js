@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c4-1', part: 'p4', seq: 1, num: '4.1', stub: true, lectures: '第 4 讲',
-      title: '语言模型与 n-gram', en: 'Language models and n-grams',
-      hook: '“the students opened their ___”，空里最可能是什么？能猜好下一个词，就说明懂了不少语言。',
-      goals: ['写出语言模型的定义和一句话概率的分解', '用计数估计 n-gram 概率', '说出 n-gram 的稀疏和存储问题'],
-      prereq: [{ text: '条件概率与链式分解', ch: 'c0-2' }],
-      topics: [
-        { id: 'lm', title: '语言模型：预测下一个词', question: '为什么说语言模型是这门课最重要的概念？' },
-        { id: 'ngram', title: '数次数：n-gram', question: 'P(books | students opened their) 怎么从语料里数出来？', visuals: [{ id: 'ngram' }] },
-        { id: 'problems', title: '稀疏与存储', question: '没见过的词组怎么办？n 越大越好吗？' },
-      ],
-      source: 'CS224N 第 4 讲；官方 notes（语言模型与 RNN）。',
-    },
-    {
       id: 'c4-2', part: 'p4', seq: 2, num: '4.2', stub: true, lectures: '第 4 讲',
       title: '从固定窗口到 RNN', en: 'From fixed windows to RNNs',
       hook: '用神经网络代替数次数，没有了稀疏问题。可窗口永远不够大，怎么办？',

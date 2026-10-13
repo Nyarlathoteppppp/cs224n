@@ -376,3 +376,27 @@
 .as-log th, .as-log td { border-bottom: 1px solid var(--border); padding: 3px 8px; text-align: left; }
 .as-log th { color: var(--text-2); font-weight: 600; }
 .as-log tr.is-wrong td { color: var(--c-red); }
+
+/* n-gram 语言模型 */
+.ng-pane { margin-top: 6px; }
+.ng-sliders { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; margin: 6px 0 10px; }
+.ng-sliders .slider input[type="range"] { width: 120px; }
+.ng-out { display: grid; gap: 6px; margin: 8px 0; }
+.ng-bar { display: grid; grid-template-columns: 7.5em minmax(0, 1fr) 4em; align-items: center; gap: 10px; min-width: 0; }
+.ng-label { font-weight: 600; text-align: right; color: var(--text-2); }
+.ng-track { height: 16px; background: var(--surface-2); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+.ng-fill { display: block; height: 100%; background: var(--border-strong); transition: width .35s; }
+.ng-bar.is-a .ng-fill { background: var(--c-blue); } .ng-bar.is-b .ng-fill { background: var(--c-orange); }
+.ng-bar.is-c .ng-fill { background: var(--border); }
+.ng-bar.is-a .ng-label { color: var(--c-blue); }
+.ng-val { font-variant-numeric: tabular-nums; font-weight: 600; }
+.ng-formula { font-size: .9rem; color: var(--text-2); font-variant-numeric: tabular-nums; margin-top: 4px; }
+.ng-note { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; font-size: .94rem; min-height: 2.6em; }
+.ng-note.is-bad { border-left-color: var(--c-red); }
+.ng-text { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; font-size: 1.15rem; margin: 6px 0; }
+.ng-w { color: var(--muted); }
+.ng-w.is-ctx { color: var(--text); font-weight: 650; border-bottom: 2px solid var(--accent); }
+.ng-blank { color: var(--accent); font-weight: 700; }
+.ng-done { line-height: 1.7; }
+.ng-sim { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; min-height: 1.6em; }
+.ng-chip { padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border-strong); font-size: .86rem; font-variant-numeric: tabular-nums; }
