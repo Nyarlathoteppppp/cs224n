@@ -400,3 +400,30 @@
 .ng-done { line-height: 1.7; }
 .ng-sim { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; min-height: 1.6em; }
 .ng-chip { padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border-strong); font-size: .86rem; font-variant-numeric: tabular-nums; }
+
+/* RNN 一步步展开 */
+.ru-svg { margin-top: 4px; }
+.ru-step { transition: opacity .3s; }
+.ru-step.is-off { opacity: .12; }
+.ru-step.is-cur .ru-hbox { stroke: var(--accent); stroke-width: 2.4; }
+.ru-word { font: 650 15px var(--font); text-anchor: middle; fill: var(--text); }
+.ru-name { font: italic 12.5px var(--font); fill: var(--muted); }
+.ru-name.small { font-style: normal; font-size: 11px; }
+.ru-hbox { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.4; }
+.ru-cell { stroke: var(--border); stroke-width: .6; }
+.ru-arrow line { stroke-width: 2; }
+.ru-arrow.wh line { stroke: var(--c-purple, #7c3aed); } .ru-head-wh { fill: var(--c-purple, #7c3aed); }
+.ru-arrow.we line { stroke: var(--c-teal); } .ru-head-we { fill: var(--c-teal); }
+.ru-arrow.u line { stroke: var(--c-orange); } .ru-head-u { fill: var(--c-orange); }
+.ru-alabel { font: italic 600 12px var(--font); text-anchor: middle; fill: var(--text-2); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.ru-axis { stroke: var(--border-strong); }
+.ru-bar { fill: var(--border-strong); }
+.ru-bar.is-target { fill: var(--c-orange); }
+.ru-target { font: 12px var(--font); text-anchor: middle; fill: var(--text-2); }
+.ru-loss { font: 600 12px var(--font); text-anchor: middle; fill: var(--c-orange); font-variant-numeric: tabular-nums; }
+.ru-cap { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; margin-top: 6px; }
+.ru-cap-title { font-weight: 650; }
+.ru-cap-text { font-size: .93rem; color: var(--text-2); margin-top: 2px; }
+.ru-stat { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px; align-items: baseline; }
+.ru-name.mid { text-anchor: middle; }
+.ru-name.end { text-anchor: end; }

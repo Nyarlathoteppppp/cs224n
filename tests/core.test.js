@@ -543,6 +543,16 @@ test('L04 p39: perplexity = exp(mean cross-entropy); a uniform 64-way guess has 
   near(P.perplexity(probs), Math.exp((-Math.log(0.5) - Math.log(0.25) - Math.log(0.1)) / 3), 1e-12);
 });
 
+test('Chapter 4.2 numbers: window W grows with the window, W_h does not grow with the sentence (N06 p5)', () => {
+  const windowW = (words, d, hidden) => hidden * words * d;
+  eq(windowW(4, 50, 100), 20000); eq(windowW(10, 50, 100), 50000);
+  eq(1000 * 1000, 1000000, 'W_h for a 1000-dimensional hidden state');
+  // the column view: W e = sum of the four d-column blocks times each word vector
+  const W = [[1, 2, 3, 4, 5, 6, 7, 8]], e = [1, 0, 0, 1, 2, 0, 0, 1];
+  const blocks = [0, 1, 2, 3].map((k) => W[0][2 * k] * e[2 * k] + W[0][2 * k + 1] * e[2 * k + 1]);
+  eq(L.matvec(W, e)[0], blocks.reduce((a, b) => a + b, 0));
+});
+
 function smallRnn(Vsize, d, Dh) {
   return { E: randMat(Vsize, d), Wh: randMat(Dh, Dh), We: randMat(Dh, d), b1: randVec(Dh), U: randMat(Vsize, Dh), b2: randVec(Vsize), h0: randVec(Dh, 0.1) };
 }

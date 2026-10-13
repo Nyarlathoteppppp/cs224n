@@ -3,18 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c4-2', part: 'p4', seq: 2, num: '4.2', stub: true, lectures: '第 4 讲',
-      title: '从固定窗口到 RNN', en: 'From fixed windows to RNNs',
-      hook: '用神经网络代替数次数，没有了稀疏问题。可窗口永远不够大，怎么办？',
-      goals: ['说出固定窗口语言模型的结构和缺点', '写出 RNN 一步的计算', '说出 RNN 的四个优点和两个缺点'],
-      prereq: [{ text: 'n-gram 语言模型', ch: 'c4-1' }, { text: '神经网络', ch: 'c2-1' }, { text: 'softmax', ch: 'c1-3' }],
-      topics: [
-        { id: 'window', title: '固定窗口的神经语言模型', question: '把前 4 个词拼起来喂给网络，还剩什么问题？' },
-        { id: 'rnn', title: 'RNN：同一个 W 反复用', question: '怎么处理任意长度的输入，又不让参数跟着变多？', visuals: [{ id: 'rnn-unroll' }] },
-      ],
-      source: 'CS224N 第 4 讲；官方 notes（语言模型与 RNN）。',
-    },
-    {
       id: 'c4-3', part: 'p4', seq: 3, num: '4.3', stub: true, lectures: '第 4 讲',
       title: '训练与评价 RNN 语言模型', en: 'Training and evaluating RNN language models',
       hook: '一个 RNN 在每一步都会猜下一个词。损失怎么算？同一个 $W_h$ 在每一步都出现，它的梯度怎么求？',
