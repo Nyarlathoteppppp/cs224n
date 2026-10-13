@@ -507,6 +507,10 @@ test('N08 p4 feature example at Figure 3 (stack ROOT has good, buffer control .)
   eq(f.slice(0, 6).map((x) => x.word), [3, 2, 0, 4, 5, null], 's1 s2 s3 b1 b2 b3');
   eq(f.filter((x) => x.word != null).map((x) => x.slot), ['s1', 's2', 's3', 'b1', 'b2', 'lc1(s2)']);
   eq(f.find((x) => x.slot === 'lc1(s2)').word, 1, 'He is the leftmost child of has');
+  const total = f.length * 2 + f.filter((x) => x.hasLabel).length;   // words + their tags + labels of the 12 child slots
+  eq(total, 48);
+  eq(total * 50, 2400, 'input length with d = 50 (Chen & Manning 2014, 课件外)');
+  eq(total * 50 * 200, 480000, 'W1 numbers with a 200-unit hidden layer');
 });
 
 test('UAS and LAS on “He has good control .”: one wrong head, two wrong labels → 80% / 40% (课件外 example)', () => {

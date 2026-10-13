@@ -29,7 +29,7 @@
     // Part 3
     ['依存句法分析', 'dependency parsing'], ['依存关系', 'dependency'], ['中心语', 'head'], ['依存词', 'dependent'],
     ['转移系统', 'transition system'], ['缓冲区', 'buffer'], ['依存结构', 'dependency structure'], ['依存树', 'dependency tree'],
-    ['栈', 'stack', null, /^顶/], ['树库', 'treebank'], ['贪心', 'greedy'], ['介词短语', 'prepositional phrase'], ['短语结构', 'phrase structure'],
+    ['栈', 'stack', null, /^顶/], ['树库', 'treebank'], ['贪心', 'greedy'], ['介词短语', 'prepositional phrase'], ['短语结构', 'phrase structure'], ['词性标注', 'part-of-speech tagging'], ['词性', 'part of speech, POS'], ['指示特征', 'indicator feature'], ['嵌入矩阵', 'embedding matrix'],
     // Part 4
     ['语言模型', 'language model'], ['大语言模型', 'large language model, LLM'], ['循环神经网络', 'recurrent neural network, RNN'], ['隐状态', 'hidden state'],
     ['困惑度', 'perplexity'], ['梯度消失', 'vanishing gradient'], ['梯度爆炸', 'exploding gradient'], ['梯度裁剪', 'gradient clipping'],
