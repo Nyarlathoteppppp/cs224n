@@ -3,20 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c1-4', part: 'p1', seq: 4, num: '1.4', stub: true, lectures: '第 2 讲',
-      title: '训练 word2vec：梯度、SGD 与负采样', en: 'Training word2vec: gradients, SGD, negative sampling',
-      hook: '目标函数写好了。每一个词向量该往哪边挪？语料有几十亿个窗口，算得过来吗？',
-      goals: ['推出 $\\partial J/\\partial v_c$，并用“观察到的 − 期望的”解释它', '解释为什么用随机梯度下降', '写出负采样的损失，并说出它比 softmax 省在哪里'],
-      prereq: [{ text: '梯度与梯度下降', ch: 'c0-3' }, { text: 'softmax 与目标函数', ch: 'c1-3' }, { text: 'sigmoid 函数', here: 'sigmoid' }],
-      topics: [
-        { id: 'grad', title: '中心词向量的梯度', question: '$\\partial J/\\partial v_c$ 长什么样？它把 $v_c$ 往哪里推？', visuals: [{ id: 'w2v-grad' }, { id: 'w2v-observed-expected', type: 'video' }] },
-        { id: 'sgd', title: '随机梯度下降', question: '为什么不等整个语料算完一次梯度再更新？' },
-        { id: 'sigmoid', title: 'sigmoid 函数', question: '负采样要用到一个把任意数压到 0 和 1 之间的函数，它长什么样？', remedial: true },
-        { id: 'neg', title: '负采样', question: 'softmax 的分母要对整个词表求和，太贵了，怎么办？', visuals: [{ id: 'neg-sampling' }] },
-      ],
-      source: 'CS224N 第 2 讲；官方 notes（词向量）。',
-    },
-    {
       id: 'c1-5', part: 'p1', seq: 5, num: '1.5', stub: true, lectures: '第 2 讲',
       title: '基于计数的方法：共现矩阵、SVD 与 GloVe', en: 'Count-based methods: co-occurrence, SVD, GloVe',
       hook: 'word2vec 要一遍遍扫语料。能不能一次把“谁和谁挨着”全数出来，直接从计数里得到词向量？',

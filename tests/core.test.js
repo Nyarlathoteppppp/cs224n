@@ -135,6 +135,25 @@ test('Chapter 1.3 numbers: 18 window pairs, toy softmax table, −log terms, qui
   eq(2 * 100 * 10000, 2000000);
 });
 
+test('Chapter 1.4 numbers: observed − expected, one SGD step, negative-sampling terms, σ values, 3/4 power', () => {
+  const v = [1, 0.5], U = [[1, 1], [0.8, 0.6], [0.5, 0.2], [0, 0.1], [-1, 0.3]];
+  const r = W2V.naiveSoftmax(v, 0, U);
+  nearAll(r.expected, [0.683, 0.638], 5e-4);
+  nearAll(r.gradCenter, [-0.317, -0.362], 5e-4);
+  near(r.loss, 0.878, 5e-4);
+  const v2 = L.sub(v, L.scale(r.gradCenter, 0.5));
+  nearAll(v2, [1.158, 0.681], 5e-4);
+  const r2 = W2V.naiveSoftmax(v2, 0, U);
+  near(r2.yhat[0], 0.463, 5e-4); near(r2.loss, 0.770, 5e-4);
+  const n = W2V.negSampling(v, 0, U, [4, 3]);
+  near(n.loss, 1.28, 5e-3);
+  nearAll([-Math.log(P.sigmoid(1.5)), -Math.log(P.sigmoid(0.85)), -Math.log(P.sigmoid(-0.05))], [0.20, 0.36, 0.72], 5e-3);
+  nearAll([P.sigmoid(1.5), P.sigmoid(0.85), P.sigmoid(-0.05)], [0.818, 0.701, 0.488], 5e-4);
+  nearAll([P.sigmoid(2), P.sigmoid(0), P.sigmoid(-2)], [0.881, 0.5, 0.119], 5e-4);
+  nearAll(W2V.unigramPower([0.9, 0.09, 0.01], 0.75), [0.825, 0.147, 0.028], 5e-4);
+  eq((2 * 2 + 1) + 2 * 10 * 2, 45); near(45 * 100 / 2000000, 0.00225, 1e-12);
+});
+
 test('L02 p27: the 3/4 power gives rare words a larger share', () => {
   const counts = [900, 90, 10];
   const p1 = W2V.unigramPower(counts, 1), p34 = W2V.unigramPower(counts, 0.75);
