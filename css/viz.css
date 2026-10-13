@@ -238,3 +238,23 @@
 .ns-bar { display: block; height: 9px; border-radius: 2px; transition: width .15s; }
 .ns-bar.raw { background: var(--c-gray); opacity: .6; } .ns-bar.pow { background: var(--c-orange); }
 .ns-v { font-variant-numeric: tabular-nums; }
+
+/* cooccur-svd: 共现矩阵与 SVD */
+.cs-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 16px; align-items: start; margin-top: 8px; }
+.cs-sent { display: flex; gap: 4px; margin: 4px 0; flex-wrap: wrap; }
+.cs-tok { padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border); font-size: .9rem; }
+.cs-tok.center { border-color: var(--c-blue); color: var(--c-blue); font-weight: 650; background: color-mix(in srgb, var(--c-blue) 10%, var(--surface)); }
+.cs-tok.ctx { border-color: var(--c-orange); color: var(--c-orange); }
+.cs-tablewrap { overflow-x: auto; }
+.cs-table { border-collapse: collapse; font-size: .8rem; font-variant-numeric: tabular-nums; }
+.cs-table th { font-weight: 600; color: var(--text-2); padding: 2px 5px; }
+.cs-table thead th { writing-mode: horizontal-tb; }
+.cs-cell { width: 34px; height: 26px; text-align: center; border: 1px solid var(--border); color: var(--muted); transition: background .25s; }
+.cs-cell.nz { color: var(--text); font-weight: 650; background: color-mix(in srgb, var(--c-teal) 12%, transparent); }
+.cs-cell.new { background: color-mix(in srgb, var(--c-orange) 35%, transparent); }
+.cs-plot { margin-top: 10px; }
+.cs-plot-head { font-weight: 600; font-size: .9rem; }
+.cs-svg { max-width: 560px; }
+.cs-axis { stroke: var(--border-strong); stroke-dasharray: 3 3; }
+.cs-pt { fill: var(--c-blue); }
+.cs-lab { font: 13px var(--font); fill: var(--text); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }

@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c1-5', part: 'p1', seq: 5, num: '1.5', stub: true, lectures: '第 2 讲',
-      title: '基于计数的方法：共现矩阵、SVD 与 GloVe', en: 'Count-based methods: co-occurrence, SVD, GloVe',
-      hook: 'word2vec 要一遍遍扫语料。能不能一次把“谁和谁挨着”全数出来，直接从计数里得到词向量？',
-      goals: ['手算一个小语料的窗口共现矩阵', '用直觉说出 SVD 降维在做什么', '解释 GloVe 为什么关心“共现概率之比”'],
-      prereq: [{ text: '矩阵', ch: 'c0-1' }, { text: 'word2vec 的目标函数', ch: 'c1-3' }],
-      topics: [
-        { id: 'cooccur', title: '共现矩阵', question: '“I like deep learning / I like NLP / I enjoy flying”，窗口为 1 时，谁和谁挨着几次？', visuals: [{ id: 'cooccur-svd' }] },
-        { id: 'svd', title: 'SVD 降维', question: '一个又大又稀疏的计数矩阵，怎么压成每个词几十维的稠密向量？' },
-        { id: 'glove', title: 'GloVe', question: '怎么把“共现概率之比”变成“向量之差”？', visuals: [{ id: 'glove-ratio', type: 'video' }] },
-      ],
-      source: 'CS224N 第 2 讲；官方 notes（词向量 2）；作业 1。',
-    },
-    {
       id: 'c1-6', part: 'p1', seq: 6, num: '1.6', stub: true, lectures: '第 2–3 讲',
       title: '怎么评价词向量', en: 'Evaluating word vectors',
       hook: '两套词向量，哪一套更好？可以考它们做类比题，也可以直接拿去做真实任务。',

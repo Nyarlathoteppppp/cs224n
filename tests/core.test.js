@@ -192,6 +192,22 @@ test('SVD of the L02 p31 matrix: eigenpairs hold, full rank reconstructs X, valu
   eq(L.shape(two.reduced), [8, 2]);
 });
 
+test('Chapter 1.5 numbers: row cosines, singular values and 2-D SVD coordinates of the L02 p31 matrix', () => {
+  const vocab = ['I', 'like', 'enjoy', 'deep', 'learning', 'NLP', 'flying', '.'];
+  const X = CO.cooccurrence(['I like deep learning .', 'I like NLP .', 'I enjoy flying .'].map((x) => x.split(' ')), 1, vocab).X;
+  const row = (w) => X[vocab.indexOf(w)];
+  near(L.cosine(row('deep'), row('NLP')), 0.5, 1e-12); near(L.cosine(row('deep'), row('flying')), 0, 1e-12);
+  const r = CO.truncatedSVD(X, 2);
+  nearAll(r.allSingularValues.slice(0, 3), [2.757, 2.678, 1.892], 5e-4);
+  // signs of singular vectors are arbitrary: compare up to a sign per column
+  const fix = (pt) => pt.map((v, k) => v * Math.sign(r.reduced[vocab.indexOf('like')][k]) * [1, -1][k]);
+  nearAll(fix(r.reduced[vocab.indexOf('like')]), [1.639, -1.688], 5e-4);
+  nearAll(fix(r.reduced[vocab.indexOf('enjoy')]), [0.707, -0.734], 5e-4);
+  nearAll(fix(r.reduced[vocab.indexOf('deep')]), [0.788, 0.664], 5e-4);
+  nearAll(fix(r.reduced[vocab.indexOf('NLP')]), [0.841, 0.787], 5e-4);
+  near(Math.log(8), 2.079, 5e-4);
+});
+
 test('L02 p39: analogy man : woman :: king : ? on toy vectors, input words excluded', () => {
   const vecs = { man: [1, 0], woman: [1, 1], king: [3, 0.2], queen: [3, 1.2], apple: [-2, 0.5] };
   eq(CO.analogy(vecs, 'man', 'woman', 'king').answer, 'queen');
