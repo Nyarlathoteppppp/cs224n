@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c5-2', part: 'p5', seq: 2, num: '5.2', stub: true, lectures: '第 5 讲',
-      title: '自注意力', en: 'Self-attention',
-      hook: '如果注意力这么好用，能不能干脆把 RNN 扔掉，让句子里的每个词直接看所有的词？',
-      goals: ['说出 RNN 的两个根本问题', '写出自注意力的三步：Q/K/V → 分数与权重 → 加权和', '把自注意力写成矩阵形式，并说出它为什么能并行'],
-      prereq: [{ text: '注意力', ch: 'c5-1' }, { text: '矩阵乘法', ch: 'c0-1' }],
-      topics: [
-        { id: 'why', title: 'RNN 的两个根本问题', question: '离得远的词要隔多少步才能交互？为什么 RNN 没法并行？' },
-        { id: 'selfattn', title: 'Q、K、V', question: '每个词怎么同时扮演“提问者”、“被比较者”和“被取用的内容”？', visuals: [{ id: 'self-attn' }, { id: 'self-attention', type: 'video' }] },
-        { id: 'matrix', title: '矩阵形式', question: '怎么用一次矩阵乘法算出所有词对的分数？' },
-      ],
-      source: 'CS224N 第 5 讲；官方 notes（自注意力与 Transformer）。',
-    },
-    {
       id: 'c5-3', part: 'p5', seq: 3, num: '5.3', stub: true, lectures: '第 5 讲',
       title: '从自注意力到 Transformer block：三道坎', en: 'From self-attention to a Transformer block',
       hook: '光有自注意力，还不能当积木用：它分不清词序，全是加权平均，还会偷看未来。三道坎，各配一个补丁。',

@@ -640,6 +640,17 @@ test('Chapter 5.1 numbers: scores [3.84, 1, 1, 1] → weights ≈ [0.851, 0.050,
   near(0.5 * 2 + 0.5 * 4 + 0 * 10, 3);
 });
 
+test('Chapter 5.2 example: “his” in “Zuko made his uncle tea” (made-up X, Q, K, V = I)', () => {
+  const X = [[1, 0, 0.5], [0, 1, 0], [0.8, 0.2, 0.4], [0.3, 0, 1], [0, 0.6, 0.8]];
+  const Q = [[1, 0.5, 0], [0, 1, 0.5], [0.5, 0, 1]], K = [[1, 0, 0.5], [0.5, 1, 0], [0, 0.5, 1]];
+  const r = ATT.selfAttention(X, Q, K, L.identity(3));
+  nearAll(r.queries[2], [1, 0.6, 0.5], 1e-12); nearAll(r.keys[0], [1, 0.25, 1], 1e-12);
+  nearAll(r.scores[2], [1.65, 1.1, 1.54, 1.175, 1.3], 1e-12);
+  nearAll(r.weights[2], [0.263, 0.152, 0.236, 0.164, 0.185], 5e-4);
+  nearAll(r.output[2], [0.501, 0.310, 0.538], 5e-4);
+  eq(r.scores.length, 5); eq(r.scores[0].length, 5, 'n × n scores');
+});
+
 test('L05 p50: causal mask on [START] The chef who: future weights are 0, rows sum to 1', () => {
   const M = ATT.causalMask(4);
   eq(M.map((row) => row.map((v) => (v === 0 ? 0 : 'x'))), [[0, 'x', 'x', 'x'], [0, 0, 'x', 'x'], [0, 0, 0, 'x'], [0, 0, 0, 0]]);

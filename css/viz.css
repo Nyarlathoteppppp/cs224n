@@ -553,3 +553,16 @@
 .sl-w { font: 600 11.5px var(--font); fill: var(--text-2); font-variant-numeric: tabular-nums; }
 .sl-v { font: 12px var(--font); fill: var(--text-2); font-variant-numeric: tabular-nums; }
 .sl-sum { font: 650 13px var(--font); text-anchor: middle; fill: var(--c-orange); }
+
+/* 自注意力 */
+.sa-grid { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: flex-start; margin: 8px 0; }
+.sa-fig { margin: 0; }
+.sa-fig figcaption { font-size: .82rem; color: var(--text-2); margin-bottom: 3px; }
+.sa-mat { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .82rem; }
+.sa-mat th, .sa-mat td { border: 1px solid var(--border); padding: 2px 6px; text-align: right; min-width: 2.6em; }
+.sa-mat th { color: var(--text-2); font-weight: 600; background: var(--surface-2); text-align: center; }
+.sa-mat th.is-sel { color: var(--accent); }
+.sa-mat td.is-sel { outline: 2.5px solid var(--c-orange); outline-offset: -2px; font-weight: 700; }
+.sa-mat.is-q td.is-sel { outline-color: var(--c-pink); } .sa-mat.is-k td.is-sel { outline-color: var(--c-teal); }
+.sa-mat.is-big td { cursor: pointer; min-width: 3.2em; }
+.sa-note { display: grid; gap: 4px; background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; font-size: .93rem; }
