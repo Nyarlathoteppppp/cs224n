@@ -10,7 +10,7 @@
 
   const SENTENCES = {
     fish: { words: ['I', 'ate', 'fish'], heads: [null, 2, 0, 2], labels: [null, 'nsubj', 'root', 'obj'] },
-    control: { words: ['He', 'has', 'good', 'control', '.'], heads: [null, 2, 0, 4, 2, 2], labels: [null, 'nsubj', 'root', 'amod', 'dobj', 'punct'] },
+    control: { words: ['He', 'has', 'good', 'control', '.'], heads: [null, 2, 0, 4, 2, 2], labels: [null, 'nsubj', 'root', 'amod', 'obj', 'punct'] },
   };
   const NAMES = { S: 'SHIFT', LA: 'LEFT-ARC', RA: 'RIGHT-ARC' };
 

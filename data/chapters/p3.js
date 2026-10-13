@@ -3,18 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c3-1', part: 'p3', seq: 1, num: '3.1', stub: true, lectures: '作业 2',
-      title: '依存结构与转移系统', en: 'Dependency structure and transition-based parsing',
-      hook: '一句话不只是一串词：每个词都“挂”在另一个词上。怎么用一个栈和一个缓冲区，一步步把这棵树建出来？',
-      goals: ['看懂依存弧：中心语 → 依存词', '说出 SHIFT、LEFT-ARC、RIGHT-ARC 各自改变了什么', '在一个短句上手动走完整个转移过程'],
-      prereq: [],
-      topics: [
-        { id: 'structure', title: '句子的依存结构', question: '句子里谁修饰谁？这种关系为什么能画成一棵以 ROOT 为根的树？' },
-        { id: 'transitions', title: '三种转移动作', question: '栈、缓冲区、已建的弧这三样东西，每一步怎么变？', visuals: [{ id: 'arc-standard' }] },
-      ],
-      source: 'CS224N 作业 2 第三题；2019 年官方 notes（依存句法）。W26 的讲座里没有这一讲。',
-    },
-    {
       id: 'c3-2', part: 'p3', seq: 2, num: '3.2', stub: true, lectures: '作业 2',
       title: '神经依存分析器', en: 'A neural dependency parser',
       hook: '每一步该 SHIFT、LEFT-ARC 还是 RIGHT-ARC？这其实是一个三选一的分类问题，可以交给神经网络来判断。',

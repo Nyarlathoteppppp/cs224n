@@ -465,7 +465,7 @@ test('N08 p3 Figure 3: the oracle passes through stack [ROOT has good], buffer [
   // He has good control .  — heads completed from N08's Figure 3 (has is the root; control ← good; has → control, .)
   const words = ['He', 'has', 'good', 'control', '.'];
   const heads = [null, 2, 0, 4, 2, 2];
-  const labels = [null, 'nsubj', 'root', 'amod', 'dobj', 'punct'];
+  const labels = [null, 'nsubj', 'root', 'amod', 'obj', 'punct'];
   const steps = DP.oracleTrace(words, heads, labels);
   const fig3 = steps.find((s) => s.stack.join(' ') === 'ROOT has good' && s.buffer.join(' ') === 'control .');
   ok(fig3, 'configuration of Figure 3 is reached');
@@ -510,8 +510,8 @@ test('N08 p4 feature example at Figure 3 (stack ROOT has good, buffer control .)
 });
 
 test('UAS and LAS on “He has good control .”: one wrong head, two wrong labels → 80% / 40% (课件外 example)', () => {
-  const goldH = [null, 2, 0, 4, 2, 2], goldL = [null, 'nsubj', 'root', 'amod', 'dobj', 'punct'];
-  const predH = [null, 2, 0, 2, 2, 2], predL = [null, 'nsubj', 'root', 'amod', 'nsubj', 'dobj'];
+  const goldH = [null, 2, 0, 4, 2, 2], goldL = [null, 'nsubj', 'root', 'amod', 'obj', 'punct'];
+  const predH = [null, 2, 0, 2, 2, 2], predL = [null, 'nsubj', 'root', 'amod', 'nsubj', 'obj'];
   near(DP.uas(predH, goldH), 0.8);
   near(DP.las(predH, predL, goldH, goldL), 0.4);
 });

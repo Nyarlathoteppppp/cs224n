@@ -28,7 +28,7 @@
       index = i;
       if (i < 0) {
         highlight([]);
-        explain.innerHTML = '<p class="muted">点"下一步"逐项展开，或者直接点下面任意一项。</p>';
+        explain.innerHTML = '<p class="muted">点“下一步”逐项展开，或者直接点下面任意一项。</p>';
         counter.textContent = '0 / ' + steps.length;
         return;
       }
