@@ -68,6 +68,12 @@
       if (idx) t.append(s('tspan', { 'baseline-shift': 'sub', 'font-size': '9' }, idx));
       return t;
     }
+    function sup(base, idx, x, y, cls) {   // h⁽¹⁾ with a real superscript
+      const t = s('text', { x, y, class: cls });
+      t.append(document.createTextNode(base));
+      t.append(s('tspan', { 'baseline-shift': 'super', 'font-size': '9' }, '(' + idx + ')'));
+      return t;
+    }
     function arrow(x1, y1, x2, y2, cls, label, lx, ly) {
       const g = s('g', { class: 'ru-arrow ' + cls });
       g.append(s('line', { x1, y1, x2, y2, 'marker-end': 'url(#ru-head-' + cls + ')' }));
@@ -82,18 +88,18 @@
       ['wh', 'we', 'u'].forEach((k) => defs.append(s('marker', { id: 'ru-head-' + k, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: 'ru-head-' + k }))));
       svg.append(defs);
       // h(0)
-      svg.append(s('text', { x: X0, y: 280, class: 'ru-name mid', text: 'h(0)' }), cells(p.h0, X0, 240, 14, 'is-h'));
+      svg.append(sup('h', 0, X0, 280, 'ru-name mid'), cells(p.h0, X0, 240, 14, 'is-h'));
       r.steps.forEach((st, t) => {
         const x = X[t], on = t < shown, cur = t === shown - 1;
         const g = s('g', { class: 'ru-step' + (on ? '' : ' is-off') + (cur ? ' is-cur' : '') });
         // input word and embedding
         g.append(s('text', { x, y: 418, class: 'ru-word', text: VOCAB[st.input] }));
-        g.append(s('text', { x: x - 58, y: 418, class: 'ru-name', text: 'x(' + (t + 1) + ')' }));
-        g.append(cells(st.e, x, 352, 16, 'is-e'), s('text', { x: x + 30, y: 364, class: 'ru-name', text: 'e(' + (t + 1) + ')' }));
+        g.append(sup('x', t + 1, x - 58, 418, 'ru-name'));
+        g.append(cells(st.e, x, 352, 16, 'is-e'), sup('e', t + 1, x + 30, 364, 'ru-name'));
         g.append(arrow(x, 348, x, 268, 'we', ['W', 'e'], x + 18, 312));
         // hidden state
         g.append(s('rect', { x: x - 36, y: 234, width: 72, height: 28, rx: 6, class: 'ru-hbox' }), cells(st.h, x, 240, 14, 'is-h'));
-        g.append(s('text', { x: x - 8, y: 280, class: 'ru-name end', text: 'h(' + (t + 1) + ')' }));
+        g.append(sup('h', t + 1, x - 8, 280, 'ru-name end'));
         const px = t === 0 ? X0 : X[t - 1];
         g.append(arrow(px + 38, 248, x - 40, 248, 'wh', ['W', 'h'], (px + x) / 2, 238));
         g.append(arrow(x, 232, x, 178, 'u', ['U', ''], x + 14, 208));
@@ -112,7 +118,7 @@
         g.append(chart);
         svg.append(g);
       });
-      svg.append(s('text', { x: 12, y: 104, class: 'ru-name', text: 'ŷ(t)' }), s('text', { x: 12, y: 120, class: 'ru-name small', text: '8 个词的概率' }));
+      svg.append(sup('ŷ', 't', 12, 104, 'ru-name'), s('text', { x: 12, y: 120, class: 'ru-name small', text: '8 个词的概率' }));
 
       const st = r.steps[shown - 1];
       clear(cap);
@@ -123,8 +129,8 @@
           : h('div.ru-cap-text', { html: '每一步用的都是同一组 ' + texHTML('W_h') + '、' + texHTML('W_e') + '、' + texHTML('U') + '（图里同色的箭头）。句子再长，也只是把这一步多重复几次，参数一个也不会多。' }));
       if (mode === 'train') {
         clear(stat);
-        stat.append(h('span', '已训练 ' + trained + ' 轮。'), h('span', { html: '平均损失 ' + texHTML('J = \\tfrac14\\sum_t J^{(t)} = ' + fmt(r.J, 3)) + '，困惑度 ' + texHTML('e^{J} = ' + fmt(r.perplexity, 2)) + '。' }),
-          h('span.viz-note', trained ? '每一轮：前向算出 4 个损失，沿时间反向传播求梯度，再用梯度下降更新所有参数。只在这一句话上训练，所以模型很快就把它背下来了。' : '参数是随机的，模型还什么都没学：真实的下一个词拿到的概率都不高。点“训练 20 轮”看看会怎样。'));
+        stat.append(h('span', '已训练 ' + trained + ' 轮。'), h('span', { html: '平均损失 ' + texHTML('J = \\tfrac14\\sum_t J^{(t)} = ' + fmt(r.J, 3)) + '，困惑度（本章最后一节讲）' + texHTML('e^{J} = ' + fmt(r.perplexity, 2)) + '。' }),
+          h('span.viz-note', trained ? '每一轮：前向算出 4 个损失，沿时间反向传播（下一节讲）求梯度，再用梯度下降更新所有参数。只在这一句话上训练，所以模型很快就把它背下来了。' : '参数是随机的，模型还什么都没学：真实的下一个词拿到的概率都不高。点“训练 20 轮”看看会怎样。'));
       }
       prev.disabled = shown === 1; next.disabled = shown === 4;
     }
