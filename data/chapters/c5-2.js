@@ -51,7 +51,7 @@
           intuition: [
             '以 “Zuko made his uncle tea” 为例（$n = 5$ 个词）。先把每个词变成词向量 $x_i$（第 2.1 章的嵌入层）。',
             '',
-            '然后用三个可学的 $d\\times d$ 矩阵 $Q$、$K$、$V$，把每个词向量变成三个向量（老师说，这三个矩阵会把向量“旋转、打乱、拉伸、压扁”）：',
+            '然后用三个可学的 $d\\times d$ 矩阵 $Q$、$K$、$V$（名字取自 query、key、value 的首字母），把每个词向量变成三个向量（老师说，这三个矩阵会把向量“旋转、打乱、拉伸、压扁”）：',
             '',
             '- **query** $q_i = Qx_i$：这个词拿去**问**的样子；',
             '- **key** $k_i = Kx_i$：这个词**被别人比较**时的样子；',
@@ -69,7 +69,7 @@
             title: '自注意力（第 5 讲）',
             latex: String.raw`\begin{aligned} \htmlClass{fx-qkv}{q_i = Q x_i,\quad k_i = K x_i,\quad v_i = V x_i} \\ \htmlClass{fx-e}{e_{ij} = q_i^\top k_j}, \qquad \htmlClass{fx-a}{\alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{j'} \exp(e_{ij'})}} \\ \htmlClass{fx-o}{o_i = \sum_{j} \alpha_{ij}\, v_j} \end{aligned}`,
             parts: [
-              { key: 'qkv', label: '① 每个词变出三个向量', color: 'pink', text: '$x_i = Ew_i$ 是第 $i$ 个词的词向量（$E$ 是 $d\\times|V|$ 的词向量矩阵，一列一个词）。$Q$、$K$、$V$ 都是 $d\\times d$ 的可学矩阵，所有词共用同一组。' },
+              { key: 'qkv', label: '① 每个词变出三个向量', color: 'pink', text: '$x_i = Ew_i$ 是第 $i$ 个词的词向量：$w_i$ 是第 $i$ 个词的独热向量，$E$ 是 $d\\times|V|$ 的词向量矩阵，一列一个词（第 2.1 章的嵌入层）。这里的 $v_i$ 是 value，不是 word2vec 里的中心词向量。$Q$、$K$、$V$ 都是 $d\\times d$ 的可学矩阵，所有词共用同一组。' },
               { key: 'e', label: '② 两两打分', color: 'gray', text: '第 $i$ 个词的 query 和第 $j$ 个词的 key 的点积。$i$、$j$ 各取遍 $n$ 个词，一共 $n\\times n$ 个分数。' },
               { key: 'a', label: '对每个 $i$，在 $j$ 上做 softmax', color: 'blue', text: '$j\'$ 只是求和用的字母，取遍所有词。每个词的 $n$ 个权重加起来是 $1$。' },
               { key: 'o', label: '③ 加权求和', color: 'orange', text: '第 $i$ 个词的输出 $o_i$：所有词的 value 按第 $i$ 行的权重加起来。' },
@@ -87,7 +87,7 @@
             '把 $n$ 个词向量**一行一个**摞起来，得到 $X$（$n\\times d$）。第 3.2 章说过，向量写成一行时，矩阵要放在右边乘：$XQ$ 的第 $i$ 行就是第 $i$ 个词的 query（这里的 $Q$ 相当于上一节那个 $Q$ 转置过来，内容一样）。于是：',
             '',
             '1. $XQ$、$XK$、$XV$：三次矩阵乘法，得到所有词的 query、key、value，各是 $n\\times d$。',
-            '2. $XQ\\,(XK)^\\top$：$n\\times d$ 乘 $d\\times n$，得到 $n\\times n$ 的矩阵，第 $i$ 行第 $j$ 列正是 $q_i^\\top k_j$（第 0.1 章：结果的每个数是“左边一行”和“右边一列”的点积）。课件的说法：**所有词对的注意力分数**，一次算完。',
+            '2. $XQ\\,(XK)^\\top$：$XK$ 的每一行是一个词的 key，转置以后 $(XK)^\\top$ 的每一**列**是一个词的 key。$XQ$ 的第 $i$ 行是第 $i$ 个词的 query（写成一行，就是 $q_i^\\top$），它乘 $(XK)^\\top$ 的第 $j$ 列，正是 $q_i^\\top k_j$（第 0.1 章：结果的每个数是“左边一行”和“右边一列”的点积）。$n\\times d$ 乘 $d\\times n$，得到 $n\\times n$ 的矩阵。课件的说法是：**所有词对的注意力分数**，一次算完。',
             '3. 对每一行做 softmax，得到权重矩阵，每行加起来是 $1$。',
             '4. 再乘 $XV$：$n\\times n$ 乘 $n\\times d$，得到 $n\\times d$ 的输出，第 $i$ 行就是 $o_i$。',
           ].join('\n'),

@@ -33,15 +33,15 @@
             '',
             '**多头注意力**的做法：准备 $h$ 组 $Q$、$K$、$V$，每组叫一个**头**（head），各做一遍自注意力，最后把 $h$ 个结果拼起来，再乘一个矩阵 $Y$ 混合一下。课件的图里，头 1 主要看实体（Stanford、CS、224n），头 2 主要看句法上相关的词（I、went、learned）。',
             '',
-            '每个头的 $Q_\\ell$、$K_\\ell$、$V_\\ell$ 都是 $d\\times\\frac{d}{h}$：把向量投影到一个 $d/h$ 维的小空间里做注意力。所以 $h$ 个头加起来，计算量和一个 $d$ 维的头差不多。实现时也不用真的循环 $h$ 次：照常算一次 $XQ$（$n\\times d$），把它整理成 $n\\times h\\times\\frac{d}{h}$，再把“头”这一维挪到最前面，就像多了一批数据一起算（第 4.3 章的“一批”）。',
+            '每个头的 $Q_\\ell$、$K_\\ell$、$V_\\ell$ 都是 $d\\times\\frac{d}{h}$：把向量投影到一个 $d/h$ 维的小空间里做注意力。所以 $h$ 个头加起来，计算量和一个 $d$ 维的头差不多。实现时也不用真的循环 $h$ 次：照常算一次 $XQ$（$n\\times d$），把它整理成 $n\\times h\\times\\frac{d}{h}$，再把“头”这一维挪到最前面，就像多了一批数据一起算（第 4.3 章的“一批”）。这是编程时批量计算的技巧，数学上等于各个头分别算一遍。',
             '',
             '老师补充了几点：没有什么强迫各个头学到不同的东西，只是希望它们分工，实际上也会有些重复；经验上每个头至少要 $64$ 维左右，所以模型的维数 $d$ 越大，头就可以越多；有研究发现，有些头的注意力很像依存句法（第 3 部分），有些头则是在做整体平均。',
           ].join('\n'),
           formulas: [{
             title: '多头注意力（第 5 讲）',
-            latex: String.raw`\begin{aligned} \htmlClass{fx-head}{\text{output}_\ell} &= \mathrm{softmax}\big(XQ_\ell\,K_\ell^\top X^\top\big)\, XV_\ell \;\in\; \mathbb{R}^{n\times d/h} \\ \text{output} &= \htmlClass{fx-cat}{\big[\text{output}_1,\ \dots,\ \text{output}_h\big]}\; \htmlClass{fx-y}{Y} \end{aligned}`,
+            latex: String.raw`\begin{aligned} \htmlClass{fx-head}{\text{output}_\ell} &= \mathrm{softmax}\big(XQ_\ell\,(XK_\ell)^\top\big)\, XV_\ell \;\in\; \mathbb{R}^{n\times d/h} \\ \text{output} &= \htmlClass{fx-cat}{\big[\text{output}_1,\ \dots,\ \text{output}_h\big]}\; \htmlClass{fx-y}{Y} \end{aligned}`,
             parts: [
-              { key: 'head', label: '第 $\\ell$ 个头', color: 'blue', text: '和上一章的自注意力完全一样，只是 $Q_\\ell, K_\\ell, V_\\ell$ 都是 $d\\times\\frac{d}{h}$，输出每行只有 $d/h$ 维。$\\ell$ 从 $1$ 到 $h$。（$XQ_\\ell K_\\ell^\\top X^\\top$ 就是上一章的 $XQ(XK)^\\top$。）' },
+              { key: 'head', label: '第 $\\ell$ 个头', color: 'blue', text: '和上一章的自注意力完全一样，只是 $Q_\\ell, K_\\ell, V_\\ell$ 都是 $d\\times\\frac{d}{h}$，输出每行只有 $d/h$ 维。$\\ell$ 从 $1$ 到 $h$。（和上一章的 $XQ(XK)^\\top$ 一样，只是换成第 $\\ell$ 个头的矩阵。）' },
               { key: 'cat', label: '拼起来', color: 'orange', text: '$h$ 个 $n\\times\\frac{d}{h}$ 左右拼接，回到 $n\\times d$。' },
               { key: 'y', label: '再混合一下', color: 'purple', text: '$Y$ 是 $d\\times d$ 的可学矩阵，把各个头的结果混在一起。' },
             ],
@@ -62,13 +62,13 @@
           ].join('\n'),
           formulas: [{
             title: '缩放点积（第 5 讲）',
-            latex: String.raw`\text{output}_\ell \;=\; \mathrm{softmax}\!\left(\frac{XQ_\ell\,K_\ell^\top X^\top}{\htmlClass{fx-s}{\sqrt{d/h}}}\right) XV_\ell`,
+            latex: String.raw`\text{output}_\ell \;=\; \mathrm{softmax}\!\left(\frac{XQ_\ell\,(XK_\ell)^\top}{\htmlClass{fx-s}{\sqrt{d/h}}}\right) XV_\ell`,
             parts: [
               { key: 's', label: '除以每个头的维数的平方根', color: 'red', text: '$d/h$ 是每个头的维数。随机向量点积的典型大小约是 $\\sqrt{d/h}$，除掉它，分数就回到和维数无关的大小。' },
             ],
           }],
           example: [
-            '下面实验用标准正态分布的随机向量（每个分量的平均是 $0$、典型大小约 $1$，固定随机种子，课件外）。$300$ 对随机向量点积的标准差，和一个 query 对 $8$ 个 key 做 softmax 后最大的那个权重：',
+            '表里的“标准差”衡量一组数散开的程度，本章第 4 节补讲。下面实验用标准正态分布的随机向量（每个分量的平均是 $0$、典型大小约 $1$，固定随机种子，课件外）。$300$ 对随机向量点积的标准差，和一个 query 对 $8$ 个 key 做 softmax 后最大的那个权重：',
             '',
             '| 维数 $d$ | 点积的标准差 | $\\sqrt{d}$ | 最大权重（不缩放） | 最大权重（除以 $\\sqrt d$） |',
             '|---|---|---|---|---|',
@@ -143,7 +143,7 @@
             latex: String.raw`\begin{aligned} \htmlClass{fx-mu}{\mu} &= \frac{1}{d}\sum_{j=1}^{d} x_j, \qquad \htmlClass{fx-sig}{\sigma} = \frac{1}{d}\sum_{j=1}^{d} (x_j - \mu)^2 \\ \text{output} &= \frac{x - \htmlClass{fx-mu}{\mu}}{\sqrt{\htmlClass{fx-sig}{\sigma} + \epsilon}} \odot \htmlClass{fx-gb}{\gamma} + \htmlClass{fx-gb}{\beta} \end{aligned}`,
             parts: [
               { key: 'mu', label: '这一个向量自己的均值', color: 'blue', text: '$\\mu$ 是一个数；$x - \\mu$ 表示每一维都减去它。' },
-              { key: 'sig', label: '这一个向量自己的方差', color: 'orange', text: '课件把方差记作 $\\sigma$（不是标准差），所以分母里要开平方。' },
+              { key: 'sig', label: '这一个向量自己的方差', color: 'orange', text: '课件把方差记作 $\\sigma$（不是标准差），所以分母里要开平方。这个 $\\sigma$ 只是一个数，和 sigmoid 函数 $\\sigma(z)$ 无关；高中统计常用 $\\sigma$ 表示标准差，这里也不是。' },
               { key: 'gb', label: '可学的缩放和平移', color: 'green', text: '$\\gamma, \\beta$ 都是 $d$ 维向量，每一维各乘各加（$\\odot$ 是逐元素乘）。可以不要。' },
             ],
           }],

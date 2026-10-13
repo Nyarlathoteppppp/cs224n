@@ -44,8 +44,10 @@
           intuition: [
             '自注意力里，key、query、value 都来自同一个序列。**交叉注意力**里，它们分两边来：',
             '',
-            '- **query** 来自**解码器**这一层的向量 $z_1, \\dots, z_n$；',
-            '- **key 和 value** 来自**编码器**最后的输出 $h_1, \\dots, h_n$，课件说它们就像一块“记忆”。',
+            '- **query** 来自**解码器**这一层的向量 $z_1, \\dots, z_T$；',
+            '- **key 和 value** 来自**编码器**最后的输出 $h_1, \\dots, h_N$，课件说它们就像一块“记忆”。',
+            '',
+            '源句子和译文的长度通常不一样（$N$ 和 $T$ 不相等，课件里两边都写成了 $n$），所以交叉注意力的分数表是 $T\\times N$ 的：每个译文位置对每个源位置一个分数。',
             '',
             '于是解码器的每个词都能看源句子的每个词。课件说，这“看起来更像上周讲的”注意力：正是第 5.1 章 seq2seq 里那种解码器看编码器的注意力，只是换成了 Transformer 的写法（多头、缩放）。',
             '',
@@ -55,8 +57,8 @@
             title: '交叉注意力（第 5 讲）',
             latex: String.raw`\htmlClass{fx-k}{k_i = K\,h_i}, \qquad \htmlClass{fx-k}{v_i = V\,h_i}, \qquad \htmlClass{fx-q}{q_i = Q\,z_i}`,
             parts: [
-              { key: 'k', label: 'key、value：来自编码器的输出', color: 'orange', text: '$h_1, \\dots, h_n$ 是编码器最后一层输出的向量。' },
-              { key: 'q', label: 'query：来自解码器', color: 'red', text: '$z_1, \\dots, z_n$ 是解码器这一层的输入向量。之后的打分、softmax、加权求和和自注意力完全一样。' },
+              { key: 'k', label: 'key、value：来自编码器的输出', color: 'orange', text: '$h_1, \\dots, h_N$ 是编码器最后一层输出的向量。' },
+              { key: 'q', label: 'query：来自解码器', color: 'red', text: '$z_1, \\dots, z_T$ 是解码器这一层的输入向量。之后的打分、softmax、加权求和和自注意力完全一样。' },
             ],
           }],
           takeaway: '交叉注意力：query 来自解码器，key 和 value 来自编码器的输出，让生成的每个词都能看源句子。',

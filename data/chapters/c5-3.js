@@ -41,7 +41,7 @@
             title: '加上位置向量；正弦位置编码（第 5 讲）',
             latex: String.raw`\tilde x_i \;=\; \htmlClass{fx-x}{x_i} + \htmlClass{fx-p}{p_i}, \qquad \htmlClass{fx-p}{p_i} \;=\; \begin{bmatrix} \sin\!\big(i / 10000^{2\cdot 1/d}\big) \\ \cos\!\big(i / 10000^{2\cdot 1/d}\big) \\ \vdots \\ \sin\!\big(i / 10000^{2\cdot \frac{d}{2}/d}\big) \\ \cos\!\big(i / 10000^{2\cdot \frac{d}{2}/d}\big) \end{bmatrix}`,
             parts: [
-              { key: 'x', label: '第 $i$ 个位置上的词向量', color: 'blue', text: '和上一章一样，由嵌入层查出来。' },
+              { key: 'x', label: '第 $i$ 个位置上的词向量', color: 'blue', text: '和上一章一样，由嵌入层查出来。左边的 $\\tilde x_i$ 是加上位置向量以后的新输入。' },
               { key: 'p', label: '第 $i$ 个位置的位置向量', color: 'orange', text: '和词向量一样是 $d$ 维。正弦编码里，第 $k$ 对维度的周期由 $10000^{2k/d}$ 决定：$k$ 越大，分母越大，正弦变化得越慢。可学习的做法则直接把 $p_i$ 当参数。' },
             ],
           }],
@@ -64,7 +64,7 @@
             title: '每个位置后面的前馈网络（第 5 讲）',
             latex: String.raw`m_i \;=\; \mathrm{MLP}(\text{output}_i) \;=\; \htmlClass{fx-w2}{W_2}\;\mathrm{ReLU}\big(\htmlClass{fx-w1}{W_1}\,\text{output}_i + b_1\big) + b_2`,
             parts: [
-              { key: 'w1', label: '第一层：乘矩阵、加偏置、过 ReLU', color: 'blue', text: '$\\text{output}_i$ 是第 $i$ 个位置的自注意力输出。ReLU 提供非线性（第 2.2 章）。' },
+              { key: 'w1', label: '第一层：乘矩阵、加偏置、过 ReLU', color: 'blue', text: 'MLP 是 multi-layer perceptron（多层感知机）的缩写，就是第 2 部分那种多层神经网络。$\\text{output}_i$ 是第 $i$ 个位置的自注意力输出。ReLU 提供非线性（第 2.2 章）。' },
               { key: 'w2', label: '第二层：再乘矩阵、加偏置', color: 'purple', text: '变回 $d$ 维。所有位置共用这一组 $W_1, b_1, W_2, b_2$。' },
             ],
           }],
@@ -92,7 +92,7 @@
             ],
           }],
           example: [
-            '课件的例子：编码 “[START] The chef who” 时的 $4\\times 4$ 表。下面实验的第二个标签页（分数是编的，课件外）：',
+            '课件的例子：编码 “[START] The chef who” 时（[START] 是句首标记，作用和第 4.6 章的 `<START>` 一样）的 $4\\times 4$ 表。下面实验的第二个标签页（分数是编的，课件外）：',
             '',
             '| query \\ 可以看 | [START] | The | chef | who |',
             '|---|---|---|---|---|',
