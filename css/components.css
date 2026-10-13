@@ -126,6 +126,8 @@ pre.code code { background: none; padding: 0; font-size: 1em; }
 .ch-background > :last-child, .topic-story > :last-child { margin-bottom: 0; }
 .ch-background-label, .topic-story-label { display: block; font-size: .76rem; font-weight: 700; letter-spacing: .04em; margin-bottom: 2px; }
 .ch-background-label { color: var(--muted); }
+.ch-background.usedin { border-left-color: var(--accent); }
+.ch-background.usedin .ch-background-label { color: var(--accent); }
 .topic-story-label { color: var(--c-amber); }
 
 /* ---------- formula explainer ---------- */

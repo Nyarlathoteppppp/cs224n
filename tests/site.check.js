@@ -36,8 +36,20 @@ const content = global.CS224N && global.CS224N.content;
 if (!content) { console.log('content did not load'); process.exit(1); }
 
 /* ---------- helpers ---------- */
+// Bold that would not render: CommonMark will not close ** between full-width punctuation and a Chinese character.
+// Mirrors js/ui/markdown.js: maths becomes @@M@@ placeholders, then key terms are glossed, then markdown-it renders.
+const markdownit = require(path.join(ROOT, 'vendor/markdown-it/dist/markdown-it.min.js'));
+vm.runInThisContext(fs.readFileSync(path.join(ROOT, 'js/ui/terms.js'), 'utf8'), { filename: 'js/ui/terms.js' });
+const mdit = markdownit({ html: true });
+function checkBold(where, text) {
+  if (!text.includes('**')) return;
+  const prose = text.split(/(```[\s\S]*?```)/g).filter((_, i) => i % 2 === 0).join('\n')
+    .replace(/\$\$[\s\S]+?\$\$/g, '@@M@@').replace(/\$[^\n$]+?\$/g, '@@M@@');
+  if (mdit.render(global.CS224N.terms.apply(prose)).includes('**')) bad(where, 'bold markers would show as literal ** (punctuation right inside the closing **, followed by Chinese?)');
+}
 function checkMath(where, text) {
   if (typeof text !== 'string') return;
+  checkBold(where, text);
   const math = [];
   text.split(/(```[\s\S]*?```)/g).forEach((chunk, i) => {
     if (i % 2) return;
@@ -50,7 +62,7 @@ function checkMath(where, text) {
   });
   if (/[一-鿿][^\n]*"|"[^\n]*[一-鿿]/.test(text.replace(/\$[^$]*\$/g, ''))) warn(where, 'straight double quote in Chinese text (use “ ”)');
 }
-const TEXT_FIELDS = ['hook', 'background', 'compare', 'source', 'extNote'];
+const TEXT_FIELDS = ['hook', 'background', 'usedIn', 'compare', 'source', 'extNote'];
 const TOPIC_FIELDS = ['question', 'intuition', 'math', 'example', 'extra', 'story', 'takeaway'];
 
 /* ---------- chapters ---------- */
@@ -58,6 +70,7 @@ const parts = new Set(content.parts.map((p) => p.id));
 const ids = new Set(), nums = new Set();
 content.chapters.forEach((c) => {
   const where = c.id || '(chapter without id)';
+  global.CS224N.terms.begin(c.id);
   if (ids.has(c.id)) bad(where, 'duplicate id'); ids.add(c.id);
   if (nums.has(c.num)) bad(where, 'duplicate number ' + c.num); nums.add(c.num);
   if (!parts.has(c.part)) bad(where, 'unknown part ' + c.part);

@@ -42,6 +42,16 @@ test('L02 p7–p8: one-hot motel · hotel = 0 (orthogonal)', () => {
   eq(L.dot(motel, hotel), 0);
 });
 
+test('Chapter 0.1 numbers: [3,1]·[1,2] = 5 at 45°, Wx = [4,1,5], quiz answers 4 and [7,2]', () => {
+  eq(L.dot([3, 1], [1, 2]), 5);
+  near(L.norm([3, 1]), Math.sqrt(10)); near(L.norm([1, 2]), Math.sqrt(5));
+  near(Math.acos(L.cosine([3, 1], [1, 2])) * 180 / Math.PI, 45, 1e-9);
+  eq(L.matvec([[1, 2], [0, 1], [3, -1]], [2, 1]), [4, 1, 5]);
+  eq(L.dot([2, -1, 3], [1, 4, 2]), 4);
+  eq(L.matvec([[1, 0, 2], [-1, 3, 1]], [3, 1, 2]), [7, 2]);
+  eq(L.shape(L.matmul(L.zerosMat(4, 3), L.zerosMat(3, 5))), [4, 5]);
+});
+
 test('L02 p10: banking · monetary = 1.031696, cosine ≈ 0.857', () => {
   const banking = [0.286, 0.792, -0.177, -0.107, 0.109, -0.542, 0.349, 0.271];
   const monetary = [0.413, 0.582, -0.007, 0.247, 0.216, -0.718, 0.147, 0.051];

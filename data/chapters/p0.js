@@ -3,18 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c0-1', part: 'p0', seq: 1, num: '0.1', stub: true,
-      title: '向量、点积与矩阵', en: 'Vectors, dot products and matrices',
-      hook: '计算机里，一个词可以变成一串数。两串数之间，怎么量“像不像”？一大堆数，怎么一次算完？',
-      goals: ['说出点积的两种算法（逐项相乘相加；长度 × 长度 × 夹角余弦），并解释它为什么能量相似', '看懂矩阵乘向量：每一行和向量做一次点积', '判断两个矩阵能不能相乘，乘出来是什么形状'],
-      prereq: [{ text: '函数、坐标平面上的点', where: '高中数学' }],
-      topics: [
-        { id: 'vector', title: '向量与点积', question: '一串数怎么画成一支箭头？两支箭头的点积为什么能告诉我们它们像不像？', visuals: [{ id: 'dot-product' }] },
-        { id: 'matrix', title: '矩阵与矩阵乘法', question: '把很多个向量摞在一起，乘法要怎么做？形状怎么配？', visuals: [{ id: 'matvec' }] },
-      ],
-      source: 'CS224N 第 2–3 讲用到的向量与矩阵运算。',
-    },
-    {
       id: 'c0-2', part: 'p0', seq: 2, num: '0.2', stub: true,
       title: '概率、指数与对数', en: 'Probability, exp and log',
       hook: '模型说“下一个词是 books 的概率是 0.4”，这个数是怎么来的？为什么几乎所有的训练目标里都有 log？',

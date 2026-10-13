@@ -86,7 +86,7 @@
   /* ---------- search ---------- */
   function plainText(c) {
     const topics = (c.topics || []).map((t) => [t.title, t.question, t.intuition, t.math, t.example, t.extra, t.story, t.takeaway].join(' '));
-    return [c.title, c.en, c.hook, c.background].concat(topics).join(' ').replace(/\$[^$]*\$/g, ' ').replace(/[#*|>`_:]/g, ' ').replace(/\s+/g, ' ');
+    return [c.title, c.en, c.hook, c.background, c.usedIn].concat(topics).join(' ').replace(/\$[^$]*\$/g, ' ').replace(/[#*|>`_:]/g, ' ').replace(/\s+/g, ' ');
   }
   function search(q) {
     const box = document.getElementById('toc-results'), list = document.getElementById('toc-list');
@@ -225,6 +225,7 @@
         c.stub ? h('div.stub-banner', '这一章的正文还在写。下面先列出本章要回答的问题和计划用到的可视化。') : null,
         c.hook ? h('div.ch-hook', h('span.ch-hook-label', '这一章要回答'), h('div', { html: md(c.hook) })) : null,
         c.background ? h('aside.ch-background', h('span.ch-background-label', '研究背景'), h('div', { html: md(c.background) })) : null,
+        c.usedIn ? h('aside.ch-background.usedin', h('span.ch-background-label', '后面哪里会用到'), h('div', { html: md(c.usedIn) })) : null,
         (c.goals || []).length ? h('div.ch-goals', h('b', '学完这一章，你能：'), h('ul', c.goals.map((g) => h('li', { html: inline(g) })))) : null,
         prereqBox(c)),
       flowbar,
