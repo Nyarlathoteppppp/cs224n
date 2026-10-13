@@ -81,5 +81,5 @@
     render();
   }
 
-  C.viz.register('w2v-grad', { title: '梯度 = 观察到的 − 期望的', mount });
+  C.viz.register('w2v-grad', { title: '更新方向 = 观察到的 − 期望的', mount });
 })(window);

@@ -118,7 +118,7 @@
             '',
             '$$\\frac{\\partial s}{\\partial W} \\approx \\begin{bmatrix} 0.301 \\\\ -0.086 \\end{bmatrix}\\begin{bmatrix} 1 & 2 & -1 \\end{bmatrix} = \\begin{bmatrix} 0.301 & 0.602 & -0.301 \\\\ -0.086 & -0.171 & 0.086 \\end{bmatrix}$$',
             '',
-            '另外 $\\partial s/\\partial u = h \\approx [-0.922,\\ 0.956]$，$\\partial s/\\partial x = W^\\top\\delta^\\top \\approx [0.065,\\ -0.327,\\ 0.103]$。这些数都用数值梯度逐个核对过。',
+            '另外 $\\partial s/\\partial u = h \\approx [-0.922,\\ 0.956]$，$\\partial s/\\partial x = W^\\top\\delta^\\top \\approx [0.065,\\ -0.327,\\ 0.103]$。这些数都用“推一下”的数值方法（第 2.5 章会讲）逐个核对过。',
           ].join('\n'),
           visuals: [{ id: 'outer-product', type: 'video', at: 'example' }],
           takeaway: '$\\delta = u^\\top\\odot f\'(z)$ 算一次、反复用；$\\partial s/\\partial W_{ij} = \\delta_i x_j$，整张表是外积 $\\delta^\\top x^\\top$。',

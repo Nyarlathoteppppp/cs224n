@@ -12,7 +12,7 @@
     'onehot-dense': { title: 'one-hot 与稠密向量', question: '为什么 one-hot 表示看不出 motel 和 hotel 很像？', what: 'motel、hotel 的 15 维 one-hot 向量逐位相乘，点积为 0；再把 banking、monetary 的 8 维稠密向量逐维相乘相加，得到明显为正的点积。', data: 'CS224N 第 2 讲的原数。' },
     'skipgram-window': { title: 'word2vec 的训练样本', question: 'word2vec 每一步拿什么数据来训练？', what: '在“…problems turning into banking crises as…”上滑动中心词；窗口大小 $m$ 可调；列出所有 (中心词, 上下文词) 对，并画出 $P(o\\mid c)$ 箭头。', data: 'CS224N 第 2 讲的原句。' },
     'softmax': { title: 'softmax 的三步', question: 'softmax 的每一步分别在做什么？', what: '可以拖动的分数条 → 经过 exp 的条 → 归一化后的概率条，三步之间用动画衔接；可以看到“最大的被放大，小的也留一点”。', data: '自造数字（课件外）。' },
-    'w2v-grad': { title: '梯度 = 观察到的 − 期望的', question: '为什么中心词向量的梯度是“观察到的减去期望的”？', what: '二维平面上画出中心向量 $v_c$、真实上下文词的 $u_o$ 和其他词的 $u_w$；期望向量 = 按模型概率加权的平均；每点一次“下一步”，$v_c$ 沿负梯度移动，概率条随之更新。', data: '自造数字（课件外）。' },
+    'w2v-grad': { title: '更新方向 = 观察到的 − 期望的', question: '为什么中心词向量的更新方向（负梯度）是“观察到的减去期望的”？', what: '二维平面上画出中心向量 $v_c$、真实上下文词的 $u_o$ 和其他词的 $u_w$；期望向量 = 按模型概率加权的平均；每点一次“下一步”，$v_c$ 沿负梯度移动，概率条随之更新。', data: '自造数字（课件外）。' },
     'neg-sampling': { title: '负采样的 3/4 次方', question: '采样分布为什么要取 3/4 次方？', what: '一组词频条：原始分布和取 3/4 次方后的分布并排；滑块把指数从 0 调到 1。', data: '自造词频（课件外）。' },
     'cooccur-svd': { title: '共现矩阵与 SVD', question: '共现矩阵怎么数出来？降维之后长什么样？', what: '逐词扫描三句话，矩阵的格子一格一格加 1；然后用 SVD 取前两维，把 8 个词画成散点。', data: 'CS224N 第 2 讲的三句话；SVD 由代码算出。' },
     'analogy': { title: '用向量做类比', question: 'man : woman :: king : ? 是怎么算出来的？', what: '二维平面上的 man→woman 箭头，平移到 king；画出 $x_b-x_a+x_c$，高亮离它最近的词（输入的三个词不算）。', data: '自造坐标（课件外）。' },
@@ -42,7 +42,7 @@
 
   Object.assign(content.videoSpecs, {
     'distributional': { title: '一个词的意思从哪里来', question: '只看一个词周围的词，能知道它的意思吗？', aha: 'banking 的三个上下文叠在一起，“意思”就浮现出来了。' },
-    'w2v-observed-expected': { title: '把词向量推来推去的两股力', question: '训练 word2vec 时，每个词向量是被什么力量推着走的？', aha: '梯度 = 观察到的 − 期望的：被真实的上下文拉过去，被模型自己的猜测推开。' },
+    'w2v-observed-expected': { title: '把词向量推来推去的两股力', question: '训练 word2vec 时，每个词向量是被什么力量推着走的？', aha: '更新方向（负梯度）= 观察到的 − 期望的：被真实的上下文拉过去，被模型自己的猜测推开。' },
     'glove-ratio': { title: '为什么看概率之比', question: '为什么 GloVe 关心“概率之比”，而不是概率本身？', aha: '比值把和两个词都无关的部分抵消掉，只留下它们的区别。' },
     'outer-product': { title: '外积从哪里来', question: '$\\partial s/\\partial W$ 为什么是 $\\delta$ 和 $x$ 的外积？', aha: '$W_{ij}$ 只连着 $z_i$ 和 $x_j$，所以它的梯度就是 $\\delta_i x_j$。' },
     'backprop-graph': { title: '一次算出所有梯度', question: '一个复杂函数的梯度，怎么一次全部算出来？', aha: '加法分发、max 路由、乘法互换；分叉的地方梯度相加。' },

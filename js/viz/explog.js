@@ -71,7 +71,7 @@
       sumOut.innerHTML = '<span class="el-k">取 log 后连加 log p + … + log p</span><span class="el-v">' + f3(sum) + '</span>';
       verdict.textContent = prod === 0
         ? '连乘的结果小于计算机能表示的最小正数，被存成了 0：所有句子的概率都一样是 0，没法比较了。取 log 的那一边还是一个普通的数。'
-        : '把 T 拖大，或者把 p 拖小，看连乘多快变得极小。取 log 的那一边只是线性地变负。';
+        : '把 T 拖大，或者把 p 拖小，看连乘多快变得极小；p = 0.1 时，T 到 324 就会被存成 0。取 log 的那一边只是均匀地越来越负。';
     }
 
     /* 2. exp makes everything positive */
@@ -87,7 +87,7 @@
     function renderNll() { nlPlot.place(q, '−log ' + q.toFixed(2) + ' = ' + f3(-Math.log(q) + 0)); }
 
     el.append(
-      h('div.el-section', h('div.el-title', '① 连乘会下溢，取 log 不会'), h('div.viz-row', sP, sT), h('div.el-pair', prodOut, sumOut), verdict),
+      h('div.el-section', h('div.el-title', '① 连乘会下溢（小到被存成 0），取 log 不会'), h('div.viz-row', sP, sT), h('div.el-pair', prodOut, sumOut), verdict),
       h('div.el-two',
         h('div.el-section', h('div.el-title', '② exp：任何分数都变成正数'), h('div.viz-row', sX), expPlot,
           h('p.viz-note', '曲线永远在横轴上方；分数越大，结果越大。')),
