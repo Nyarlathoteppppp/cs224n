@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c1-1', part: 'p1', seq: 1, num: '1.1', stub: true, lectures: '第 1 讲',
-      title: '课程导览：NLP 是怎么走到今天的', en: 'Course overview: how NLP got here',
-      hook: '让计算机处理人类语言，难在哪里？几十年来，人们换过哪几种思路？',
-      goals: ['说出 NLP 史上几次主要的思路转变', '知道本站后面每一部分对应这条路线上的哪一段'],
-      prereq: [],
-      topics: [
-        { id: 'hard', title: '语言为什么难', question: '同一句话可以有好几种理解，计算机要怎么判断是哪一种？' },
-        { id: 'history', title: '几个里程碑', question: '从规则、统计到神经网络和大模型，每一次转变解决了什么问题？' },
-        { id: 'route', title: '本站的学习路线', question: '接下来的 13 个部分分别在讲这条路线上的哪一段？' },
-      ],
-      source: 'CS224N 第 1 讲（课程介绍与 NLP 简史）。',
-    },
-    {
       id: 'c1-2', part: 'p1', seq: 2, num: '1.2', stub: true, lectures: '第 2 讲',
       title: '计算机里怎么放“词义”', en: 'Representing word meaning',
       hook: '搜索 “Seattle motel” 时，我们也想找到写着 “Seattle hotel” 的网页。计算机怎么知道 motel 和 hotel 意思相近？',

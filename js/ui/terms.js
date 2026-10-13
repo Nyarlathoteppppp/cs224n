@@ -30,7 +30,7 @@
     ['依存句法分析', 'dependency parsing'], ['依存关系', 'dependency'], ['中心语', 'head'], ['依存词', 'dependent'],
     ['转移系统', 'transition system'], ['缓冲区', 'buffer'],
     // Part 4
-    ['语言模型', 'language model'], ['循环神经网络', 'recurrent neural network, RNN'], ['隐状态', 'hidden state'],
+    ['语言模型', 'language model'], ['大语言模型', 'large language model, LLM'], ['循环神经网络', 'recurrent neural network, RNN'], ['隐状态', 'hidden state'],
     ['困惑度', 'perplexity'], ['梯度消失', 'vanishing gradient'], ['梯度爆炸', 'exploding gradient'], ['梯度裁剪', 'gradient clipping'],
     ['长短期记忆网络', 'long short-term memory, LSTM'], ['机器翻译', 'machine translation'], ['编码器', 'encoder'], ['解码器', 'decoder'],
     // Part 5

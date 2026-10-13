@@ -65,6 +65,12 @@ test('Chapter 0.2 numbers: 0.02·0.1·0.3·0.4 = 0.00024, log-sum −8.335, J �
   near(400 / 1000, 0.4); near(100 / 1000, 0.1);
 });
 
+test('L01b p36 (chapter 1.1): spelling correction scores from the four conditionals on the slide', () => {
+  const actress = 0.0019 * 0.0043, across = 0.000092 * 0.000026;
+  near(actress, 8.17e-6, 1e-12); near(across, 2.392e-9, 1e-15);
+  near(actress / across, 3416, 1);
+});
+
 test('L02 p10: banking · monetary = 1.031696, cosine ≈ 0.857', () => {
   const banking = [0.286, 0.792, -0.177, -0.107, 0.109, -0.542, 0.349, 0.271];
   const monetary = [0.413, 0.582, -0.007, 0.247, 0.216, -0.718, 0.147, 0.051];
