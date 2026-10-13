@@ -1,0 +1,7 @@
+# Stanford CS224N materials and lecture transcripts are not ours to republish.
+# Re-create them locally with: tools/fetch_reference.sh all
+reference/
+
+.venv/
+__pycache__/
+.DS_Store

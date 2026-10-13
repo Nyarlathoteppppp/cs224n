@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CS224N 中文教程</title>
+<meta name="description" content="按 Stanford CS224N（Winter 2026）的顺序，用中文、直觉和交互实验讲清楚 NLP 与深度学习：词向量、神经网络与反向传播、依存句法、语言模型与 RNN、注意力与 Transformer。">
+<link rel="stylesheet" href="vendor/katex/dist/katex.min.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/viz.css">
+<script>
+  // Apply a saved theme before first paint so the page does not flash.
+  try { var t = JSON.parse(localStorage.getItem('cs224n:theme')); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到正文</a>
+<header class="topbar">
+  <button id="toc-toggle" class="icon-btn" type="button" aria-label="打开或关闭目录">☰</button>
+  <a class="brand" href="#/"><span class="brand-mark">224N</span><span class="brand-text">CS224N 中文教程</span></a>
+  <div class="crumb" id="crumb" aria-live="polite"></div>
+  <div class="top-progress" title="学习进度">
+    <div class="progress-track"><div id="progress-bar" class="progress-fill"></div></div>
+    <span id="progress-text" class="progress-text"></span>
+  </div>
+  <nav class="top-actions" aria-label="复习工具">
+    <a href="#/glossary">术语表</a>
+    <a href="#/formulas">公式速查</a>
+    <a href="#/review">综合测验</a>
+    <button id="font-toggle" class="icon-btn text" type="button" aria-label="切换正文字号">字号 A+</button>
+    <button id="theme-toggle" class="icon-btn text" type="button">深色</button>
+  </nav>
+  <div class="chapter-track"><div id="chapter-progress" class="chapter-fill"></div></div>
+</header>
+<div class="shell">
+  <aside class="toc" aria-label="课程目录">
+    <label class="toc-search-label" for="toc-search">找一个概念</label>
+    <input id="toc-search" class="toc-search" type="search" placeholder="搜索章节与正文…" autocomplete="off">
+    <div id="toc-results" class="toc-results" hidden></div>
+    <nav id="toc-list"></nav>
+    <div class="toc-foot">进度、笔记和答题记录只保存在这个浏览器里，不需要联网。<button id="export-notes" class="link-btn" type="button">导出笔记与进度（Markdown）</button></div>
+  </aside>
+  <div id="scrim" class="scrim"></div>
+  <main id="main" tabindex="-1"><div id="main-inner" class="main-inner"></div></main>
+  <aside id="viz-panel" class="viz-panel" aria-label="交互实验"></aside>
+</div>
+<noscript><p style="padding:24px">这个网站的公式和交互需要启用 JavaScript。</p></noscript>
+
+<script src="vendor/katex/dist/katex.min.js"></script>
+<script src="vendor/markdown-it/dist/markdown-it.min.js"></script>
+<!-- core algorithms (also loaded by the Node tests) -->
+<script src="js/core/linalg.js"></script>
+<script src="js/core/prob.js"></script>
+<script src="js/core/calculus.js"></script>
+<script src="js/core/optim.js"></script>
+<script src="js/core/word2vec.js"></script>
+<script src="js/core/cooccur.js"></script>
+<script src="js/core/nn.js"></script>
+<script src="js/core/autodiff.js"></script>
+<script src="js/core/depparse.js"></script>
+<script src="js/core/ngram.js"></script>
+<script src="js/core/rnn.js"></script>
+<script src="js/core/gated.js"></script>
+<script src="js/core/attention.js"></script>
+<script src="js/core/bpe.js"></script>
+<!-- UI -->
+<script src="js/ui/dom.js"></script>
+<script src="js/ui/markdown.js"></script>
+<script src="js/ui/terms.js"></script>
+<script src="js/ui/formula.js"></script>
+<script src="js/ui/quiz.js"></script>
+<script src="js/ui/visual.js"></script>
+<!-- content -->
+<script src="data/course.js"></script>
+<script src="data/visuals.js"></script>
+<script src="data/chapters/p0.js"></script>
+<script src="data/chapters/p1.js"></script>
+<script src="data/chapters/p2.js"></script>
+<script src="data/chapters/c2-5.js"></script>
+<script src="data/chapters/p3.js"></script>
+<script src="data/chapters/p4.js"></script>
+<script src="data/chapters/p5.js"></script>
+<!-- interactive experiments (js/viz/*.js) are added here as they are built -->
+<script src="js/viz/compgraph.js"></script>
+<script src="js/viz/gradcheck.js"></script>
+<script src="js/ui/app.js"></script>
+</body>
+</html>

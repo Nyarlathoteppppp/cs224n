@@ -1,0 +1,83 @@
+/* Shared styles for interactive experiments (js/viz/*.js). Each experiment adds its own rules below its header. */
+.viz-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 8px 0; }
+.viz-svg { width: 100%; height: auto; display: block; max-width: 100%; }
+.viz-note { font-size: .88rem; color: var(--text-2); }
+.slider { display: inline-flex; align-items: center; gap: 8px; font-size: .88rem; }
+.slider-label { color: var(--text-2); white-space: nowrap; }
+.slider input[type="range"] { width: 140px; accent-color: var(--accent); }
+.slider-value { min-width: 3.2em; font-variant-numeric: tabular-nums; color: var(--text); font-weight: 600; }
+
+/* compgraph: 计算图上的反向传播 */
+.cg-stages { display: flex; gap: 6px; margin: 10px 0 2px; font-size: .84rem; }
+.cg-stage { padding: 2px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+.cg-stage.is-done { color: var(--text-2); border-color: var(--border-strong); }
+.cg-stage.is-current { color: var(--on-accent); background: var(--accent); border-color: var(--accent); font-weight: 600; }
+.cg-edge { stroke: var(--border-strong); stroke-width: 2; transition: stroke .3s, stroke-width .3s, opacity .3s; }
+.cg-edge.is-live { stroke: var(--c-blue); stroke-width: 3; }
+.cg-edge.is-zero { stroke-dasharray: 5 5; opacity: .5; }
+.cg-head { fill: var(--border-strong); }
+.cg-head-back { fill: var(--c-red); }
+.cg-head-new { fill: var(--c-orange); }
+.cg-back { stroke: var(--c-red); stroke-width: 1.6; opacity: 0; transition: opacity .35s; }
+.cg-back.on { opacity: .8; }
+.cg-back.is-new { stroke: var(--c-orange); stroke-width: 2.2; opacity: 1; }
+.cg-val, .cg-grad { font: 650 15px var(--font); text-anchor: middle; dominant-baseline: central; font-variant-numeric: tabular-nums;
+  paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; opacity: 0; transition: opacity .35s; }
+.cg-val { fill: var(--c-blue); }
+.cg-grad { fill: var(--c-red); }
+.cg-val.on, .cg-grad.on { opacity: 1; }
+.cg-val.is-new, .cg-grad.is-new { font-size: 18px; }
+.cg-grad.is-new { fill: var(--c-orange); }
+.cg-node circle { fill: var(--surface); stroke: var(--text-2); stroke-width: 1.8; transition: stroke .3s, fill .3s; }
+.cg-node text { font: 600 19px var(--font); text-anchor: middle; dominant-baseline: central; fill: var(--text); }
+.cg-node text.small { font-size: 14px; }
+.cg-node.input text { font: italic 21px KaTeX_Math, "Times New Roman", serif; }
+.cg-node.is-active circle { stroke: var(--accent); stroke-width: 3; fill: var(--accent-soft); }
+.cg-junction { fill: var(--text-2); transition: fill .3s; }
+.cg-junction.is-active { fill: var(--c-orange); }
+.cg-badge { font: 650 14px var(--font); fill: var(--c-teal); text-anchor: middle; dominant-baseline: central; opacity: 0; transition: opacity .35s; }
+.cg-badge.on { opacity: 1; }
+.cg-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: .82rem; color: var(--text-2); margin: 0 0 8px; }
+.cg-key::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.cg-key.val::before { background: var(--c-blue); } .cg-key.grad::before { background: var(--c-red); }
+.cg-key.new::before { background: var(--c-orange); } .cg-key.rule::before { background: var(--c-teal); }
+.cg-caption { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; min-height: 132px; }
+.cg-cap-title { font-weight: 650; }
+.cg-cap-tex .katex-display { margin: .45em 0; }
+.cg-cap-text { font-size: .94rem; color: var(--text-2); }
+.cg-up { color: var(--c-red); } .cg-loc { color: var(--c-teal); } .cg-down { color: var(--c-orange); }
+.cg-nav { margin-top: 10px; }
+.cg-dots { display: flex; gap: 6px; }
+.cg-dot { width: 12px; height: 12px; padding: 0; border-radius: 50%; border: 1.5px solid var(--border-strong); background: var(--surface); cursor: pointer; }
+.cg-dot.is-done { background: var(--border-strong); }
+.cg-dot.is-current { background: var(--accent); border-color: var(--accent); }
+.cg-counter { font-size: .84rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* grad-check: 数值梯度检查 */
+.gc-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 6px 0; }
+.gc-panels figure { margin: 0; min-width: 0; }
+.gc-panels figcaption { font-size: .82rem; color: var(--muted); text-align: center; }
+.gc-axis { stroke: var(--border-strong); stroke-width: 1.2; }
+.gc-grid { stroke: var(--border); stroke-width: 1; }
+.gc-guide { stroke: var(--border-strong); stroke-dasharray: 3 4; }
+.gc-tickline { stroke: var(--border-strong); }
+.gc-tick { font: 12px var(--font); fill: var(--muted); text-anchor: middle; }
+.gc-axis-label { font: 12.5px var(--font); fill: var(--text-2); text-anchor: middle; }
+.gc-curve { fill: none; stroke: var(--text-2); stroke-width: 2.2; }
+.gc-curve-label { font: italic 14px KaTeX_Main, "Times New Roman", serif; fill: var(--text-2); }
+.gc-tangent { stroke: var(--c-pink); stroke-width: 2; stroke-dasharray: 6 4; }
+.gc-one { fill: none; stroke: var(--c-orange); stroke-width: 2; }
+.gc-two { fill: none; stroke: var(--c-blue); stroke-width: 2; }
+.gc-dot { fill: var(--text); }
+.gc-hint { font: 12.5px var(--font); fill: var(--muted); transition: opacity .25s; }
+.gc-marker { stroke: var(--text-2); stroke-width: 1; stroke-dasharray: 3 3; }
+.gc-mone { fill: var(--c-orange); } .gc-mtwo { fill: var(--c-blue); }
+.gc-lab { font: 600 12.5px var(--font); }
+.gc-lab.one { fill: var(--c-orange); } .gc-lab.two { fill: var(--c-blue); } .gc-lab.note { fill: var(--muted); font-weight: 400; }
+.gc-table { border-collapse: collapse; font-size: .88rem; margin: 6px 0; }
+.gc-table th, .gc-table td { padding: 3px 12px 3px 0; text-align: left; border-bottom: 1px solid var(--border); }
+.gc-table th { color: var(--muted); font-weight: 500; }
+.gc-table td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.gc-swatch { display: inline-block; width: 18px; height: 0; border-top: 2.5px solid; vertical-align: middle; }
+.gc-swatch.tangent { border-color: var(--c-pink); border-top-style: dashed; }
+.gc-swatch.one { border-color: var(--c-orange); } .gc-swatch.two { border-color: var(--c-blue); }

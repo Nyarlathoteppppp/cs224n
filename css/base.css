@@ -1,0 +1,79 @@
+/* Design tokens, light and dark themes, typography.
+ * Light is the default; dark is only used when the reader switches to it (the user asked for a light page).
+ * Semantic colours mean the same thing on every page, in every figure and in the Manim videos:
+ *   blue = input / word vectors / center vector      orange = context / outside vectors
+ *   green = probabilities / outputs / correct         red = loss / gradients / errors
+ *   purple = parameters / weights                     teal = hidden states / memory
+ *   amber = attention weights                          pink = targets / true labels
+ *   gray = fixed, given, not learned */
+:root {
+  color-scheme: light;
+  --bg: #f8f6f1;
+  --surface: #ffffff;
+  --surface-2: #f4f1ea;
+  --surface-3: #e9e4d9;
+  --border: #e3ded3;
+  --border-strong: #c8c0ae;
+  --text: #1d1b26;
+  --text-2: #45424f;
+  --muted: #6f6b78;
+  --accent: #3346a8;
+  --accent-soft: #e9ecf8;
+  --on-accent: #ffffff;
+  --focus: #b4532a;
+  --c-blue: #2563eb;
+  --c-orange: #d9480f;
+  --c-green: #15803d;
+  --c-red: #d12f2f;
+  --c-purple: #7048e8;
+  --c-teal: #0c8599;
+  --c-amber: #b7791f;
+  --c-pink: #c2255c;
+  --c-gray: #6b7280;
+  --code-bg: #f6f4ee;
+  --shadow: 0 1px 2px rgba(40, 32, 20, .05), 0 6px 18px rgba(40, 32, 20, .06);
+  --radius: 10px;
+  --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Segoe UI", Roboto, sans-serif;
+  --mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --topbar-h: 56px;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #15151c; --surface: #1d1d27; --surface-2: #242431; --surface-3: #2e2e3d;
+  --border: #363647; --border-strong: #4c4c63; --text: #ebe9f2; --text-2: #c9c6d5; --muted: #a09cae;
+  --accent: #97a8ff; --accent-soft: #272d4c; --on-accent: #10121f; --focus: #f0b48a;
+  --c-blue: #6ea0ff; --c-orange: #ff8a4c; --c-green: #4ade80; --c-red: #f87171; --c-purple: #a78bfa;
+  --c-teal: #3bc9db; --c-amber: #f6c453; --c-pink: #f472b6; --c-gray: #a1a1aa;
+  --code-bg: #1a1a23;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 20px rgba(0, 0, 0, .3);
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font: 16.5px/1.85 var(--font); letter-spacing: .01em;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+h1, h2, h3, h4 { line-height: 1.35; margin: 0 0 .5em; font-weight: 650; text-wrap: balance; }
+h1 { font-size: 1.9rem; }
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
+p { margin: 0 0 .9em; }
+small, .muted { color: var(--muted); }
+code { font-family: var(--mono); font-size: .88em; background: var(--surface-2); padding: .1em .35em; border-radius: 4px; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 1.5em 0; }
+.skip-link { position: absolute; left: -999px; top: 8px; background: var(--surface); padding: 8px 12px; z-index: 100; }
+.skip-link:focus { left: 8px; }
+.warn-text { color: var(--c-red); }
+.katex { font-size: 1.06em; }
+.katex-display { margin: .8em 0; overflow-x: auto; overflow-y: hidden; padding: 4px 0; }
+/* KaTeX's hidden MathML is position:absolute; scroll containers must be positioned or it widens the page. */
+.katex-display, .prose table, table.data, pre.code, .math-display, .katex { position: relative; }
+
+/* semantic colour helpers usable inside prose: <span class="c-blue">…</span> */
+.c-blue { color: var(--c-blue); } .c-orange { color: var(--c-orange); } .c-green { color: var(--c-green); }
+.c-red { color: var(--c-red); } .c-purple { color: var(--c-purple); } .c-teal { color: var(--c-teal); }
+.c-amber { color: var(--c-amber); } .c-pink { color: var(--c-pink); } .c-gray { color: var(--c-gray); }
