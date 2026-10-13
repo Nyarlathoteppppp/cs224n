@@ -347,6 +347,24 @@ test('L03 p69–p71: f = (x+y)·max(y,z) at (1, 2, 0): forward 3, 2, 6; backward
   eq(toY, [2, 3], 'plus distributes 2, max routes 3; they add up at y');
 });
 
+test('Chapter 2.4 numbers: δ, ∂s/∂b, ∂s/∂W (outer product), ∂s/∂u, ∂s/∂x for the tanh example, all checked numerically', () => {
+  const params = { W: [[0.5, -1, 0.2], [1, 0.3, -0.5]], b: [0.1, -0.2], u: [2, -1] }, x = [1, 2, -1];
+  const g = NN.windowScoreGrad(params, x, 'tanh');
+  nearAll(g.forward.z, [-1.6, 1.9], 1e-12);
+  nearAll(g.forward.h, [-0.922, 0.956], 5e-4); near(g.forward.s, -2.800, 5e-4);
+  nearAll(g.forward.z.map((z) => 1 - Math.tanh(z) ** 2), [0.151, 0.086], 5e-4);
+  nearAll(g.delta, [0.301, -0.086], 5e-4);
+  nearAll(g.dW, [[0.301, 0.602, -0.301], [-0.086, -0.171, 0.086]], 5e-4);
+  nearAll(g.dU, [-0.922, 0.956], 5e-4); nearAll(g.dX, [0.065, -0.327, 0.103], 5e-4);
+  const score = (W, b, u, xx) => NN.windowForward({ W, b, u }, xx, 'tanh').s;
+  nearAll(C.gradient((bb) => score(params.W, bb, params.u, x), params.b), g.dB, 1e-7);
+  nearAll(C.gradientMatrix((W) => score(W, params.b, params.u, x), params.W), g.dW, 1e-7);
+  nearAll(C.gradient((xx) => score(params.W, params.b, params.u, xx), x), g.dX, 1e-7);
+  eq(L.outer([1, 2], [3, 4, 5]), [[3, 4, 5], [6, 8, 10]]);
+  eq(L.outer([0.5, -2], [3, 1, 4])[1][2], -8);
+  eq(L.hadamard([2, -1], [0.25, 0.5]), [0.5, -0.5]);
+});
+
 test('Chapter 2.5 numbers: nudges 6.2 / 6.51 / 6 (T03), z = 3 variant, multiply gate with upstream 0.5', () => {
   const run = (xv, yv, zv) => {
     const x = AD.input(xv, 'x'), y = AD.input(yv, 'y'), z = AD.input(zv, 'z');

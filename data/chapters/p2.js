@@ -3,20 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c2-4', part: 'p2', seq: 4, num: '2.4', stub: true, lectures: '第 3 讲',
-      title: '手推一个小网络的梯度', en: 'Deriving the gradients of a small network',
-      hook: '窗口分类器的得分 $s=u^\\top f(Wx+b)$。$\\partial s/\\partial b$ 和 $\\partial s/\\partial W$ 各是多少？为什么算第二个时，前一个的大半结果可以直接拿来用？',
-      goals: ['推出 $\\partial s/\\partial b=\\delta$', '推出 $\\partial s/\\partial W=\\delta^\\top x^\\top$ 并解释它为什么是外积', '说出“形状约定”是什么、为什么作业要求这么写'],
-      prereq: [{ text: '链式法则与常用 Jacobian', ch: 'c2-3' }, { text: '窗口分类器', ch: 'c2-1' }, { text: '外积', here: 'outer' }],
-      topics: [
-        { id: 'db', title: '对偏置求导', question: '$\\partial s/\\partial b$ 由哪三个 Jacobian 相乘得到？' },
-        { id: 'outer', title: '外积', question: '一个列向量乘一个行向量，会得到什么？', remedial: true },
-        { id: 'dw', title: '对权重求导，复用 δ', question: '$\\partial s/\\partial W$ 和 $\\partial s/\\partial b$ 共用了哪一部分？', visuals: [{ id: 'outer-product', type: 'video' }] },
-        { id: 'shape', title: '形状约定', question: '为什么梯度要和参数长得一样？什么时候需要转置？' },
-      ],
-      source: 'CS224N 第 3 讲；官方 notes（梯度计算）。',
-    },
-    {
       id: 'c2-6', part: 'p2', seq: 6, num: '2.6', stub: true,
       title: '训练技巧与优化器', en: 'Training tricks and optimizers',
       hook: '梯度会算了，可网络还是容易过拟合、训练得慢。实际训练时还要用到哪些办法？',
