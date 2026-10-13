@@ -761,6 +761,12 @@ test('Chapter 5.4 numbers: random dot products spread like √d; softmax of 8 sc
   eq(512 / 8, 64, 'd = 512 with 8 heads: 64 dimensions per head');
 });
 
+test('Chapter 5.5 numbers: the n × n score table for n = 30 and n = 50,000 (T08 [74:40])', () => {
+  eq(30 * 30, 900);
+  eq(50000 * 50000, 2.5e9);
+  eq(ATT.causalMask(30).flat().length, 900);
+});
+
 /* ───────── Part 6 preview: BPE (needed early because 6.1 uses it) ───────── */
 
 test('L14 p26–p53: BPE on "Peter Piper picked a peck of pickled peppers" — merges, corpus and tables', () => {

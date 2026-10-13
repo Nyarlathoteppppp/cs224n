@@ -581,3 +581,21 @@
 .sc2-w { fill: var(--c-blue); transition: y .3s, height .3s; }
 .ln-bar { fill: var(--c-blue); transition: y .35s, height .35s; }
 .ln-bar.is-neg { fill: var(--c-red); }
+
+/* 三种 Transformer */
+.tb-block { fill: var(--surface-2); stroke: var(--border-strong); stroke-dasharray: 5 4; }
+.tb-box rect { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.4; transition: stroke .2s; }
+.tb-box text { font: 600 13px var(--font); text-anchor: middle; fill: var(--text); }
+.tb-box.is-mself rect { fill: color-mix(in srgb, var(--c-red) 14%, var(--surface)); stroke: var(--c-red); }
+.tb-box.is-self rect { fill: color-mix(in srgb, var(--c-blue) 14%, var(--surface)); stroke: var(--c-blue); }
+.tb-box.is-cross rect { fill: color-mix(in srgb, var(--c-orange) 18%, var(--surface)); stroke: var(--c-orange); stroke-width: 2.2; }
+.tb-box.is-norm rect { fill: var(--surface-2); }
+.tb-box.is-ff rect { fill: color-mix(in srgb, var(--c-purple) 12%, var(--surface)); }
+.tb-box.is-out rect, .tb-box.is-emb rect { fill: color-mix(in srgb, var(--c-green) 12%, var(--surface)); }
+.tb-box.is-sel rect { stroke: var(--accent); stroke-width: 3; }
+.tb-box .tb-tag { text-anchor: start; }
+.tb-tag { font: 700 12px var(--font); }
+.tb-tag.is-mask { fill: var(--c-red); } .tb-tag.is-cross { fill: var(--c-orange); }
+.tb-flow { stroke: var(--border-strong); stroke-width: 1.6; }
+.tb-cross { fill: none; stroke: var(--c-orange); stroke-width: 2.6; }
+.tb-headp { fill: var(--c-orange); }
