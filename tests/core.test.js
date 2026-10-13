@@ -553,6 +553,14 @@ test('Chapter 4.2 numbers: window W grows with the window, W_h does not grow wit
   eq(L.matvec(W, e)[0], blocks.reduce((a, b) => a + b, 0));
 });
 
+test('Chapter 4.3 perplexity example: P = 0.5, 0.25, 0.2, 0.4 → J ≈ 1.151, perplexity = 100^(1/4) ≈ 3.162', () => {
+  const probs = [0.5, 0.25, 0.2, 0.4];
+  near(probs.reduce((s, p) => s - Math.log(p), 0) / 4, 1.1513, 5e-5);
+  near(P.perplexity(probs), Math.pow(100, 0.25), 1e-12);
+  near(P.perplexity(probs), 3.162, 5e-4);
+  near(1 / 0.002, 500, 1e-9, 'T06: inverting 0.002 gives 500');
+});
+
 function smallRnn(Vsize, d, Dh) {
   return { E: randMat(Vsize, d), Wh: randMat(Dh, Dh), We: randMat(Dh, d), b1: randVec(Dh), U: randMat(Vsize, Dh), b2: randVec(Vsize), h0: randVec(Dh, 0.1) };
 }
