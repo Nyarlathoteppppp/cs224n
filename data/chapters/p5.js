@@ -3,21 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c5-4', part: 'p5', seq: 4, num: '5.4', stub: true, lectures: '第 5 讲',
-      title: '多头、缩放、残差与 LayerNorm', en: 'Multi-head attention, scaling, residuals, LayerNorm',
-      hook: '真正的 Transformer 在最小可用的版本上还多了四样东西。每一样各在解决什么问题？',
-      goals: ['解释多头注意力为什么几乎不增加计算', '说明为什么要除以 $\\sqrt{d/h}$', '解释残差连接为什么让梯度好传', '说清 LayerNorm 在哪个维度上求统计量'],
-      prereq: [{ text: '自注意力的矩阵形式', ch: 'c5-2' }, { text: '梯度消失', ch: 'c4-4' }, { text: '均值与标准差', here: 'stats' }],
-      topics: [
-        { id: 'multihead', title: '多头注意力', question: '一个词为什么要同时用好几种方式去看别的词？' },
-        { id: 'scale', title: '缩放点积', question: '维度越大，点积越大，softmax 会怎样？', visuals: [{ id: 'scaling' }] },
-        { id: 'residual', title: '残差连接', question: '为什么“只学差值”更容易训练？' },
-        { id: 'stats', title: '均值与标准差', question: '一组数的“中心”和“散开程度”怎么量？', remedial: true },
-        { id: 'layernorm', title: '层归一化', question: 'LayerNorm 对一个词向量做了什么？', visuals: [{ id: 'layernorm' }] },
-      ],
-      source: 'CS224N 第 5 讲；官方 notes（自注意力与 Transformer）。',
-    },
-    {
       id: 'c5-5', part: 'p5', seq: 5, num: '5.5', stub: true, lectures: '第 5 讲',
       title: 'Transformer 的三种形态与代价', en: 'Encoder, decoder, encoder-decoder, and the cost',
       hook: 'GPT、BERT、T5 用的都是 Transformer，结构却不一样。差别其实只在两处。',

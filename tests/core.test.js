@@ -744,6 +744,23 @@ test('L05 p59: dot products of random vectors grow with d, so unscaled softmax g
   near(s256 / Math.sqrt(256), s4 / Math.sqrt(4), 0.35, 'dividing by √d brings them back');
 });
 
+test('Chapter 5.4 numbers: random dot products spread like √d; softmax of 8 scores peaks unless scaled (seed 7)', () => {
+  const run = (d) => {
+    const r = OPT.rng(7), vec = () => Array.from({ length: d }, () => OPT.gaussian(r));
+    const pairs = Array.from({ length: 300 }, () => L.dot(vec(), vec()));
+    const q = vec(), keys = Array.from({ length: 8 }, vec), sc = keys.map((k) => L.dot(q, k));
+    return { sd: P.std(pairs), top: Math.max(...P.softmax(sc)), topScaled: Math.max(...P.softmax(sc.map((v) => v / Math.sqrt(d)))) };
+  };
+  const a = run(4), b = run(64), c = run(512);
+  near(a.sd, 2.1, 0.05); near(b.sd, 7.8, 0.05); near(c.sd, 23.0, 0.05);
+  near(a.top, 0.652, 5e-4); near(b.top, 0.837, 5e-4); near(c.top, 0.976, 5e-4);
+  near(a.topScaled, 0.408, 5e-4); near(b.topScaled, 0.257, 5e-4); near(c.topScaled, 0.209, 5e-4);
+  // layer norm of [2, −1, 4, 7]: μ = 3, σ (mean squared deviation) = 8.5
+  const ln = ATT.layerNorm([2, -1, 4, 7], null, null, 0);
+  near(ln.mu, 3); near(ln.sigma, 8.5); nearAll(ln.output, [-0.343, -1.372, 0.343, 1.372], 5e-4);
+  eq(512 / 8, 64, 'd = 512 with 8 heads: 64 dimensions per head');
+});
+
 /* ───────── Part 6 preview: BPE (needed early because 6.1 uses it) ───────── */
 
 test('L14 p26–p53: BPE on "Peter Piper picked a peck of pickled peppers" — merges, corpus and tables', () => {

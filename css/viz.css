@@ -574,3 +574,10 @@
 .om-table td.is-same { color: var(--c-red); font-weight: 650; }
 .om-table td.is-diff { color: var(--c-green); font-weight: 650; }
 .om-mask td.is-masked { background: var(--surface-2); color: var(--muted); }
+
+/* 缩放与层归一化 */
+.sc2-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin: 6px 0; }
+.sc2-bar { fill: var(--border-strong); }
+.sc2-w { fill: var(--c-blue); transition: y .3s, height .3s; }
+.ln-bar { fill: var(--c-blue); transition: y .35s, height .35s; }
+.ln-bar.is-neg { fill: var(--c-red); }
