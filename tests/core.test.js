@@ -393,6 +393,18 @@ test('autodiff agrees with numerical derivatives on a deeper graph', () => {
   near(g.y.grad, C.derivative((t) => build(0.7, t).out.value, -1.3), 1e-7);
 });
 
+test('Chapter 2.6 numbers: momentum averages, Xavier ranges, exponential decay, Adam equalising two step sizes', () => {
+  let st = {}, th = [0]; const ms = [];
+  [2, 2, -2, 2].forEach((g) => { const r = OPT.momentum(st, th, [g], 0.1, 0.9); st = r.state; th = r.theta; ms.push(st.m[0]); });
+  nearAll(ms, [0.2, 0.38, 0.142, 0.328], 5e-4);
+  near(Math.sqrt(6 / 400), 0.122, 5e-4); near(Math.sqrt(6 / 600), 0.1, 1e-12);
+  near(0.1 * Math.exp(-0.5 * 2), 0.037, 5e-4);
+  let sa = {}, ta = [0, 0], ts = [0, 0];
+  for (let i = 0; i < 3; i++) { const r = OPT.adam(sa, ta, [10, 0.1], 0.01); sa = r.state; ta = r.theta; ts = OPT.sgd(ts, [10, 0.1], 0.01).theta; }
+  nearAll(ts, [-0.3, -0.003], 1e-12);
+  nearAll(ta, [-0.039, -0.039], 5e-4);
+});
+
 test('A2 Q2: momentum and Adam follow the handout equations; dropout keeps the expectation', () => {
   const theta = [1, -2], grad = [0.5, -4];
   const m1 = OPT.momentum({}, theta, grad, 0.1, 0.9);
