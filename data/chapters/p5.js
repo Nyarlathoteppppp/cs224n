@@ -3,18 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c5-1', part: 'p5', seq: 1, num: '5.1', stub: true, lectures: '第 5 讲',
-      title: '注意力', en: 'Attention',
-      hook: '解码器每写一个词，都可以回头看一眼原文的任意位置。它怎么决定看哪里、看多少？',
-      goals: ['一步步算出 seq2seq 注意力：分数 → 权重 → 加权和', '解释注意力怎么解决瓶颈和梯度消失', '用 query、key、value 说出注意力的一般形式'],
-      prereq: [{ text: 'seq2seq 与瓶颈', ch: 'c4-6' }, { text: '点积', ch: 'c0-1' }, { text: 'softmax', ch: 'c1-3' }],
-      topics: [
-        { id: 'seq2seq-attn', title: '给解码器一条直通原文的路', question: '翻译 “he” 的时候，解码器在看原文的哪个词？', visuals: [{ id: 'attention-steps' }, { id: 'seq2seq-attention', type: 'video' }] },
-        { id: 'qkv', title: '注意力的一般形式', question: '抛开翻译，注意力本质上是在做什么？', visuals: [{ id: 'soft-lookup' }] },
-      ],
-      source: 'CS224N 第 5 讲；官方 notes（NMT 与注意力）。',
-    },
-    {
       id: 'c5-2', part: 'p5', seq: 2, num: '5.2', stub: true, lectures: '第 5 讲',
       title: '自注意力', en: 'Self-attention',
       hook: '如果注意力这么好用，能不能干脆把 RNN 扔掉，让句子里的每个词直接看所有的词？',

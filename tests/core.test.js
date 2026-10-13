@@ -630,6 +630,16 @@ test('N06 p11–p12: a GRU with update gate z ≈ 1 copies the previous state', 
 
 /* ───────── Part 5: attention and Transformers ───────── */
 
+test('Chapter 5.1 numbers: scores [3.84, 1, 1, 1] → weights ≈ [0.851, 0.050, 0.050, 0.050]; weighted sum of the encoder states', () => {
+  const w = P.softmax([3.84, 1, 1, 1]);
+  near(w[0], 0.851, 5e-4); near(w[1], 0.050, 5e-4);
+  const H = [[0.9, 0.1, -0.3], [0.2, 0.7, 0.4], [-0.4, 0.8, 0.1], [0.1, -0.5, 0.9]];
+  const a = [0, 1, 2].map((d) => w.reduce((s, x, j) => s + x * H[j][d], 0));
+  nearAll(a, [0.761, 0.135, -0.186], 5e-4);
+  near(P.softmax([2, 0, 0])[0], 0.787, 5e-4);
+  near(0.5 * 2 + 0.5 * 4 + 0 * 10, 3);
+});
+
 test('L05 p50: causal mask on [START] The chef who: future weights are 0, rows sum to 1', () => {
   const M = ATT.causalMask(4);
   eq(M.map((row) => row.map((v) => (v === 0 ? 0 : 'x'))), [[0, 'x', 'x', 'x'], [0, 0, 'x', 'x'], [0, 0, 0, 'x'], [0, 0, 0, 0]]);

@@ -515,3 +515,41 @@
 .s2-cap { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; margin-top: 6px; min-height: 70px; }
 .s2-cap-title { font-weight: 650; }
 .s2-cap-text { font-size: .93rem; color: var(--text-2); margin-top: 2px; }
+
+/* 注意力每一步 */
+.at-enc { fill: color-mix(in srgb, var(--c-red) 14%, var(--surface)); stroke: var(--c-red); stroke-width: 1.4; }
+.at-dec { fill: color-mix(in srgb, var(--c-green) 18%, var(--surface)); stroke: var(--c-green); stroke-width: 1.4; transition: opacity .3s; }
+.at-dec.is-off { opacity: .2; } .at-dec.is-cur { stroke-width: 3; }
+.at-unit { stroke: var(--border); stroke-width: .5; }
+.at-word { font: 600 13px var(--font); text-anchor: middle; fill: var(--text); }
+.at-word.small { font-size: 11px; } .at-word.is-off { opacity: .2; }
+.at-h { font: italic 12px var(--font); text-anchor: end; fill: var(--muted); }
+.at-label { font: 12px var(--font); fill: var(--muted); }
+.at-score { fill: var(--border-strong); }
+.at-alpha { fill: var(--c-blue); transition: height .3s, y .3s; }
+.at-num { font: 600 11.5px var(--font); text-anchor: middle; fill: var(--text-2); font-variant-numeric: tabular-nums; }
+.at-link { fill: none; stroke: var(--border-strong); stroke-dasharray: 3 3; }
+.at-link.is-weight { stroke: var(--c-blue); stroke-dasharray: none; opacity: .75; }
+.at-attn { fill: color-mix(in srgb, var(--c-purple) 18%, var(--surface)); stroke: var(--c-purple); stroke-width: 1.6; }
+.at-concat { stroke: var(--c-purple); stroke-width: 2; stroke-dasharray: 4 3; }
+.at-out { font: 700 14px var(--font); text-anchor: middle; fill: var(--c-green); }
+.at-cap { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; margin-top: 6px; min-height: 70px; }
+.at-cap-title { font-weight: 650; } .at-cap-text { font-size: .93rem; color: var(--text-2); margin-top: 2px; }
+.at-table { border-collapse: collapse; margin: 6px 0; font-variant-numeric: tabular-nums; }
+.at-table th, .at-table td { padding: 6px 12px; text-align: center; border: 1px solid var(--border); }
+.at-table th { color: var(--text-2); font-weight: 600; }
+
+/* 软查找 */
+.sl-title { font: 650 13px var(--font); fill: var(--text); }
+.sl-key { fill: var(--surface-2); stroke: var(--border-strong); }
+.sl-val { fill: var(--surface); stroke: var(--border-strong); stroke-dasharray: 3 2; }
+.sl-key.is-hit, .sl-val.is-hit { stroke: var(--c-orange); stroke-width: 2.4; }
+.sl-q { fill: color-mix(in srgb, var(--c-pink) 20%, var(--surface)); stroke: var(--c-pink); stroke-width: 1.6; }
+.sl-out { fill: color-mix(in srgb, var(--c-orange) 20%, var(--surface)); stroke: var(--c-orange); stroke-width: 1.6; }
+.sl-t { font: 600 13px var(--font); text-anchor: middle; fill: var(--text); }
+.sl-link { stroke: var(--c-blue); opacity: .7; }
+.sl-link.is-hit { stroke: var(--c-orange); stroke-width: 2.4; opacity: 1; }
+.sl-bar { fill: var(--c-blue); }
+.sl-w { font: 600 11.5px var(--font); fill: var(--text-2); font-variant-numeric: tabular-nums; }
+.sl-v { font: 12px var(--font); fill: var(--text-2); font-variant-numeric: tabular-nums; }
+.sl-sum { font: 650 13px var(--font); text-anchor: middle; fill: var(--c-orange); }
