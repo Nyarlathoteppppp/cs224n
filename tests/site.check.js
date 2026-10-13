@@ -134,6 +134,46 @@ content.chapters.forEach((c) => {
   }
 });
 
+/* ---------- never assume what hasn't been taught ---------- */
+// For every written chapter, the first use of a term that is taught in a later chapter (tests/taught.js) must come with a
+// bracketed explanation right after it, or a forward pointer (第 N 部分 / 第 N.M 章 / 下一章 …) in the same sentence.
+const TAUGHT = require('./taught.js');
+const order = (id) => { const m = /^c(\d+)-(\d+)$/.exec(id || ''); return m ? +m[1] * 100 + +m[2] : Infinity; };
+const POINTER = /第\s*\d[\d、，,.\s–-]*\s*(部分|章)|下一章|下一节|下一个补课|后面会|会讲|会补讲|会介绍|会正式讲|会详细讲|会单独/;
+const GLOSS = /^(\s*[（(]|，?\s*(也就是|即|就是|指的是|意思是))/;
+function chapterText(c) {
+  const out = [c.hook, c.background, c.usedIn].concat(c.goals || []);
+  (c.topics || []).forEach((t) => {
+    out.push(t.question, t.intuition);
+    (t.formulas || []).forEach((f) => (f.parts || []).forEach((p) => out.push(p.label, p.text)));
+    out.push(t.math, t.example, t.extra, t.story, t.takeaway);
+  });
+  out.push(c.compare);
+  (c.pitfalls || []).forEach((p) => out.push(p.wrong, p.right));
+  (c.quiz || []).forEach((q) => out.push(q.q, q.explain));
+  return out.concat(c.takeaways || []).filter((x) => typeof x === 'string').join('\n')
+    .replace(/```[\s\S]*?```/g, ' ').replace(/\$\$[\s\S]+?\$\$/g, ' ').replace(/\$[^\n$]+?\$/g, ' ');
+}
+const forward = [];
+content.chapters.filter((c) => !c.stub).forEach((c) => {
+  const text = chapterText(c);
+  Object.entries(TAUGHT).forEach(([term, where]) => {
+    if (where === c.id || (where && order(where) <= order(c.id))) return;
+    const i = text.indexOf(term);
+    if (i < 0) return;
+    const after = text.slice(i + term.length).replace(/^\*+/, '');
+    const start = Math.max(text.lastIndexOf('。', i), text.lastIndexOf('\n', i), text.lastIndexOf('？', i)) + 1;
+    const ends = ['。', '\n', '？'].map((p) => text.indexOf(p, i)).filter((k) => k >= 0);
+    const sentence = text.slice(start, ends.length ? Math.min(...ends) : text.length);
+    const before = text.slice(0, i);
+    const inBrackets = before.lastIndexOf('（') > before.lastIndexOf('）');   // the term itself names a bracketed gloss
+    const routeRow = /^\|\s*\d/.test(sentence.trim());                      // a row of a “部分 | 内容” route table
+    if (GLOSS.test(after) || inBrackets || routeRow || POINTER.test(sentence)) return;
+    forward.push(c.id + ': “' + term + '”' + (where ? '（第 ' + where.slice(1).replace('-', '.') + ' 章才讲）' : '（本站不单独讲）') + '没有解释或指引：' + sentence.trim().slice(0, 60));
+  });
+});
+forward.forEach((f) => warn('先用后讲', f));
+
 /* ---------- visual specs ---------- */
 Object.entries(content.visuals).forEach(([id, s]) => {
   ['title', 'question', 'what', 'data'].forEach((k) => { if (!s[k]) bad('visuals.' + id, 'missing ' + k); });

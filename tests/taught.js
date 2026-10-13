@@ -1,0 +1,29 @@
+/* Where each concept is first taught, for the "never assume what hasn't been taught" check in tests/site.check.js.
+ * key: the term as it appears in Chinese text (or an English name); value: the chapter id that teaches it, or null for
+ * concepts this site never teaches on their own (every chapter that uses them must explain them in passing).
+ * A chapter that uses a term before the chapter that teaches it must, in the same sentence, either explain it in
+ * brackets right after the term — “词错误率（识别错的词占多少比例）” — or point forward: “第 4 部分会讲”, “下一章”, “第 1.6 章”. */
+module.exports = {
+  // Part 0
+  '点积': 'c0-1', '余弦相似度': 'c0-1', '独热向量': 'c0-1', '正交': 'c0-1', '转置': 'c0-1',
+  '条件概率': 'c0-2', '负对数似然': 'c0-2', '语料': 'c0-2',
+  '导数': 'c0-3', '偏导数': 'c0-3', '梯度下降': 'c0-3', '链式法则': 'c0-3', '学习率': 'c0-3', '参数': 'c0-3', '损失': 'c0-3', '凸': 'c0-3',
+  // Part 1
+  '词向量': 'c1-2', '分布式语义': 'c1-2', 'softmax': 'c1-3', '词袋': 'c1-3', '目标函数': 'c1-3',
+  'sigmoid': 'c1-4', '随机梯度下降': 'c1-4', 'SGD': 'c1-4', '负采样': 'c1-4',
+  '共现矩阵': 'c1-5', '奇异值': 'c1-5', 'SVD': 'c1-5', '矩阵分解': 'c1-5', '对角矩阵': 'c1-5', '最小二乘': 'c1-5', '偏置': 'c1-5',
+  '命名实体识别': 'c1-6', '相关系数': 'c1-6', '内在评测': 'c1-6', '外在评测': 'c1-6',
+  // Part 2
+  '神经网络': 'c2-1', '分类器': 'c2-1', '隐藏层': 'c2-1', '激活函数': 'c2-2', '非线性': 'c2-2', '交叉熵': 'c2-2', 'ReLU': 'c2-2',
+  '雅可比': 'c2-3', 'Jacobian': 'c2-3', '反向传播': 'c2-5', '计算图': 'c2-5', '自动微分': 'c2-5',
+  '过拟合': 'c2-6', '正则化': 'c2-6', 'dropout': 'c2-6', 'Adam': 'c2-6', '泛化': 'c2-6',
+  // Parts 3–5
+  '依存': 'c3-1', '句法分析': 'c3-1',
+  'n-gram': 'c4-1', 'RNN': 'c4-2', '循环神经网络': 'c4-2', '困惑度': 'c4-3', '梯度消失': 'c4-4', 'LSTM': 'c4-5',
+  '编码器': 'c4-6', '解码器': 'c4-6',
+  '注意力': 'c5-1', '自注意力': 'c5-2', 'Transformer': 'c5-4',
+  // later parts
+  '预训练': 'c6-1', '微调': 'c6-1',
+  // never taught on their own
+  '词性标注': null, '文本分类': null, '词错误率': null, '复杂度': null,
+};

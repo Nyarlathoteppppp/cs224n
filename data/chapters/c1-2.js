@@ -6,7 +6,7 @@
       id: 'c1-2', part: 'p1', seq: 2, num: '1.2', lectures: '第 2 讲',
       title: '计算机里怎么放“词义”', en: 'Representing word meaning',
       hook: '搜索 “Seattle motel” 时，我们也想找到写着 “Seattle hotel” 的网页。计算机怎么知道 motel 和 hotel 意思相近？',
-      background: '“看一个词身边经常出现什么词，就知道它是什么意思”，这个想法来自英国语言学家 J. R. Firth 1957 年的一句话。几十年后，它成了神经网络 NLP 的起点：Manning 在第 1 讲称它是现代计算语言学最成功的想法之一。',
+      background: '“看一个词身边经常出现什么词，就知道它是什么意思”，这个想法来自英国语言学家 J. R. Firth 1957 年的一句话。几十年后，它成了神经网络（一类从数据里学习的模型，第 2 部分会讲）做 NLP 的起点：Manning 在第 1 讲称它是现代计算语言学最成功的想法之一。',
       goals: [
         '说出 WordNet 这类人工词典的几个问题',
         '解释为什么独热向量之间没有“相似”可言，人工加特征为什么也不是好办法',

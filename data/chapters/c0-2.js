@@ -37,7 +37,7 @@
             ],
           }],
           example: [
-            'CS224N 第 4 讲的例子：在一个语料库里，“students opened their” 一共出现了 $1000$ 次，后面接 books 的有 $400$ 次，接 exams 的有 $100$ 次。于是',
+            'CS224N 第 4 讲的例子：在一个语料库（用来统计的一大批文本）里，“students opened their” 一共出现了 $1000$ 次，后面接 books 的有 $400$ 次，接 exams 的有 $100$ 次。于是',
             '',
             '$$P(\\text{books}\\mid\\text{students opened their}) \\approx \\frac{400}{1000} = 0.4$$',
             '$$P(\\text{exams}\\mid\\text{students opened their}) \\approx \\frac{100}{1000} = 0.1$$',
@@ -107,7 +107,7 @@
             latex: String.raw`J \;=\; \htmlClass{fx-avg}{-\frac{1}{T}\sum_{t=1}^{T}}\,\htmlClass{fx-logp}{\log p_t}`,
             parts: [
               { key: 'logp', label: '第 $t$ 步给正确答案的概率，取 log', color: 'green', text: '$p_t$ 是模型在第 $t$ 步给正确的那个词的概率。' },
-              { key: 'avg', label: '取平均，再加负号', color: 'red', text: '负号让结果 $\\ge 0$，取平均让结果不随文本长度变大。概率越大，$J$ 越小，所以**最大化概率 = 最小化 $J$**。CS224N 第 2 讲 word2vec 的目标函数就是这个形状。' },
+              { key: 'avg', label: '取平均，再加负号', color: 'red', text: '负号让结果 $\\ge 0$，取平均让结果不随文本长度变大。概率越大，$J$ 越小，所以**最大化概率 = 最小化 $J$**。CS224N 第 2 讲里 word2vec 的训练目标（目标函数，第 1.3 章）就是这个形状。' },
             ],
           }],
           example: [
@@ -132,7 +132,7 @@
       pitfalls: [
         { wrong: '$P(A\\mid B)$ 和 $P(B\\mid A)$ 是一回事', right: '不一样。$P(\\text{books}\\mid\\text{students opened their})$ 问的是“前文已知，下一个词是 books 的可能”，反过来问的是“已经看到 books，前文是这三个词的可能”，两者数值一般差很多。**竖线右边永远是已知条件。**' },
         { wrong: '对概率取 log，结果是正数', right: '$0$ 到 $1$ 之间的数取 log 是负数（$\\log 1 = 0$）。所以训练目标前面要加负号，变成 $\\ge 0$ 的负对数。' },
-        { wrong: '最大化似然和最小化负对数似然是两种不同的训练目标', right: 'log 是增函数，加负号把“最大”变成“最小”。**两者是同一个目标，最优的参数完全相同**，只是后者算起来更方便。' },
+        { wrong: '最大化似然和最小化负对数似然是两种不同的训练目标', right: 'log 是增函数，加负号把“最大”变成“最小”。**两者是同一个目标，最好的模型完全相同**，只是后者算起来更方便。' },
         { wrong: '用 exp 只是为了把数字放大', right: 'exp 的作用是**把任意分数（包括负数）变成正数，同时保持大小顺序**，这样除以总和以后才能当概率用。' },
       ],
       quiz: [

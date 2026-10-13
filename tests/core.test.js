@@ -216,6 +216,19 @@ test('L02 p39: analogy man : woman :: king : ? on toy vectors, input words exclu
 
 /* ───────── Part 0 & 2: derivatives, neural networks, backprop ───────── */
 
+test('Chapter 1.6 numbers: toy analogy ranking with and without the input words; correlation example', () => {
+  const vecs = { man: [1, 1], woman: [1.2, 2.2], king: [3.5, 1.4], queen: [3.6, 2.5], boy: [0.5, 0.8], girl: [0.6, 1.8], apple: [2, -1.2] };
+  const r = CO.analogy(vecs, 'man', 'woman', 'king', 'cosine');
+  nearAll(r.target, [3.7, 2.6], 1e-12);
+  eq(r.answer, 'queen'); near(r.ranked[0].score, 1.000, 5e-4); eq(r.ranked[1].word, 'boy'); near(r.ranked[1].score, 0.921, 5e-4);
+  const cos = (w) => L.cosine(r.target, vecs[w]);
+  near(cos('man'), 0.985, 5e-4); near(cos('king'), 0.973, 5e-4);
+  ok(cos('man') > cos('boy') && cos('king') > cos('boy'), 'inputs crowd the top when not excluded');
+  const pearson = (x, y) => { const mx = P.mean(x), my = P.mean(y); let a = 0, b = 0, c = 0; x.forEach((_, i) => { a += (x[i] - mx) * (y[i] - my); b += (x[i] - mx) ** 2; c += (y[i] - my) ** 2; }); return a / Math.sqrt(b * c); };
+  near(pearson([7.35, 7.46, 5.77, 0.92], [0.8, 0.7, 0.5, 0.1]), 0.979, 5e-4);
+  near(pearson([7.35, 7.46, 5.77, 0.92], [0.1, 0.5, 0.7, 0.8]), -0.718, 5e-4);
+});
+
 test('L03 p21: f(x) = x³ has slope 3 at x = 1 and 48 at x = 4; 1.01³ ≈ 1.03, 4.01³ ≈ 64.48', () => {
   const f = (x) => x * x * x;
   near(C.derivative(f, 1), 3, 1e-6);
