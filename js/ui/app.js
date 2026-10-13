@@ -221,7 +221,7 @@
         h('div.ch-kicker', h('span.badge' + (c.kind === 'extension' ? '.ext' : c.kind === 'homework' ? '.hw' : ''), '第 ' + part.num + ' 部分 · ' + part.title),
           c.lectures ? h('span', '对应 CS224N ' + c.lectures) : null),
         h('h1.ch-title', h('span', { html: plainInline(c.num + ' ' + c.title) }), c.en ? h('span.ch-en', c.en) : null),
-        c.kind === 'extension' ? h('div.ext-banner', { html: inline(c.extNote || '延伸章节：依据的是往年的讲课材料，不属于 CS224N Winter 2026 的课件。') }) : null,
+        (c.kind === 'extension' || c.extNote) ? h('div.ext-banner', { html: inline(c.extNote || '延伸章节：依据的是往年的讲课材料，不属于 CS224N Winter 2026 的课件。') }) : null,
         c.stub ? h('div.stub-banner', '这一章的正文还在写。下面先列出本章要回答的问题和计划用到的可视化。') : null,
         c.hook ? h('div.ch-hook', h('span.ch-hook-label', '这一章要回答'), h('div', { html: md(c.hook) })) : null,
         c.background ? h('aside.ch-background', h('span.ch-background-label', '研究背景'), h('div', { html: md(c.background) })) : null,

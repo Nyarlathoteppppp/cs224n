@@ -333,3 +333,46 @@
 .op-key.sgd::before { border-color: var(--c-red); } .op-key.mom::before { border-color: var(--c-blue); } .op-key.adam::before { border-color: var(--c-green); }
 .op-table { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .88rem; font-variant-numeric: tabular-nums; }
 .op-row.sgd { color: var(--c-red); } .op-row.mom { color: var(--c-blue); } .op-row.adam { color: var(--c-green); }
+
+/* 转移式依存分析 (arc-standard) */
+.as-svg { margin: 4px 0 0; }
+.as-box { fill: var(--surface); stroke: var(--border-strong); stroke-width: 1.4; transition: fill .3s, stroke .3s; }
+.as-wtext { font: 600 17px var(--font); text-anchor: middle; dominant-baseline: central; fill: var(--text); }
+.as-tag { font: 12px var(--font); text-anchor: middle; fill: var(--muted); }
+.as-word.is-stack .as-box { fill: var(--accent-soft); stroke: var(--accent); }
+.as-word.is-top .as-box, .as-word.is-second .as-box { stroke-width: 2.6; }
+.as-word.is-top .as-tag, .as-word.is-second .as-tag { fill: var(--accent); font-weight: 650; }
+.as-word.is-buffer .as-box { stroke-dasharray: 4 3; }
+.as-word.is-done .as-box { fill: var(--surface-2); stroke: var(--border); }
+.as-word.is-done .as-wtext { fill: var(--text-2); }
+.as-arc { fill: none; stroke: var(--c-blue); stroke-width: 2.2; }
+.as-arc.is-new { stroke: var(--c-orange); stroke-width: 3; }
+.as-arc.is-wrong { stroke: var(--c-red); stroke-dasharray: 2 4; }
+.as-arrow { fill: var(--c-blue); } .as-arrow-new { fill: var(--c-orange); } .as-arrow-gold { fill: var(--border-strong); }
+.as-gold { fill: none; stroke: var(--border-strong); stroke-width: 1.6; stroke-dasharray: 6 5; }
+.as-label { font: 600 13px var(--font); text-anchor: middle; fill: var(--c-blue); paint-order: stroke; stroke: var(--surface); stroke-width: 5px; stroke-linejoin: round; }
+.as-label.is-wrong { fill: var(--c-red); }
+.as-config { display: grid; gap: 6px; margin: 6px 0 4px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); }
+.as-row { display: grid; grid-template-columns: 7.5em minmax(0, 1fr) auto; align-items: center; gap: 10px; min-width: 0; }
+.as-name { font-weight: 650; color: var(--text-2); font-size: .9rem; }
+.as-cells { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.as-cell { padding: 2px 10px; border: 1.4px solid var(--border-strong); border-radius: 6px; background: var(--surface); font-weight: 600; }
+.as-cell.is-top, .as-cell.is-second { border-color: var(--accent); background: var(--accent-soft); }
+.as-cell.is-first { border-style: dashed; border-color: var(--text-2); }
+.as-arcitem { padding: 1px 8px; border-radius: 999px; background: var(--surface); border: 1px solid var(--c-blue); color: var(--c-blue); font-size: .88rem; }
+.as-arcitem.is-wrong { border-color: var(--c-red); color: var(--c-red); }
+.as-empty, .as-end { color: var(--muted); font-size: .84rem; }
+.as-actions .as-act { font-weight: 650; min-width: 7.5em; }
+.as-sep { width: 1px; align-self: stretch; background: var(--border); margin: 0 4px; }
+.as-check { font-size: .88rem; color: var(--text-2); }
+.as-caption { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 10px 14px; min-height: 64px; }
+.as-caption.is-good { border-left-color: var(--c-green); }
+.as-caption.is-bad { border-left-color: var(--c-red); }
+.as-cap-title { font-weight: 650; }
+.as-cap-text { font-size: .94rem; color: var(--text-2); margin-top: 2px; }
+.as-log-wrap { margin-top: 10px; font-size: .9rem; }
+.as-log-wrap summary { cursor: pointer; color: var(--text-2); }
+.as-log { border-collapse: collapse; margin-top: 6px; width: 100%; font-variant-numeric: tabular-nums; }
+.as-log th, .as-log td { border-bottom: 1px solid var(--border); padding: 3px 8px; text-align: left; }
+.as-log th { color: var(--text-2); font-weight: 600; }
+.as-log tr.is-wrong td { color: var(--c-red); }
