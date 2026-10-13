@@ -70,7 +70,7 @@
     },
     {
       id: 'c2-7', part: 'p2', seq: 7, num: '2.7', stub: true, kind: 'homework', lectures: '作业 2',
-      title: '作业精讲：A2 第一、二题', en: 'Assignment 2, Q1–Q2 walkthrough',
+      title: '作业思路：A2 第一、二题', en: 'Assignment 2, Q1–Q2: approach',
       hook: '作业 2 前两题：推出 word2vec 的全部梯度，再解释 Adam 和 dropout 为什么有用。',
       goals: ['独立完成 A2 Q1（a–g）与 Q2，并说清每一步的理由'],
       prereq: [{ text: 'word2vec 的梯度', ch: 'c1-4' }, { text: '矩阵微积分与形状约定', ch: 'c2-4' }, { text: '训练技巧与优化器', ch: 'c2-6' }],

@@ -29,7 +29,7 @@
     },
     {
       id: 'c3-3', part: 'p3', seq: 3, num: '3.3', stub: true, kind: 'homework', lectures: '作业 2',
-      title: '作业精讲：A2 第三题', en: 'Assignment 2, Q3 walkthrough',
+      title: '作业思路：A2 第三题', en: 'Assignment 2, Q3: approach',
       hook: '作业 2 第三题：手动分析一个句子，实现转移系统和批量分析，再推两个导数、训练一个分析器。',
       goals: ['独立完成 A2 Q3（a–e），并说清每一步的理由'],
       prereq: [{ text: '转移系统', ch: 'c3-1' }, { text: '神经依存分析器', ch: 'c3-2' }],

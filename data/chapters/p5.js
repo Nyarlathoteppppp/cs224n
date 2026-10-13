@@ -70,7 +70,7 @@
     },
     {
       id: 'c5-6', part: 'p5', seq: 6, num: '5.6', stub: true, kind: 'homework', lectures: '作业 3',
-      title: '作业精讲：A3', en: 'Assignment 3 walkthrough',
+      title: '作业思路：A3', en: 'Assignment 3: approach',
       hook: '作业 3：先用数学弄清注意力和位置编码的性质，再从零写一个 GPT-2 式的 Transformer。',
       goals: ['独立完成 A3 的数学题和编程题，并说清每一步的理由'],
       prereq: [{ text: '注意力', ch: 'c5-1' }, { text: '三道坎与位置编码', ch: 'c5-3' }, { text: '多头注意力', ch: 'c5-4' }],
