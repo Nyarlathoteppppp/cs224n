@@ -399,8 +399,9 @@ test('Chapter 2.6 numbers: momentum averages, Xavier ranges, exponential decay, 
   nearAll(ms, [0.2, 0.38, 0.142, 0.328], 5e-4);
   near(Math.sqrt(6 / 400), 0.122, 5e-4); near(Math.sqrt(6 / 600), 0.1, 1e-12);
   near(0.1 * Math.exp(-0.5 * 2), 0.037, 5e-4);
-  let sa = {}, ta = [0, 0], ts = [0, 0];
-  for (let i = 0; i < 3; i++) { const r = OPT.adam(sa, ta, [10, 0.1], 0.01); sa = r.state; ta = r.theta; ts = OPT.sgd(ts, [10, 0.1], 0.01).theta; }
+  let sa = {}, ta = [0, 0], ts = [0, 0]; const moves = [];
+  for (let i = 0; i < 3; i++) { const r = OPT.adam(sa, ta, [10, 0.1], 0.01); moves.push(ta[0] - r.theta[0]); sa = r.state; ta = r.theta; ts = OPT.sgd(ts, [10, 0.1], 0.01).theta; }
+  nearAll(moves, [0.01, 0.0135, 0.0157], 5e-5, 'm and v start at 0: the first step is exactly α, the next two a bit larger');
   nearAll(ts, [-0.3, -0.003], 1e-12);
   nearAll(ta, [-0.039, -0.039], 5e-4);
 });
@@ -484,6 +485,35 @@ test('A2 Q3(a): the oracle reproduces the three given rows of the transition tab
   eq([steps[3].transition, steps[3].stack, steps[3].arc.head, steps[3].arc.dependent], ['LA', ['ROOT', 'presented'], 'presented', 'I']);
   const last = steps[steps.length - 1];
   eq([last.stack, last.buffer], [['ROOT'], []]);
+});
+
+test('TW04: “I ate fish” takes S S LA S RA RA; a wrong arc makes the oracle give up', () => {
+  const heads = [null, 2, 0, 2];   // I ← ate → fish, ROOT → ate
+  const steps = DP.oracleTrace(['I', 'ate', 'fish'], heads, [null, 'nsubj', 'root', 'obj']);
+  eq(steps.slice(1).map((s) => s.transition), ['S', 'S', 'LA', 'S', 'RA', 'RA']);
+  eq(steps.slice(1).map((s) => s.stack.join(' ')), ['ROOT I', 'ROOT I ate', 'ROOT ate', 'ROOT ate fish', 'ROOT ate', 'ROOT']);
+  // [ROOT, ate] with fish still in the buffer: RIGHT-ARC is legal but premature, the oracle shifts
+  eq(DP.oracleNext([0, 2], [3], [[2, 1]], heads), 'S');
+  eq(DP.oracleNext([0], [3], [[2, 1], [0, 2]], heads), null, 'RIGHT-ARC too early: ate left the stack before fish was attached');
+  eq(DP.oracleNext([0, 1], [2, 3], [], heads), 'S', 'with [ROOT, I] the LEFT/RIGHT arcs would be wrong');
+  eq(DP.oracleNext([0], [2, 3], [[0, 1]], heads), null, 'I attached to ROOT: gold tree unreachable');
+});
+
+test('N08 p4 feature example at Figure 3 (stack ROOT has good, buffer control .): 18 word slots, 12 label slots', () => {
+  // positions: ROOT 0, He 1, has 2, good 3, control 4, . 5; arcs so far: has → He
+  const f = DP.features([0, 2, 3], [4, 5], [[2, 1]]);
+  eq(f.length, 18);
+  eq(f.filter((x) => x.hasLabel).length, 12);
+  eq(f.slice(0, 6).map((x) => x.word), [3, 2, 0, 4, 5, null], 's1 s2 s3 b1 b2 b3');
+  eq(f.filter((x) => x.word != null).map((x) => x.slot), ['s1', 's2', 's3', 'b1', 'b2', 'lc1(s2)']);
+  eq(f.find((x) => x.slot === 'lc1(s2)').word, 1, 'He is the leftmost child of has');
+});
+
+test('UAS and LAS on “He has good control .”: one wrong head, two wrong labels → 80% / 40% (课件外 example)', () => {
+  const goldH = [null, 2, 0, 4, 2, 2], goldL = [null, 'nsubj', 'root', 'amod', 'dobj', 'punct'];
+  const predH = [null, 2, 0, 2, 2, 2], predL = [null, 'nsubj', 'root', 'amod', 'nsubj', 'dobj'];
+  near(DP.uas(predH, goldH), 0.8);
+  near(DP.las(predH, predL, goldH, goldL), 0.4);
 });
 
 /* ───────── Part 4: language models, RNNs ───────── */

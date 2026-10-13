@@ -8,9 +8,10 @@ probability, exponential and log functions, simple derivatives). Knows no linear
 learning, no NLP, no programming jargon.
 
 **Reading order** (a chapter may rely only on itself and the chapters before it):
-0.1 `c0-1.js` → 0.2 `c0-2.js` → 0.3 `c0-3.js` → 1.1 `c1-1.js` → 1.2 → 1.3 → 1.4 → 1.5 → 1.6 → 1.7 `c1-7.js`.
-Chapter 2.5 (`c2-5.js`) comes after chapters 2.1–2.4, which are not written yet; their planned content is in
-`COURSE_MAP.md` §3 (part 2 table). Treat what that table lists for 2.1–2.4 as taught when you review 2.5.
+0.1 `c0-1.js` → 0.2 `c0-2.js` → 0.3 `c0-3.js` → 1.1 `c1-1.js` → … → 1.7 `c1-7.js` → 2.1 `c2-1.js` → … → 2.7 `c2-7.js`.
+Later chapters (part 3 onwards) follow the same pattern as they get written; `COURSE_MAP.md` §3 lists them all.
+Chapters with `kind: 'homework'` only explain the approach to an assignment, never the answers; do not ask them to
+give answers.
 
 ## What to look for
 For each chapter you are given, read every field (hook, background, usedIn, goals, prereq, topics: question,
