@@ -290,3 +290,20 @@
 .wn-u { color: var(--c-purple); }
 .wn-out { display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; font-variant-numeric: tabular-nums; background: var(--surface-2); border-radius: 6px; padding: 6px 12px; }
 .wn-p { font-weight: 700; color: var(--c-green); }
+
+/* activations: 激活函数一览 */
+.ac-two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.ac-fig { margin: 0; min-width: 0; } .ac-fig figcaption { font-size: .82rem; color: var(--muted); text-align: center; }
+.ac-axis { stroke: var(--border-strong); stroke-width: 1; }
+.ac-tick { font: 11px var(--font); fill: var(--muted); text-anchor: middle; }
+.ac-curve { fill: none; stroke-width: 2.4; } .ac-curve.f { stroke: var(--c-teal); } .ac-curve.df { stroke: var(--c-red); }
+.ac-dot { fill: var(--text); } .ac-v { stroke: var(--text-2); stroke-dasharray: 3 3; }
+.ac-read { font-variant-numeric: tabular-nums; }
+
+/* why-nonlinear: 为什么必须有非线性 */
+.wl-layout { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 16px; align-items: center; }
+.wl-yes { fill: color-mix(in srgb, var(--c-blue) 18%, var(--surface)); } .wl-no { fill: var(--surface); }
+.wl-axis { stroke: var(--border-strong); }
+.wl-pyes { fill: var(--c-blue); stroke: var(--c-blue); stroke-width: 2; } .wl-pno { fill: var(--surface); stroke: var(--c-blue); stroke-width: 2.5; }
+.wl-pyes.wrong, .wl-pno.wrong { stroke: var(--c-red); stroke-width: 4; }
+.wl-score { font-weight: 600; }

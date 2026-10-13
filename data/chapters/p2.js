@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c2-2', part: 'p2', seq: 2, num: '2.2', stub: true, lectures: '第 3 讲',
-      title: '激活函数、非线性与交叉熵', en: 'Activations, nonlinearity, cross-entropy',
-      hook: '网络里每一层后面都要过一个“弯一下”的函数。为什么非弯不可？又为什么是这几种形状？',
-      goals: ['画出 sigmoid、tanh、ReLU 的形状和导数', '用 $W_1W_2x=Wx$ 说明为什么必须有非线性', '写出交叉熵，并说明 one-hot 目标时它只剩一项'],
-      prereq: [{ text: '导数', ch: 'c0-3' }, { text: '神经网络的一层', ch: 'c2-1' }, { text: '负对数似然', ch: 'c1-3' }],
-      topics: [
-        { id: 'activations', title: '激活函数', question: '阈值函数为什么学不动？sigmoid、tanh、ReLU 是怎么一步步来的？', visuals: [{ id: 'activations' }] },
-        { id: 'nonlinear', title: '为什么必须有非线性', question: '多叠几层线性层，能不能得到更强的模型？', visuals: [{ id: 'why-nonlinear' }] },
-        { id: 'ce', title: '交叉熵损失', question: '分类器的损失怎么定义？它和 word2vec 的目标函数是什么关系？' },
-      ],
-      source: 'CS224N 第 3 讲；官方 notes（神经网络）。',
-    },
-    {
       id: 'c2-3', part: 'p2', seq: 3, num: '2.3', stub: true, lectures: '第 3 讲',
       title: '矩阵微积分：梯度、Jacobian 与链式法则', en: 'Matrix calculus: gradients, Jacobians, chain rule',
       hook: '一层网络有 $n$ 个输入、$m$ 个输出。这时候“导数”该是一个数、一个向量，还是一张表？',

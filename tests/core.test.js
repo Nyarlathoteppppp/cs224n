@@ -289,6 +289,20 @@ test('L03 p15–p16: tanh = 2·sigmoid(2z) − 1; GELU ≈ x·σ(1.702x)', () =>
   [-2, -0.5, 0.5, 2].forEach((z) => near(NN.activations.gelu.f(z), NN.activations.geluLogistic.f(z), 0.03));
 });
 
+test('Chapter 2.2 numbers: activation values and slopes, the merged matrix, the ReLU fix, cross-entropy', () => {
+  const A = NN.activations;
+  nearAll([A.sigmoid.f(2), A.sigmoid.df(2), A.sigmoid.df(0)], [0.881, 0.105, 0.25], 5e-4);
+  nearAll([A.tanh.f(2), A.tanh.df(2), A.tanh.df(0)], [0.964, 0.071, 1], 5e-4);
+  eq([A.relu.df(2), A.relu.f(2)], [1, 2]);
+  eq(L.matmul([[1, 2], [0, 1]], [[2, 0], [1, 1]]), [[4, 2], [1, 1]]);
+  eq(L.matvec([[4, 2], [1, 1]], [1, 1]), [6, 2]);
+  const s = (x, y) => A.relu.f(x + y) + A.relu.f(-x - y) - 1;
+  eq([s(1, 1), s(-1, -1), s(1, -1), s(-1, 1)], [1, 1, -1, -1]);
+  near(-Math.log(0.7), 0.357, 5e-4); near(-Math.log(0.1), 2.303, 5e-4);
+  near(-0.5 * Math.log(0.7) - 0.5 * Math.log(0.2), 0.983, 5e-4); near(-Math.log(0.3), 1.204, 5e-4);
+  near(P.crossEntropy([0, 1, 0], [0.5, 0.3, 0.2]), -Math.log(0.3), 1e-12);
+});
+
 test('L03 p17: two linear layers collapse into one (W₁W₂x = Wx)', () => {
   const W1 = randMat(3, 4), W2 = randMat(4, 2), x = randVec(2);
   nearAll(L.matvec(W1, L.matvec(W2, x)), L.matvec(L.matmul(W1, W2), x), 1e-12);
