@@ -1,0 +1,167 @@
+/* 2.3 矩阵微积分：梯度、Jacobian 与链式法则 — W26 Lecture 3 p20–p33; official notes N04 p1–p4; teaching order from the
+ * 2024 lecture (T03 [18:35]–[33:00]). Numbers: tests/core.test.js. */
+(function (root) {
+  'use strict';
+  root.CS224N.content.addChapters([
+    {
+      id: 'c2-3', part: 'p2', seq: 3, num: '2.3', lectures: '第 3 讲',
+      title: '矩阵微积分：梯度、Jacobian 与链式法则', en: 'Matrix calculus: gradients, Jacobians, chain rule',
+      hook: '一层网络有 $n$ 个输入、$m$ 个输出。这时候“导数”该是一个数、一个向量，还是一张表？一层套一层的时候，又该怎么乘？',
+      background: '要用梯度下降训练第 2.1 章的网络，得先求出损失对每个参数的梯度。第 3 讲接下来的一半时间都在手算这些梯度。老师的口号是：**多元微积分就是一元微积分，只不过用上了矩阵**。他也承认，大学学过的多元微积分两年后大多忘了，所以从头讲起。',
+      goals: [
+        '区分导数、梯度（多个输入、一个输出）和 Jacobian（多个输入、多个输出）',
+        '说出对角矩阵、单位矩阵和逐元素乘的关系',
+        '用“Jacobian 相乘”写出复合函数的导数',
+        '写出 $Wx$、$Wx + b$、逐元素激活、$u^\\top h$ 这几个常用的 Jacobian',
+      ],
+      prereq: [
+        { text: '偏导数、梯度、链式法则', ch: 'c0-3' },
+        { text: '矩阵乘法、转置', ch: 'c0-1' },
+        { text: '神经网络的一层', ch: 'c2-1' },
+        { text: '对角矩阵与单位矩阵', here: 'diag' },
+      ],
+      topics: [
+        {
+          id: 'jacobian',
+          title: '梯度与 Jacobian',
+          question: '多个输入、多个输出时，“输入动一点、输出动多少”该怎么记？',
+          intuition: [
+            '第 0.3 章讲过两种情况，这里补上第三种，三者是同一个想法（第 3 讲第 21–23 页）：',
+            '',
+            '| 输入 | 输出 | “导数”是什么 | 形状 |',
+            '|---|---|---|---|',
+            '| 1 个 | 1 个 | 导数，就是斜率 | 一个数 |',
+            '| $n$ 个 | 1 个 | **梯度**：对每个输入的偏导数排成一排 | $1\\times n$ |',
+            '| $n$ 个 | $m$ 个 | **Jacobian 矩阵**：每个输出对每个输入的偏导数排成一张表 | $m\\times n$ |',
+            '',
+            'Jacobian 的第 $i$ 行第 $j$ 列是 $\\dfrac{\\partial f_i}{\\partial x_j}$：**第 $j$ 个输入动一点，第 $i$ 个输出动多少**。每一行对应一个输出，每一列对应一个输入。梯度就是只有一个输出时的 Jacobian，只有一行。',
+            '',
+            '为什么要把这么多偏导数排成矩阵？老师的说法是：一个一个变量去算可以帮助理解，但真正训练时必须**向量化**，也就是写成矩阵运算。计算机做矩阵运算非常快，网络才能跑得飞快。',
+          ].join('\n'),
+          formulas: [{
+            title: 'Jacobian 矩阵',
+            latex: String.raw`\frac{\partial \boldsymbol f}{\partial \boldsymbol x} \;=\; \begin{bmatrix} \htmlClass{fx-r1}{\dfrac{\partial f_1}{\partial x_1}} & \cdots & \htmlClass{fx-r1}{\dfrac{\partial f_1}{\partial x_n}} \\ \vdots & \ddots & \vdots \\ \dfrac{\partial f_m}{\partial x_1} & \cdots & \dfrac{\partial f_m}{\partial x_n} \end{bmatrix} \qquad \Big(\frac{\partial \boldsymbol f}{\partial \boldsymbol x}\Big)_{ij} \;=\; \htmlClass{fx-ij}{\frac{\partial f_i}{\partial x_j}}`,
+            parts: [
+              { key: 'r1', label: '第一行：第 1 个输出对每个输入的偏导数', color: 'blue', text: '只看第 1 个输出 $f_1$，它对 $n$ 个输入的偏导数就是 $f_1$ 的梯度。$m$ 个输出，就有 $m$ 行。' },
+              { key: 'ij', label: '第 $i$ 行第 $j$ 列', color: 'orange', text: '第 $j$ 个输入动一点，第 $i$ 个输出动多少。形状是 $m\\times n$：输出个数 × 输入个数。' },
+            ],
+          }],
+          example: [
+            '$f(x_1, x_2) = [\\,x_1x_2,\\ \\ x_1 + 3x_2\\,]$，两个输入、两个输出，Jacobian 是 $2\\times 2$：',
+            '',
+            '$$\\frac{\\partial f}{\\partial x} = \\begin{bmatrix} \\partial(x_1x_2)/\\partial x_1 & \\partial(x_1x_2)/\\partial x_2 \\\\ \\partial(x_1+3x_2)/\\partial x_1 & \\partial(x_1+3x_2)/\\partial x_2 \\end{bmatrix} = \\begin{bmatrix} x_2 & x_1 \\\\ 1 & 3 \\end{bmatrix}$$',
+            '',
+            '在 $(2, 1)$ 处是 $\\begin{bmatrix} 1 & 2 \\\\ 1 & 3 \\end{bmatrix}$。验证第一列：只把 $x_1$ 从 $2$ 推到 $2.01$，$f$ 从 $[2, 5]$ 变成 $[2.01, 5.01]$，两个输出各动了 $0.01$，正好是第一列 $[1, 1]$ 乘 $0.01$。',
+          ].join('\n'),
+          takeaway: 'Jacobian 是 $m\\times n$ 的表：第 $i$ 行第 $j$ 列 = 第 $j$ 个输入动一点，第 $i$ 个输出动多少。梯度是只有一行的 Jacobian。',
+        },
+        {
+          id: 'diag',
+          title: '对角矩阵、单位矩阵与逐元素乘',
+          remedial: true,
+          question: '除了对角线全是 0 的矩阵，乘上去有什么特别？',
+          intuition: [
+            '第 1.5 章见过**对角矩阵**：只有左上到右下那条对角线上有数，其余全是 $0$。把对角线上的数排成向量 $d$，矩阵记作 $\\mathrm{diag}(d)$。',
+            '',
+            '用它乘一个向量 $v$：结果的第 $i$ 个分量只跟 $v_i$ 有关，等于 $d_i v_i$，因为第 $i$ 行除了对角线那一格全是 $0$。也就是说，**$\\mathrm{diag}(d)\\,v$ 就是把 $d$ 和 $v$ 对应位置相乘**。这种“对应位置相乘、不相加”的运算叫**逐元素乘**（也叫 Hadamard 积），记作 $d \\odot v$，结果还是一个向量（第 0.1 章提到过，讲神经网络时会用到）。',
+            '',
+            '对角线上全是 $1$ 的对角矩阵叫**单位矩阵**，记作 $I$。它乘任何向量都不改变那个向量：$Iv = v$，就像数字里的 $1$。',
+          ].join('\n'),
+          example: '$\\mathrm{diag}([2, 3])\\begin{bmatrix} 1 \\\\ 4 \\end{bmatrix} = \\begin{bmatrix} 2 & 0 \\\\ 0 & 3 \\end{bmatrix}\\begin{bmatrix} 1 \\\\ 4 \\end{bmatrix} = \\begin{bmatrix} 2 \\\\ 12 \\end{bmatrix} = [2, 3] \\odot [1, 4]$。',
+          takeaway: '$\\mathrm{diag}(d)\\,v = d \\odot v$（对应位置相乘）；单位矩阵 $I$ 乘什么都不变。',
+        },
+        {
+          id: 'chain',
+          title: '链式法则与常用 Jacobian',
+          question: '一层层套起来的函数，导数怎么算？',
+          intuition: [
+            '第 0.3 章的链式法则：一层套一层，各层导数相乘。换成多个变量，**就是各层的 Jacobian 相乘**（第 3 讲第 24 页）。比如一层网络 $h = f(z)$，$z = Wx + b$，那么',
+            '',
+            '$$\\frac{\\partial h}{\\partial x} = \\frac{\\partial h}{\\partial z}\\,\\frac{\\partial z}{\\partial x}$$',
+            '',
+            '为什么是矩阵乘法？看 $h_i$ 对 $x_j$ 的偏导数：$x_j$ 动一点，会通过 $z_1, z_2, \\dots$ 每一个中间量影响 $h_i$，每条路的影响是两段偏导数相乘，所有路加起来，$\\sum_k \\frac{\\partial h_i}{\\partial z_k}\\frac{\\partial z_k}{\\partial x_j}$。这正是矩阵乘法里第 $i$ 行第 $j$ 列的算法。（“几条路的影响加起来”，第 2.5 章还会以“分叉处梯度相加”的形式再出现。）',
+            '',
+            '有了这条规则，只要知道几个基本部件的 Jacobian，就能拼出整个网络的导数。第 3 讲列出的常用 Jacobian（官方 notes 有推导）：',
+          ].join('\n'),
+          formulas: [{
+            title: '神经网络里最常用的四个 Jacobian',
+            latex: String.raw`\begin{gathered} \frac{\partial}{\partial x}\big(\htmlClass{fx-wx}{Wx + b}\big) = \htmlClass{fx-wx}{W} \qquad\qquad \frac{\partial}{\partial b}\big(\htmlClass{fx-b}{Wx + b}\big) = \htmlClass{fx-b}{I} \\[6pt] \frac{\partial}{\partial z}\,\htmlClass{fx-f}{f(z)} = \htmlClass{fx-f}{\mathrm{diag}\big(f'(z)\big)} \qquad\qquad \frac{\partial}{\partial u}\big(\htmlClass{fx-u}{u^\top h}\big) = \htmlClass{fx-u}{h^\top} \end{gathered}`,
+            parts: [
+              { key: 'wx', label: '对输入求导：就是 $W$', color: 'blue', text: '$z_i = \\sum_k W_{ik}x_k$，对 $x_j$ 求偏导，只有 $k = j$ 那一项留下，得 $W_{ij}$。所以整张表就是 $W$。和一元的 $\\frac{d}{dx}(wx) = w$ 一模一样，老师说“别想太复杂”。' },
+              { key: 'b', label: '对偏置求导：单位矩阵', color: 'gray', text: '$z_i = \\cdots + b_i$，$b_i$ 动一点，只有 $z_i$ 跟着动同样多，其他分量不动：对角线是 $1$、其余是 $0$，即单位矩阵 $I$。在链式法则里乘它等于没乘。' },
+              { key: 'f', label: '逐元素激活：对角矩阵', color: 'teal', text: '$h_i = f(z_i)$ 只依赖 $z_i$，所以 $\\partial h_i/\\partial z_j$ 在 $i \\ne j$ 时是 $0$，在 $i = j$ 时是 $f\'(z_i)$。$n$ 个输入、$n$ 个输出，是 $n\\times n$ 的对角矩阵。乘它就等于和 $f\'(z)$ 逐元素乘。' },
+              { key: 'u', label: '点积对 $u$ 求导', color: 'purple', text: '$u^\\top h = \\sum_i u_i h_i$，对 $u_i$ 的偏导是 $h_i$。只有一个输出，所以是一行：$h^\\top$。（第 2.4 章会讲，按“形状约定”我们会把它写成和 $u$ 同样形状的 $h$。）' },
+            ],
+          }],
+          math: [
+            '官方 notes 还直接给出了一个以后会反复用到的结果（这里不推导）：如果 $\\hat y = \\mathrm{softmax}(\\theta)$，损失是 $\\hat y$ 和独热的真实分布 $y$ 之间的交叉熵（第 2.2 章），那么',
+            '',
+            '$$\\frac{\\partial J}{\\partial \\theta} = \\hat y - y$$',
+            '',
+            '**预测的分布减去真实的分布**。这和第 1.4 章 word2vec 梯度里的“期望的 − 观察到的”是同一件事。',
+          ].join('\n'),
+          example: [
+            '一层 ReLU 网络：$W = \\begin{bmatrix} 1 & -1 \\\\ 2 & 0.5 \\end{bmatrix}$，$b = [0,\\ -1]^\\top$，$x = [1,\\ 2]^\\top$，$h = \\mathrm{ReLU}(Wx + b)$。',
+            '',
+            '1. 前向：$z = Wx + b = [1 - 2 + 0,\\ \\ 2 + 1 - 1] = [-1,\\ 2]$。',
+            '2. ReLU 的导数：$z_1 < 0$ 处是 $0$，$z_2 > 0$ 处是 $1$，所以 $\\frac{\\partial h}{\\partial z} = \\mathrm{diag}([0, 1])$。',
+            '3. 相乘：$\\frac{\\partial h}{\\partial x} = \\mathrm{diag}([0, 1])\\,W = \\begin{bmatrix} 0 & 0 \\\\ 2 & 0.5 \\end{bmatrix}$。',
+            '',
+            '第一行全是 $0$：第一个神经元的输入是负的，ReLU 把它关掉了，$x$ 怎么动它都输出 $0$。第二行就是 $W$ 的第二行。用数值的方法逐个推一下 $x_1$、$x_2$，得到的也是这个矩阵。',
+          ].join('\n'),
+          takeaway: '多变量的链式法则 = Jacobian 相乘；记住四个部件：$Wx + b$ 对 $x$ 是 $W$，对 $b$ 是 $I$，逐元素激活是 $\\mathrm{diag}(f\'(z))$，$u^\\top h$ 对 $u$ 是 $h^\\top$。',
+        },
+      ],
+      pitfalls: [
+        { wrong: 'Jacobian 的形状是“输入个数 × 输出个数”', right: '是**输出个数 × 输入个数**（$m\\times n$）：每一行对应一个输出，每一列对应一个输入。' },
+        { wrong: '逐元素激活 $h = f(z)$ 的 Jacobian 每一格都是 $f\'$', right: '$h_i$ 只依赖 $z_i$，所以只有对角线上是 $f\'(z_i)$，其余都是 $0$。' },
+        { wrong: '$\\mathrm{diag}(d)\\,v$ 要做完整的矩阵乘法才能算', right: '对角矩阵乘向量就是**逐元素乘** $d \\odot v$，实际计算时根本不用把矩阵写出来。' },
+        { wrong: '多变量的链式法则是把各层的 Jacobian 逐元素相乘', right: '是**矩阵相乘**：$x_j$ 通过每个中间量影响输出，各条路的贡献要加起来，这正是矩阵乘法。' },
+      ],
+      quiz: [
+        {
+          kind: '概念判断',
+          q: '函数 $f$ 有 $3$ 个输入、$2$ 个输出。它的 Jacobian 是什么形状？',
+          options: ['$2\\times 3$', '$3\\times 2$', '$3\\times 3$', '$1\\times 3$'],
+          answer: 0,
+          explain: '行数 = 输出个数 $2$，列数 = 输入个数 $3$。',
+          why: ['对。', '反了：每一行对应一个输出。', '只有输入、输出个数相同时才是方阵。', '那是只有一个输出时的梯度。'],
+        },
+        {
+          kind: '计算',
+          q: '$\\mathrm{diag}([2, 3])$ 乘向量 $[1, 4]^\\top$，结果的第二个分量是多少？',
+          answer: 12, tol: 1e-9,
+          explain: '对角矩阵乘向量 = 逐元素乘：$[2\\times 1,\\ 3\\times 4] = [2, 12]$。',
+        },
+        {
+          kind: '计算',
+          q: '$z = Wx$，$W = \\begin{bmatrix} 1 & 2 \\\\ 3 & 4 \\end{bmatrix}$。$\\partial z_2 / \\partial x_1$ 是多少？',
+          answer: 3, tol: 1e-9,
+          explain: '$\\partial z/\\partial x = W$，第 2 行第 1 列是 $3$。直接看：$z_2 = 3x_1 + 4x_2$，对 $x_1$ 求导得 $3$。',
+        },
+        {
+          kind: '概念判断',
+          q: '为什么逐元素激活 $h = f(z)$ 的 Jacobian 是对角矩阵？',
+          options: ['因为 $f$ 是非线性的', '因为 $h_i$ 只依赖 $z_i$，和其他分量无关', '因为 $z$ 和 $h$ 一样长', '因为激活函数的导数总是正的'],
+          answer: 1,
+          explain: '$h_i = f(z_i)$，改变 $z_j$（$j \\ne i$）不影响 $h_i$，所以非对角线上的偏导数都是 $0$。',
+          why: ['线性的逐元素函数（比如 $h_i = 2z_i$）也是对角的，关键不在非线性。', '对。', '一样长只说明它是方阵，不说明它是对角的。', 'ReLU 的导数可以是 $0$，而且正负和对角无关。'],
+        },
+        {
+          kind: '计算',
+          q: '正文的 ReLU 例子里，$\\partial h/\\partial x = \\begin{bmatrix} 0 & 0 \\\\ 2 & 0.5 \\end{bmatrix}$。如果把 $x_1$ 增加 $0.01$（$x_2$ 不变），$h_2$ 大约增加多少？',
+          answer: 0.02, tol: 1e-6,
+          explain: '第 2 行第 1 列是 $2$：$x_1$ 每动 $1$，$h_2$ 动 $2$。所以增加约 $2\\times 0.01 = 0.02$。',
+        },
+      ],
+      takeaways: [
+        '导数（一个数）、梯度（一行）、**Jacobian**（$m\\times n$ 的表）是同一个想法：输入动一点，输出动多少。',
+        '$\\mathrm{diag}(d)\\,v = d\\odot v$（逐元素乘）；单位矩阵 $I$ 乘什么都不变。',
+        '**多变量链式法则 = Jacobian 相乘。**',
+        '常用 Jacobian：$\\frac{\\partial(Wx+b)}{\\partial x} = W$，$\\frac{\\partial(Wx+b)}{\\partial b} = I$，$\\frac{\\partial f(z)}{\\partial z} = \\mathrm{diag}(f\'(z))$，$\\frac{\\partial(u^\\top h)}{\\partial u} = h^\\top$。',
+        'softmax 加交叉熵的梯度是 $\\hat y - y$：预测减真实。',
+      ],
+      source: 'CS224N 第 3 讲中段（梯度、Jacobian、链式法则、逐元素激活和其他常用 Jacobian）；官方 notes《Computing Neural Network Gradients》（Jacobian 的推导与 softmax 加交叉熵的梯度）。讲课顺序参考了 2024 年同一讲的录像。',
+    },
+  ]);
+})(window);

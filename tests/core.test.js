@@ -237,6 +237,20 @@ test('L03 p21: f(x) = x³ has slope 3 at x = 1 and 48 at x = 4; 1.01³ ≈ 1.03,
   near(f(4.01), 64.481201, 1e-9);
 });
 
+test('Chapter 2.3 numbers: a 2×2 Jacobian, diag times vector, the ReLU layer Jacobian (checked numerically)', () => {
+  const f = (v) => [v[0] * v[1], v[0] + 3 * v[1]];
+  nearAll([0, 1].map((i) => C.gradient((v) => f(v)[i], [2, 1])), [[1, 2], [1, 3]], 1e-6);
+  eq(f([2.01, 1]).map((v) => +v.toFixed(10)), [2.01, 5.01]);
+  eq(L.hadamard([2, 3], [1, 4]), [2, 12]);
+  eq(L.matvec([[2, 0], [0, 3]], [1, 4]), [2, 12]);
+  const W = [[1, -1], [2, 0.5]], b = [0, -1], x = [1, 2];
+  const relu = (v) => v.map((t) => Math.max(t, 0)), z = L.add(L.matvec(W, x), b);
+  eq(z, [-1, 2]);
+  const analytic = L.matmul([[z[0] > 0 ? 1 : 0, 0], [0, z[1] > 0 ? 1 : 0]], W);
+  eq(analytic, [[0, 0], [2, 0.5]]);
+  nearAll([0, 1].map((i) => C.gradient((v) => relu(L.add(L.matvec(W, v), b))[i], x)), analytic, 1e-6);
+});
+
 test('L03 p24: z = 3y, y = x² gives dz/dx = 6x', () => {
   [-2, 0.5, 3].forEach((x) => near(C.derivative((t) => 3 * t * t, x), 6 * x, 1e-6));
 });

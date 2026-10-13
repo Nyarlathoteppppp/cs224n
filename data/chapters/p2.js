@@ -3,19 +3,6 @@
   'use strict';
   root.CS224N.content.addChapters([
     {
-      id: 'c2-3', part: 'p2', seq: 3, num: '2.3', stub: true, lectures: '第 3 讲',
-      title: '矩阵微积分：梯度、Jacobian 与链式法则', en: 'Matrix calculus: gradients, Jacobians, chain rule',
-      hook: '一层网络有 $n$ 个输入、$m$ 个输出。这时候“导数”该是一个数、一个向量，还是一张表？',
-      goals: ['区分梯度（一个输出）和 Jacobian（多个输出）', '用“Jacobian 相乘”写出复合函数的导数', '写出逐元素激活、$Wx+b$ 这几个常用的 Jacobian'],
-      prereq: [{ text: '偏导数与链式法则', ch: 'c0-3' }, { text: '矩阵乘法', ch: 'c0-1' }, { text: '对角矩阵与单位矩阵', here: 'diag' }],
-      topics: [
-        { id: 'jacobian', title: '梯度与 Jacobian', question: '多个输入、多个输出时，“输入动一点、输出动多少”该怎么记？' },
-        { id: 'diag', title: '对角矩阵与单位矩阵', question: '除了对角线全是 0 的矩阵，乘上去有什么特别？', remedial: true },
-        { id: 'chain', title: '链式法则与常用 Jacobian', question: '一层层套起来的函数，导数怎么算？', visuals: [{ id: 'shape-check' }] },
-      ],
-      source: 'CS224N 第 3 讲；官方 notes（梯度计算、微积分复习）。',
-    },
-    {
       id: 'c2-4', part: 'p2', seq: 4, num: '2.4', stub: true, lectures: '第 3 讲',
       title: '手推一个小网络的梯度', en: 'Deriving the gradients of a small network',
       hook: '窗口分类器的得分 $s=u^\\top f(Wx+b)$。$\\partial s/\\partial b$ 和 $\\partial s/\\partial W$ 各是多少？为什么算第二个时，前一个的大半结果可以直接拿来用？',
