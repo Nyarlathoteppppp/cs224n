@@ -133,9 +133,27 @@ get_subs() {
   echo "subtitles: $(ls "$dir"/*.vtt 2>/dev/null | wc -l | tr -d ' ') vtt files -> $dir"
 }
 
+# Third-party Chinese notes the user pointed to (no licence, so they stay in reference/ like everything else).
+# lvsir18: short W26 notes for all 19 lectures. LooperXX: 2019 reading notes that follow the lecture videos;
+# only the lectures this tutorial covers. Their PDF text layer is broken (custom font encoding), so
+# tools/ocr_notes.sh turns them into text with macOS Vision.
+fetch_community() {
+  local dir="$ROOT/reference/community"
+  mkdir -p "$dir/looperxx/pdf"
+  [ -d "$dir/lvsir18" ] || git clone -q --depth 1 https://github.com/lvsir18/CS224n-Winter-2026-Learning-Notes.git "$dir/lvsir18"
+  gh api "repos/LooperXX/CS224n-Reading-Notes/git/trees/master" --jq '.tree[].path' |
+    grep -E '^CS224n-2019-(0[1-8]|12|14)-.*\.pdf$' | while IFS= read -r f; do
+      local n="${f:12:2}"
+      [ -s "$dir/looperxx/pdf/$n.pdf" ] && continue
+      curl -sSL --fail -o "$dir/looperxx/pdf/$n.pdf" "https://raw.githubusercontent.com/LooperXX/CS224n-Reading-Notes/master/$(urlencode "$f")"
+    done
+  echo "community notes: $(ls "$dir/looperxx/pdf" | wc -l | tr -d ' ') LooperXX PDFs, lvsir18 in $dir/lvsir18"
+}
+
 case "${1:-all}" in
-  files) fetch_files ;;
-  subs)  fetch_subs ;;
-  all)   fetch_files; fetch_subs ;;
-  *)     echo "usage: $0 [files|subs|all]" >&2; exit 2 ;;
+  files)     fetch_files ;;
+  subs)      fetch_subs ;;
+  community) fetch_community ;;
+  all)       fetch_files; fetch_subs; fetch_community ;;
+  *)         echo "usage: $0 [files|subs|community|all]" >&2; exit 2 ;;
 esac

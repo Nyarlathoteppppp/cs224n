@@ -55,6 +55,10 @@
 - `reference/` 不进 git，因为课件和字幕是斯坦福的版权内容。用 `tools/fetch_reference.sh all` 重新下载，下载清单在 `reference/raw/MANIFEST.tsv`。
 - 内容以 Winter 2026 官网为准。录像字幕来自 Spring 2024 和 2023 的 YouTube 自动字幕，只用来辅助理解，讲次顺序和内容与 W26 不完全一致。
 - W26 的讲次里没有依存句法（dependency parsing），但 A2 考了，所以要放进教程。
+- 第三方中文笔记放在 `reference/community/`，用 `tools/fetch_reference.sh community` 下载，用 `tools/ocr_notes.sh` 做 OCR。两份都没有开源许可，只能参考，不能照抄。
+  - `lvsir18/`：W26 全部 19 讲的简短中文笔记，主线取自个人笔记站。只用来核对主题有没有遗漏，以及参考中文译法，不能当事实来源。
+  - `looperxx/`：2019 版中文阅读笔记，以讲课视频为主，记录了不少课件外的课堂讲解。`ocr/` 是 OCR 结果，公式不可靠，公式以课件为准。主要用来补字幕缺失的讲次（词向量、RNN 语言模型、梯度消失、机器翻译）的讲解顺序和比喻。
+  - 笔记里提到的内容，要在 CS224N 课件、notes 或字幕里找到依据才能写进网站；找不到的就不写，或者标“课件外”。2019 版和 W26 不一致时以 W26 为准。
 
 ## 流程
 按"课件转交互课程手册"（https://claude.ai/artifact/GWzgcXqsbXfYV5i7NkH6pa）的 8 步：
