@@ -1,8 +1,8 @@
 /* 注意力每一步算了什么 (L05 p25–p37): seq2seq with attention on “il a m’ entarté” → “he hit me with a pie”.
  * Each decoder step is shown in four stages: dot-product scores → softmax → weighted sum of encoder states →
  * output word; after the sixth step the weights form the alignment heatmap. The attention weights are made up
- * (课件外) to follow the light/dark pattern of the slide's heatmap; the scores are chosen so that softmax gives
- * exactly those weights (js/core/prob.js softmax). Encoder states are made-up 3-number vectors. */
+ * Encoder states h_j and decoder states s_t are made-up 3-number vectors (课件外); the scores are their real dot
+ * products and the weights are softmax of those (js/core/prob.js). */
 (function (root) {
   'use strict';
   const C = root.CS224N;
@@ -12,17 +12,12 @@
   const SRC = ['il', 'a', 'm’', 'entarté'];
   const OUT = ['he', 'hit', 'me', 'with', 'a', 'pie'];
   const IN = ['<START>', 'he', 'hit', 'me', 'with', 'a'];
-  const ALPHA = [
-    [0.85, 0.05, 0.05, 0.05],
-    [0.20, 0.25, 0.05, 0.50],
-    [0.05, 0.10, 0.65, 0.20],
-    [0.05, 0.05, 0.10, 0.80],
-    [0.05, 0.05, 0.10, 0.80],
-    [0.03, 0.05, 0.07, 0.85],
-  ];
-  const SCORES = ALPHA.map((row) => row.map((a) => Math.round((Math.log(a) + 4) * 100) / 100));
-  const WEIGHTS = SCORES.map((row) => P.softmax(row));   // what the reader sees is exactly softmax(scores)
   const H = [[0.9, 0.1, -0.3], [0.2, 0.7, 0.4], [-0.4, 0.8, 0.1], [0.1, -0.5, 0.9]];   // encoder states
+  // decoder states s_t (made up, 课件外), chosen so that the softmax of the real dot products follows the light/dark
+  // pattern of the slide's alignment heatmap
+  const S = [[1.4, -0.6, -1.7], [2.2, 0.5, 2.5], [-2.5, -0.6, -0.8], [-1.9, -2.4, -0.2], [-1.7, -2.2, 0.1], [-1.1, -1.7, 1.2]];
+  const SCORES = S.map((st) => H.map((hj) => hj.reduce((acc, v, d) => acc + v * st[d], 0)));
+  const WEIGHTS = SCORES.map((row) => P.softmax(row));
   const STAGES = ['① 打分：点积', '② softmax', '③ 加权求和', '④ 输出一个词'];
 
   function mount(el) {
@@ -63,8 +58,9 @@
         svg.append(s('text', { x: ex(j), y: by + 50, class: 'at-word', text: w }), s('text', { x: ex(j) - 34, y: by + 20, class: 'at-h', text: 'h' + (j + 1) }));
         // bars above the encoder
         if (stage === 0) {
-          const hgt = Math.max(2, score[j] * 22);
-          svg.append(s('rect', { x: ex(j) - 14, y: by - 10 - hgt, width: 28, height: hgt, class: 'at-score' }), s('text', { x: ex(j), y: by - 16 - hgt, class: 'at-num', text: fmt(score[j], 2) }));
+          const mid = by - 70, hgt = Math.max(2, Math.abs(score[j]) * 22);
+          svg.append(s('line', { x1: ex(j) - 22, y1: mid, x2: ex(j) + 22, y2: mid, class: 'vg-grid is-one' }));
+          svg.append(s('rect', { x: ex(j) - 14, y: score[j] >= 0 ? mid - hgt : mid, width: 28, height: hgt, class: 'at-score' + (score[j] < 0 ? ' is-neg' : '') }), s('text', { x: ex(j), y: score[j] >= 0 ? mid - hgt - 6 : mid + hgt + 14, class: 'at-num', text: fmt(score[j], 2) }));
         } else {
           const hgt = alpha[j] * 120;
           svg.append(s('rect', { x: ex(j) - 14, y: by - 10 - hgt, width: 28, height: hgt, class: 'at-alpha' }), s('text', { x: ex(j), y: by - 16 - hgt, class: 'at-num', text: fmt(alpha[j], 2) }));
@@ -95,7 +91,7 @@
       const top = alpha.indexOf(Math.max(...alpha));
       const title = '第 ' + (t + 1) + ' 步：输入 “' + IN[t] + '”，要写出第 ' + (t + 1) + ' 个英文词';
       const text = [
-        '解码器当前的隐状态，和编码器的 4 个隐状态各做一次点积，得到 4 个分数（柱子上的数）。分数越大，表示这个法语位置和“现在要写的词”越相关。',
+        '解码器当前的隐状态 s' + (t + 1) + ' = [' + S[t].map((v) => fmt(v, 1)).join(', ') + ']，和编码器的 4 个隐状态各做一次点积，得到 4 个分数（柱子上的数，可正可负）。比如和 h1 = [' + H[0].join(', ') + '] 的点积是 ' + fmt(score[0], 2) + '。分数越大，表示这个法语位置和“现在要写的词”越相关。',
         'softmax 把 4 个分数变成 4 个加起来是 1 的权重（第 1.3 章）。这一步权重最大的是 “' + SRC[top] + '”（' + fmt(alpha[top], 2) + '）。连线越粗，权重越大。',
         '按权重把 4 个编码器隐状态加起来：注意力输出 = ' + alpha.map((w, j) => fmt(w, 2) + '·h' + (j + 1)).join(' + ') + ' = [' + a.map((v) => fmt(v, 2)).join(', ') + ']。它主要包含权重大的那个位置的信息。',
         '把注意力输出和解码器的隐状态拼起来，算出下一个词的概率分布，写出 “' + OUT[t] + '”。' + (t < 5 ? '下一步再重新打分，看原文的别处。' : '6 步走完，点“看对齐热力图”。'),
@@ -108,7 +104,7 @@
       const table = h('table.at-table');
       table.append(h('tr', h('th', ''), OUT.map((w) => h('th', w))));
       SRC.forEach((w, j) => table.append(h('tr', h('th', w), OUT.map((_, i) => h('td', { style: { background: 'color-mix(in srgb, var(--c-blue) ' + Math.round(WEIGHTS[i][j] * 100) + '%, var(--surface))', color: WEIGHTS[i][j] > 0.5 ? 'var(--on-accent)' : 'var(--text)' } }, fmt(WEIGHTS[i][j], 2))))));
-      heatBox.append(h('p.viz-note', '每一列是解码器的一步，每一行是一个法语词，颜色越深权重越大。没人告诉模型哪个词对哪个词，它自己学出了这种对应（权重是我们按课件热力图的明暗编的，课件外）。'), table);
+      heatBox.append(h('p.viz-note', '每一列是解码器的一步，每一行是一个法语词，颜色越深权重越大。没人告诉模型哪个词对哪个词，它自己学出了这种对应（这里的解码器隐状态是我们设的，课件外，让权重大致符合课件热力图的明暗）。'), table);
       cap.append(h('div.at-cap-title', '对齐'), h('div.at-cap-text', 'il ↔ he，m’ ↔ me，entarté ↔ with a pie：一个法语词对应好几个英文词，模型也能看出来。'));
     }
     render();

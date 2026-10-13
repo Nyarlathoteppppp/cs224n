@@ -630,14 +630,22 @@ test('N06 p11–p12: a GRU with update gate z ≈ 1 copies the previous state', 
 
 /* ───────── Part 5: attention and Transformers ───────── */
 
-test('Chapter 5.1 numbers: scores [3.84, 1, 1, 1] → weights ≈ [0.851, 0.050, 0.050, 0.050]; weighted sum of the encoder states', () => {
-  const w = P.softmax([3.84, 1, 1, 1]);
-  near(w[0], 0.851, 5e-4); near(w[1], 0.050, 5e-4);
+test('Chapter 5.1 numbers: s₁ = [1.4, −0.6, −1.7] against four encoder states → scores, weights, attention output', () => {
   const H = [[0.9, 0.1, -0.3], [0.2, 0.7, 0.4], [-0.4, 0.8, 0.1], [0.1, -0.5, 0.9]];
-  const a = [0, 1, 2].map((d) => w.reduce((s, x, j) => s + x * H[j][d], 0));
-  nearAll(a, [0.761, 0.135, -0.186], 5e-4);
+  const r = ATT.attend([1.4, -0.6, -1.7], H, H);
+  nearAll(r.scores, [1.71, -0.82, -1.21, -1.09], 1e-9);
+  nearAll(r.weights, [0.837, 0.067, 0.045, 0.051], 5e-4);
+  nearAll(r.output, [0.754, 0.141, -0.174], 5e-4);
+  // every step of the experiment: the largest weight sits where the slide's heatmap is darkest
+  const S = [[1.4, -0.6, -1.7], [2.2, 0.5, 2.5], [-2.5, -0.6, -0.8], [-1.9, -2.4, -0.2], [-1.7, -2.2, 0.1], [-1.1, -1.7, 1.2]];
+  const argmax = (w) => w.indexOf(Math.max(...w));
+  eq(S.map((st) => argmax(ATT.attend(st, H, H).weights)), [0, 3, 2, 3, 3, 3], 'il; entarté; m’; entarté ×3');
   near(P.softmax([2, 0, 0])[0], 0.787, 5e-4);
   near(0.5 * 2 + 0.5 * 4 + 0 * 10, 3);
+  // low-rank bilinear score: sᵀ(AᵀB)h = (As)ᵀ(Bh), and 2·k·d numbers instead of d²
+  const A = randMat(2, 4), B = randMat(2, 4), sv = randVec(4), hv = randVec(4);
+  near(L.dot(sv, L.matvec(L.matmul(L.transpose(A), B), hv)), L.dot(L.matvec(A, sv), L.matvec(B, hv)), 1e-12);
+  eq(2 * 100 * 1000, 200000); eq(1000 * 1000, 1000000);
 });
 
 test('Chapter 5.2 example: “his” in “Zuko made his uncle tea” (made-up X, Q, K, V = I)', () => {

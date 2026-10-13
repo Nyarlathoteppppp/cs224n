@@ -599,3 +599,4 @@
 .tb-flow { stroke: var(--border-strong); stroke-width: 1.6; }
 .tb-cross { fill: none; stroke: var(--c-orange); stroke-width: 2.6; }
 .tb-headp { fill: var(--c-orange); }
+.at-score.is-neg { fill: var(--c-red); opacity: .7; }

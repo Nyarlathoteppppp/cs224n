@@ -24,7 +24,7 @@
     const svgR = s('svg', { class: 'viz-svg', viewBox: '0 0 360 220', role: 'img', 'aria-label': 'softmax 后的权重' });
     const note = h('div.vg-note');
     const sd = slider('向量维数 d', { min: 0, max: DIMS.length - 1, step: 1, value: di, format: (v) => String(DIMS[v]), onInput: (v) => { di = v; render(); } });
-    const cb = h('label.as-check', h('input', { type: 'checkbox', onchange: (e) => { scaled = e.target.checked; render(); } }), ' 分数除以 √d（缩放）');
+    const cb = h('label.as-check', h('input', { type: 'checkbox', onchange: (e) => { scaled = e.target.checked; render(); } }), ' 分数除以 √(向量维数)（缩放）');
     el.append(h('div.viz-row', sd, cb), h('div.sc2-grid', h('figure.sa-fig', h('figcaption', '300 对随机向量的点积（除以 √d 前）'), svgL), h('figure.sa-fig', h('figcaption', '一个 query 对 8 个 key：softmax 后的权重'), svgR)), note);
 
     function render() {

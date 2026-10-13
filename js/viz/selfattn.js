@@ -46,6 +46,8 @@
       const dcols = ['1', '2', '3'];
       top.append(
         matrix(texHTML('X') + '：每行一个词', X, { rows: WORDS, cols: dcols, selRow: i }),
+        matrix(texHTML('Q') + '（按行的写法）', Q, { rows: dcols, cols: dcols }),
+        matrix(texHTML('K'), K, { rows: dcols, cols: dcols }),
         matrix(texHTML('XQ') + '：每行是 query', R.queries, { rows: WORDS.map((w, k) => 'q' + (k + 1)), cols: dcols, selRow: i, cls: 'is-q' }),
         matrix(texHTML('XK') + '：每行是 key', R.keys, { rows: WORDS.map((w, k) => 'k' + (k + 1)), cols: dcols, selRow: j, cls: 'is-k' }),
         matrix(texHTML('XV') + '：每行是 value', R.values, { rows: WORDS.map((w, k) => 'v' + (k + 1)), cols: dcols, cls: 'is-v' }));

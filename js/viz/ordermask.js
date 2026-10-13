@@ -51,7 +51,7 @@
         M.forEach((row, i) => t.append(h('tr', h('th', MW[i]), row.map((v, j) => h('td' + (useMask && j > i ? '.is-masked' : ''), { style: isW ? { background: 'color-mix(in srgb, var(--c-blue) ' + Math.round(v * 100) + '%, var(--surface))' } : null }, v === -Infinity ? '−∞' : fmt(v, 2))))));
         return h('figure.sa-fig', h('figcaption', title), t);
       };
-      body.append(h('p.viz-note', '编码 “[START] The chef who” 时，每一行是一个词作为 query，每一列是它可以看的词。'), toggle,
+      body.append(h('p.viz-note', '算 “[START] The chef who” 每个位置的表示时，每一行是一个词作为 query，每一列是它可以看的词。'), toggle,
         h('div.sa-grid', grid('分数（未来的位置设为 −∞）', scores, false), grid('softmax 后的权重（每行和为 1）', weights, true)),
         h('div.vg-note', useMask
           ? '对角线右上方都是 −∞，e^(−∞) = 0，所以这些位置的权重正好是 0。chef 这一行只看 [START]、The、chef，用它来预测下一个词 who 不算作弊。整张表仍然一次算完，并行没有受影响。'
@@ -65,7 +65,7 @@
       svg.append(s('text', { x: 60, y: H - 6, class: 'vg-tick', style: 'text-anchor:start', text: '位置 1' }), s('text', { x: W - 20, y: H - 6, class: 'vg-tick', text: '位置 50 →' }));
       svg.append(s('text', { x: 52, y: 14, class: 'vg-tick', text: '第 1 维' }), s('text', { x: 52, y: H - 28, class: 'vg-tick', text: '第 32 维' }));
       body.append(h('p.viz-note', '每一列是一个位置的位置向量（32 维），每一行是一维。蓝正红负，颜色越深绝对值越大。'), svg,
-        h('div.vg-note', '上面几维变化得快，下面几维变化得慢：每一维是一个周期不同的正弦或余弦。每个位置得到一个独一无二的向量。'));
+        h('div.vg-note', '每两维一组（一个正弦、一个余弦，周期相同），上面几组变化得快，下面几组变化得慢。每个位置得到一个独一无二的向量。'));
     }
     function render() {
       clear(body);
