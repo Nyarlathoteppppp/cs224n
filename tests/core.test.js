@@ -172,6 +172,20 @@ test('L03 p24: z = 3y, y = x² gives dz/dx = 6x', () => {
   [-2, 0.5, 3].forEach((x) => near(C.derivative((t) => 3 * t * t, x), 6 * x, 1e-6));
 });
 
+test('Chapter 0.3 numbers: θ² descent from 3 with α = 0.1, 0.5, 1.1; ∇(x² + 2y²); quiz answers', () => {
+  const run = (alpha, n) => { let t = 3; const out = [t]; for (let i = 0; i < n; i++) { t = OPT.sgd([t], [2 * t], alpha).theta[0]; out.push(t); } return out; };
+  nearAll(run(0.1, 3), [3, 2.4, 1.92, 1.536], 1e-12);
+  nearAll(run(0.5, 1), [3, 0], 1e-12);
+  nearAll(run(1.1, 3), [3, -3.6, 4.32, -5.184], 1e-12);
+  const f = (v) => v[0] * v[0] + 2 * v[1] * v[1];
+  nearAll(C.gradient(f, [1, 1]), [2, 4], 1e-6);
+  nearAll(C.gradient(f, [2, 1]), [4, 4], 1e-6);
+  nearAll(OPT.sgd([2, 1], [4, 4], 0.1).theta, [1.6, 0.6], 1e-12);
+  near(C.derivative((x) => x ** 3, 3), 27, 1e-6);
+  near(Math.pow(2.01, 3) - 8, 0.120601, 1e-12);
+  near(C.derivative((x) => 3 * x * x, 5), 30, 1e-6);
+});
+
 test('L03 p78: centered difference beats the one-sided one', () => {
   const f = (x) => x * x * x;
   const central = Math.abs(C.derivative(f, 4, 1e-4) - 48), oneSided = Math.abs(C.derivative(f, 4, 1e-4, 'forward') - 48);

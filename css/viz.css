@@ -145,3 +145,21 @@
 .el-guide { stroke: var(--text-2); stroke-width: 1; stroke-dasharray: 3 3; }
 .el-val { font: 600 13px var(--font); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
 .el-val.exp { fill: var(--c-blue); } .el-val.nll { fill: var(--c-red); }
+
+/* slope-descent: 斜率与梯度下降 */
+.sd-axis { stroke: var(--border-strong); stroke-width: 1.2; }
+.sd-axis.faint { stroke: var(--border); }
+.sd-tick { font: 11.5px var(--font); fill: var(--muted); text-anchor: middle; }
+.sd-curve { fill: none; stroke: var(--text-2); stroke-width: 2.2; }
+.sd-curve-label { font: italic 13px KaTeX_Main, "Times New Roman", serif; fill: var(--text-2); }
+.sd-tangent { stroke: var(--c-blue); stroke-width: 2.4; }
+.sd-dot { fill: var(--c-blue); }
+.sd-rise { fill: none; stroke: var(--c-orange); stroke-width: 1.6; stroke-dasharray: 4 3; }
+.sd-rise-text { font: 600 12.5px var(--font); fill: var(--c-orange); dominant-baseline: central; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; }
+.sd-read { background: var(--surface-2); border-radius: 6px; padding: 6px 12px; font-size: .92rem; font-variant-numeric: tabular-nums; }
+.sd-two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.sd-two figure { margin: 0; min-width: 0; }
+.sd-contour { fill: none; stroke: var(--border-strong); stroke-width: 1; }
+.sd-step { stroke: var(--c-red); stroke-width: 1.6; }
+.sd-pt { fill: var(--c-red); opacity: .55; }
+.sd-pt.cur { opacity: 1; }
