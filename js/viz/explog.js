@@ -35,7 +35,7 @@
       for (let v = Math.ceil(d[0]); v <= d[1]; v += (d[1] - d[0] > 8 ? 5 : 1)) {
         out.push(axis === 'x'
           ? s('text', { x: X(v), y: H - P.b + 16, class: 'el-tick' }, String(v).replace('-', '−'))
-          : s('text', { x: X(Math.max(0, xd[0])) - 6, y: Y(v), class: 'el-tick', 'text-anchor': 'end', 'dominant-baseline': 'central' }, String(v)));
+          : s('text', { x: X(Math.max(0, xd[0])) - 6, y: Y(v), class: 'el-tick', style: 'text-anchor:end', 'dominant-baseline': 'central' }, String(v)));
       }
       return out;
     };

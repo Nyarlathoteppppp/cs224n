@@ -42,6 +42,7 @@
       if (v == null) continue;
       if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2), v);
       else if (k === 'text') node.textContent = v;
+      else if (k === 'text-anchor') node.style.textAnchor = v;   // inline, so a class's text-anchor in viz.css cannot override it
       else node.setAttribute(k, v);
     }
     children.flat(Infinity).forEach((c) => c != null && node.appendChild(c instanceof Node ? c : document.createTextNode(String(c))));

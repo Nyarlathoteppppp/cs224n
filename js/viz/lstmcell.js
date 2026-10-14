@@ -20,7 +20,7 @@
       mk('输出门 o（露出多少）', 0, 1, o, (v) => { o = v; }),
       mk('候选内容 c̃', -1, 1, cand, (v) => { cand = v; }),
       mk('旧记忆 c(t−1)', -2, 2, cOld, (v) => { cOld = v; }));
-    const chart = s('svg', { class: 'viz-svg lc-chart', viewBox: '0 0 760 210', role: 'img', 'aria-label': '记忆能保存多少步' });
+    const chart = s('svg', { class: 'viz-svg lc-chart', viewBox: '0 0 820 210', role: 'img', 'aria-label': '记忆能保存多少步' });
     const chartNote = h('div.lc-note');
     const keep = h('div.lc-sliders',
       slider('LSTM 的遗忘门 f', { min: 0.5, max: 1, step: 0.01, value: keepF, format: (v) => fmt(v, 2), onInput: (v) => { keepF = v; renderChart(); } }),
@@ -80,11 +80,17 @@
       lstm.forEach((v, t) => chart.append(s('circle', { cx: x0 + t * dx, cy: y0 - Math.min(1.1, v) * hgt, r: 3, class: 'lc-dot is-lstm' })));
       rnn.forEach((v, t) => chart.append(s('circle', { cx: x0 + t * dx, cy: y0 - Math.max(0, Math.min(1.1, v)) * hgt, r: 3, class: 'lc-dot is-rnn' })));
       for (let t = 0; t < N; t += 3) chart.append(s('text', { x: x0 + t * dx, y: y0 + 18, class: 'vg-step', text: '第 ' + (t + 1) + ' 步' }));
-      chart.append(s('text', { x: x0 + (N - 1) * dx, y: y0 - lstm[N - 1] * hgt - 8, class: 'lc-legend is-lstm', text: 'LSTM：' + fmt(lstm[N - 1], 3) }));
-      chart.append(s('text', { x: x0 + (N - 1) * dx, y: y0 - Math.max(0, Math.min(1.1, rnn[N - 1])) * hgt + 18, class: 'lc-legend is-rnn', text: '普通 RNN：' + fmt(rnn[N - 1], 3) }));
+      // legends to the right of the last points, pushed apart when the two values are close
+      let yl = y0 - Math.min(1.1, lstm[N - 1]) * hgt + 4, yr = y0 - Math.max(0, Math.min(1.1, rnn[N - 1])) * hgt + 4;
+      if (Math.abs(yl - yr) < 15) { const mid = (yl + yr) / 2, up = lstm[N - 1] >= rnn[N - 1]; yl = mid + (up ? -8 : 8); yr = mid + (up ? 8 : -8); }
+      chart.append(s('text', { x: x0 + (N - 1) * dx + 10, y: yl, class: 'lc-legend is-lstm', text: 'LSTM：' + fmt(lstm[N - 1], 3) }));
+      chart.append(s('text', { x: x0 + (N - 1) * dx + 10, y: yr, class: 'lc-legend is-rnn', text: '普通 RNN：' + fmt(rnn[N - 1], 3) }));
+      chart.append(s('text', { x: x0 - 30, y: 10, class: 'lc-ytitle', text: '这条信息还剩多少（第 1 步写入时为 1）' }));
       clear(chartNote);
       chartNote.append('第 20 步时，LSTM 还剩 ' + fmt(lstm[N - 1], 3) + '（就是 f 的 19 次方），普通 RNN 剩 ' + fmt(rnn[N - 1], 3) + '。');
-      chartNote.append(keepF === 1 ? '遗忘门是 1 时，记忆一点不少地一直传下去。' : w > 1.2 ? '普通 RNN 的 w 调大以后，值不再趋向 0，但会停在一个和最初的信息无关的数上：每一步的整个重写都在改它。' : '普通 RNN 每一步都乘 w 再过 tanh，信息很快就被冲淡了。');
+      chartNote.append(keepF === 1 ? '遗忘门是 1 时，记忆一点不少地一直传下去。' : w > 1
+        ? '普通 RNN 的 w 大于 1 时，值不再趋向 0，而是停在一个只由 w 决定的数上：最初写进去的是 1 还是 0.3，最后都停在差不多同一个数，信息的大小被每一步的重写抹掉了（只剩正负号）。图上的数大，不等于它还记得最初写进去的是什么。'
+        : '普通 RNN 每一步都乘 w 再过 tanh，信息很快就被冲淡了。');
       chartNote.append(' 反向传播时也一样：LSTM 从 c(20) 传回 c(1) 只是乘 19 次 f，中间没有矩阵乘法。');
     }
     render(); renderChart();

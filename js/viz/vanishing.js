@@ -28,6 +28,7 @@
   function mount(el) {
     let mode = 'beta', beta = 0.5, scale = 1, gLen = 12, thr = 5;
     const W = 760, H = 250, base = 200, x0 = 70, step = 54;
+    const legend = h('div.vg-legend', h('span.vg-key'), '普通　', h('span.vg-key.is-tiny'), '小于 0.001：几乎收不到梯度　', h('span.vg-key.is-huge'), '大于 1000：梯度爆炸');
     const svg = s('svg', { class: 'viz-svg vg-svg', viewBox: '0 0 ' + W + ' ' + H, role: 'img', 'aria-label': '梯度往回传时每一步的大小' });
     const note = h('div.vg-note');
     const sb = slider('每一步乘的系数 β', { min: 0.3, max: 1.6, step: 0.05, value: beta, format: (v) => fmt(v, 2), onInput: (v) => { beta = v; render(); } });
@@ -39,7 +40,7 @@
     const st = slider('阈值', { min: 1, max: 20, step: 1, value: thr, format: String, onInput: (v) => { thr = v; renderClip(); } });
     el.append(
       h('div.viz-row', segmented([{ value: 'beta', label: '简化：每一步乘 β' }, { value: 'rnn', label: '真实的小 RNN' }], mode, (v) => { mode = v; render(); }, '模式'), ctl),
-      svg, note,
+      svg, legend, note,
       h('h4.vg-h', '梯度裁剪'),
       h('div.vg-clipwrap', clipSvg, h('div', h('div.viz-row', sg, st), clipNote)));
 
@@ -71,6 +72,7 @@
         svg.append(s('text', { x: x + (step - 16) / 2, y: Math.max(14, top - 6), class: 'vg-val', text: sci(v) }));
       });
       svg.append(s('text', { x: W - 20, y: base + 36, class: 'vg-axis', text: '← 梯度从最后一步的损失往回传' }));
+      svg.append(s('text', { x: 6, y: 10, class: 'vg-axis', style: 'text-anchor:start', text: '梯度大小（最后一步 = 1；纵轴是对数刻度，每一格差 100 倍）' }));
       clear(note);
       const first = vals[0];
       if (mode === 'beta') {
@@ -78,19 +80,20 @@
         note.append(beta < 1 ? '每一步都小于 1，越往前越小：远处的词几乎收不到来自这个损失的梯度（梯度消失）。' : beta > 1 ? '每一步都大于 1，越往前越大（梯度爆炸）。' : '恰好是 1 时不增不减，但真实网络里很难一直这样。');
       } else {
         note.append('这是一个 4 维隐状态、sigmoid 激活的小 RNN 实际算出来的 ‖∂J/∂h(k)‖（以最后一步为 1，参数是随机设的，课件外）。传回 h(1) 时是最后一步的 ' + sci(first) + ' 倍。');
-        note.append(first < 1e-3 ? 'sigmoid 的斜率最大才 0.25（第 2.2 章），每往回一步都要乘上它，所以很容易消失。' : first > 1e3 ? 'W_h 放得足够大时，梯度也会爆炸。' : '把 W_h 再放大一些试试，看看要放大多少才不消失。');
+        note.append('sigmoid 的斜率最大才 0.25（第 2.2 章），每往回一步都要乘上它，所以很容易消失。把 W_h 放大也没用：sigmoid 里面的数跟着变大，sigmoid 进入两端平坦的区域，斜率更接近 0，抵消了 W_h 的放大。所以用 sigmoid 的 RNN 几乎总是梯度消失；想看梯度爆炸，切回“简化：每一步乘 β”，把 β 拖到 1 以上。');
       }
     }
 
     function renderClip() {
-      const dir = [0.8, 0.6], R = 11, cx = 15, cy = 235;
+      // the chapter's example direction ĝ = [3, 4] / 5; the picture scales so the longer of g and the threshold fills it
+      const dir = [0.6, 0.8], R = 210 / Math.max(gLen, thr), cx = 15, cy = 235;
       const g = dir.map((d) => d * gLen), r = OPT.clipByNorm(g, thr);
       clear(clipSvg);
       clipSvg.append(s('defs',
         s('marker', { id: 'vg-a1', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: 'vg-head-raw' })),
         s('marker', { id: 'vg-a2', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: 'vg-head-clip' }))));
       clipSvg.append(s('path', { d: 'M' + (cx + thr * R) + ',' + cy + ' A' + thr * R + ',' + thr * R + ' 0 0 0 ' + cx + ',' + (cy - thr * R), class: 'vg-circle' }));
-      clipSvg.append(s('text', { x: cx + thr * R, y: cy + 13, class: 'vg-tick mid', text: '阈值 ' + thr }));
+      clipSvg.append(s('text', { x: cx + 6, y: Math.max(12, cy - thr * R - 6), class: 'vg-tick', style: 'text-anchor:start', text: '阈值 ' + thr }));
       const end = (v) => [cx + v[0] * R, cy - Math.abs(v[1]) * R];
       const [ex, ey] = end(g), [kx, ky] = end(r.grad);
       clipSvg.append(s('line', { x1: cx, y1: cy, x2: ex, y2: ey, class: 'vg-raw', 'marker-end': 'url(#vg-a1)' }));
@@ -98,7 +101,7 @@
       clipSvg.append(s('circle', { cx, cy, r: 3, class: 'vg-origin' }));
       clear(clipNote);
       clipNote.append(r.clipped
-        ? h('span', '‖g‖ = ' + fmt(r.norm, 1) + ' ≥ 阈值 ' + thr + '：把它乘上 ' + thr + ' / ' + fmt(r.norm, 1) + ' = ' + fmt(thr / r.norm, 3) + '，方向不变，长度缩成 ' + thr + '（绿色）。这一步照样往同一个方向走，只是步子小多了。')
+        ? h('span', 'g = [' + fmt(g[0], 2) + ', ' + fmt(g[1], 2) + ']，‖g‖ = ' + fmt(r.norm, 1) + ' ≥ 阈值 ' + thr + '：把它乘上 ' + thr + ' / ' + fmt(r.norm, 1) + ' = ' + fmt(thr / r.norm, 3) + '，方向不变，长度缩成 ' + thr + '（绿色）：[' + fmt(r.grad[0], 2) + ', ' + fmt(r.grad[1], 2) + ']。这一步照样往同一个方向走，只是步子小多了。')
         : h('span', '‖g‖ = ' + fmt(r.norm, 1) + ' 小于阈值 ' + thr + '：不用动它。'));
     }
     render(); renderClip();

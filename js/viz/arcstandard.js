@@ -29,7 +29,8 @@
     btn.LA.title = '栈里第二个词挂到栈顶的词上，第二个词出栈';
     btn.RA.title = '栈顶的词挂到栈里第二个词上，栈顶出栈';
     const hintBtn = button('提示', () => { note = { kind: 'hint' }; render(); });
-    const stepBtn = button('按提示走一步', () => { const t = next(); if (t) act(t); });
+    // from a dead end there is no next oracle move: say so, as the hint button does
+    const stepBtn = button('按提示走一步', () => { const t = alive(state) ? next() : null; if (t) act(t); else { note = { kind: 'hint' }; render(); } });
     const playBtn = button('自动走完', play);
     const undoBtn = button('撤销', undo);
     const resetBtn = button('重来', () => load(key));
@@ -124,7 +125,8 @@
       const x = xs();
       svg.append(s('defs',
         s('marker', { id: 'as-head', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: 'as-arrow' })),
-        s('marker', { id: 'as-head-new', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: 'as-arrow-new' })),
+        s('marker', { id: 'as-head-LA', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: 'as-arrow-la' })),
+        s('marker', { id: 'as-head-RA', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: 'as-arrow-ra' })),
         s('marker', { id: 'as-head-gold', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: 'as-arrow-gold' }))));
       if (showGold) {
         S.heads.forEach((hd, d) => {
@@ -133,10 +135,11 @@
           svg.append(s('path', { d: p.d, class: 'as-gold', 'marker-end': 'url(#as-head-gold)' }));
         });
       }
-      const lastArc = history.length && history[history.length - 1].arc;
+      // the newest arc takes the colour of the action that built it (LEFT-ARC orange, RIGHT-ARC green, as in the formula card)
+      const lastArc = history.length && history[history.length - 1].arc, lastT = history.length ? history[history.length - 1].t : null;
       state.arcs.forEach(([hd, d]) => {
         const p = arcPath(x, hd, d), isNew = lastArc && lastArc[0] === hd && lastArc[1] === d, wrong = S.heads[d] !== hd;
-        svg.append(s('path', { d: p.d, class: 'as-arc' + (isNew ? ' is-new' : '') + (wrong ? ' is-wrong' : ''), 'marker-end': 'url(#' + (isNew ? 'as-head-new' : 'as-head') + ')' }));
+        svg.append(s('path', { d: p.d, class: 'as-arc' + (isNew ? ' is-new-' + lastT : '') + (wrong ? ' is-wrong' : ''), 'marker-end': 'url(#' + (isNew ? 'as-head-' + lastT : 'as-head') + ')' }));
         svg.append(s('text', { x: p.mid, y: p.top + 6, class: 'as-label' + (wrong ? ' is-wrong' : ''), text: wrong ? '✗' : S.labels[d] }));
       });
       const inStack = new Set(state.stack), inBuffer = new Set(state.buffer);

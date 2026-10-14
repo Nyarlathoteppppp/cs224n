@@ -10,6 +10,10 @@
   const SRC = ['il', 'm’', 'a', 'entarté'];
   const TGT_IN = ['<START>', 'he', 'hit', 'me', 'with', 'a', 'pie'];
   const TGT_OUT = ['he', 'hit', 'me', 'with', 'a', 'pie', '<END>'];
+  // test time: a made-up slip at step 5 (“the” for “a”, 课件外) shows that the decoder's own output, right or wrong,
+  // becomes its next input; at training time the input is always the true word
+  const TEST_OUT = ['he', 'hit', 'me', 'with', 'the', 'pie', '<END>'];
+  const TEST_IN = ['<START>'].concat(TEST_OUT.slice(0, 6));
 
   function mount(el) {
     let mode = 'test', k = 0;
@@ -43,22 +47,24 @@
       // hand-over: the bottleneck
       const handed = k > SRC.length;
       svg.append(s('path', { d: 'M' + (ex(3) + 21) + ',' + cy + ' C' + (ex(3) + 50) + ',' + (cy - 60) + ' ' + (dx(0) - 60) + ',' + (cy - 60) + ' ' + (dx(0) - 22) + ',' + cy, class: 's2-arrow bot' + (handed ? '' : ' is-off'), 'marker-end': 'url(#s2-head-bot)' }));
-      svg.append(s('text', { x: (ex(3) + dx(0)) / 2, y: cy - 62, class: 's2-bot-label' + (handed ? '' : ' is-off'), text: '唯一的通道：最后一个隐状态' }));
+      svg.append(s('text', { x: dx(0) - 34, y: cy - 62, style: 'text-anchor:end', class: 's2-bot-label' + (handed ? '' : ' is-off'), text: '唯一的通道：最后一个隐状态' }));
+      svg.append(s('text', { x: dx(0) - 20, y: 46, class: 's2-sub', text: mode === 'test' ? '输入行：上一步自己生成的词（粉色虚线送回来），对错都照用' : '输入行：平行语料里的真实译文，不管模型猜了什么' }));
+      const IN = mode === 'test' ? TEST_IN : TGT_IN, OUT = mode === 'test' ? TEST_OUT : TGT_OUT;
       // decoder
-      TGT_IN.forEach((w, j) => {
+      IN.forEach((w, j) => {
         const step = SRC.length + 1 + j, on = k >= step + 1, cur = k === step + 1;
         if (j > 0) svg.append(arrow(dx(j - 1) + 21, cy, dx(j) - 22, cy, 'dec' + (on ? '' : ' is-off')));
         svg.append(cell(dx(j), cy, 'is-dec' + (cur ? ' is-cur' : ''), on));
         svg.append(arrow(dx(j), cy + 52, dx(j), cy + 20, 'dec' + (on ? '' : ' is-off')));
-        svg.append(s('text', { x: dx(j), y: cy + 68, class: 's2-word' + (on ? '' : ' is-off') + (mode === 'test' && j > 0 ? ' is-fed' : ''), text: w }));
+        svg.append(s('text', { x: dx(j), y: cy + 68, class: 's2-word' + (on ? '' : ' is-off') + (mode === 'test' && j > 0 ? ' is-fed' : '') + (w !== TGT_IN[j] ? ' is-wrong' : ''), text: w }));
         svg.append(arrow(dx(j), cy - 20, dx(j), cy - 44, 'dec' + (on ? '' : ' is-off')));
-        svg.append(s('text', { x: dx(j), y: cy - 52, class: 's2-out' + (on ? '' : ' is-off'), text: TGT_OUT[j] }));
-        if (mode === 'test' && j < TGT_IN.length - 1 && on) {
+        svg.append(s('text', { x: dx(j), y: cy - 52, class: 's2-out' + (on ? '' : ' is-off') + (OUT[j] !== TGT_OUT[j] ? ' is-wrong' : ''), text: OUT[j] }));
+        if (mode === 'test' && j < IN.length - 1 && on) {
           svg.append(s('path', { d: 'M' + (dx(j) + 14) + ',' + (cy - 56) + ' C' + (dx(j) + 34) + ',' + (cy - 56) + ' ' + (dx(j) + 26) + ',' + (cy + 62) + ' ' + (dx(j + 1) - 16) + ',' + (cy + 62), class: 's2-arrow feed', 'marker-end': 'url(#s2-head-feed)' }));
         }
         if (mode === 'train' && on) svg.append(s('text', { x: dx(j), y: cy - 72, class: 's2-loss', text: 'J' + (j + 1) }));
       });
-      if (mode === 'test') svg.append(s('text', { x: dx(6) + 20, y: cy - 75, class: 's2-note-t', text: '每步取概率最大的词（argmax），喂给下一步' }));
+      if (mode === 'test') svg.append(s('text', { x: dx(6) + 20, y: cy - 75, class: 's2-note-t', text: '每步取概率最大的词（argmax），作为下一步的输入' }));
       if (mode === 'train' && k === N) {
         svg.append(s('line', { x1: dx(6) + 10, y1: cy + 92, x2: ex(0) - 10, y2: cy + 92, class: 's2-arrow back', 'marker-end': 'url(#s2-head-back)' }));
         svg.append(s('text', { x: (ex(0) + dx(6)) / 2, y: cy + 108, class: 's2-back-label', text: 'J = (J1 + … + J7) / 7，从解码器一直反向传播到编码器（端到端）' }));
@@ -71,9 +77,10 @@
       else if (k === SRC.length + 1) { title = '交接：瓶颈'; text = '编码器最后一个隐状态，作为解码器的初始隐状态。整句法语的所有信息，都只能通过这一个向量交给解码器。课件把它叫作“瓶颈”。'; }
       else {
         const j = k - SRC.length - 2;
-        title = '解码器第 ' + (j + 1) + ' 步：输入 “' + TGT_IN[j] + '”，输出 “' + TGT_OUT[j] + '”';
+        const IN = mode === 'test' ? TEST_IN : TGT_IN, OUT = mode === 'test' ? TEST_OUT : TGT_OUT;
+        title = '解码器第 ' + (j + 1) + ' 步：输入 “' + IN[j] + '”，输出 “' + OUT[j] + '”';
         text = mode === 'test'
-          ? (j === 0 ? '第一个输入是表示“开始”的 <START>。' : '输入的是上一步自己生成的词。') + '解码器是一个语言模型，但它的起点是法语的编码，所以叫条件语言模型。' + (TGT_OUT[j] === '<END>' ? '生成 <END>，翻译结束。' : '')
+          ? (j === 0 ? '第一个输入是表示“开始”的 <START>。' : OUT[j - 1] !== TGT_OUT[j - 1] ? '输入的是上一步自己生成的词，哪怕它是错的：上一步把 a 写成了 the（课件外的示意），这一步只能接着它往下写。' : OUT[j] !== TGT_OUT[j] ? '这一步生成错了：该是 a，却写成了 the（课件外的示意）。测试时没有正确答案可看，这个错词会成为下一步的输入。' : '输入的是上一步自己生成的词。') + '解码器是一个语言模型，但它的起点是法语的编码，所以叫条件语言模型。' + (TGT_OUT[j] === '<END>' ? '生成 <END>，翻译结束。' : '')
           : '训练时，输入的是平行语料里真实的英文词（teacher forcing）；输出处算一个损失 J' + (j + 1) + ' = −log P(真实的 “' + TGT_OUT[j] + '”)。' + (j === TGT_IN.length - 1 ? '七个损失取平均，就是这一句的损失。' : '');
       }
       cap.append(h('div.s2-cap-title', title), h('div.s2-cap-text', text));

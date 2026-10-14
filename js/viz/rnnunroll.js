@@ -46,6 +46,7 @@
       for (let i = 0; i < n; i++) {
         const { grads } = RNN.bptt(p, SENT);
         Object.keys(grads).forEach((k) => {
+          if (k === 'h0') return;   // h⁽⁰⁾ stays all zeros: it is not one of the parameters θ
           if (Array.isArray(p[k][0])) p[k] = p[k].map((row, a) => row.map((x, b) => x - 1.0 * grads[k][a][b]));
           else p[k] = p[k].map((x, a) => x - 1.0 * grads[k][a]);
         });
@@ -58,7 +59,8 @@
       const n = vals.length, total = n * w;
       vals.forEach((v, i) => {
         const a = Math.max(-1, Math.min(1, v));
-        g.append(s('rect', { x: x - total / 2 + i * w, y, width: w - 2, height: w - 2, rx: 2, class: 'ru-cell', style: 'fill:' + (a >= 0 ? 'var(--c-blue)' : 'var(--c-red)') + ';fill-opacity:' + (0.15 + 0.85 * Math.abs(a)) }));
+        const zero = Math.abs(a) < 1e-9;   // exactly 0 is neither blue (positive) nor red (negative)
+        g.append(s('rect', { x: x - total / 2 + i * w, y, width: w - 2, height: w - 2, rx: 2, class: 'ru-cell', style: 'fill:' + (zero ? 'var(--surface-2)' : a > 0 ? 'var(--c-blue)' : 'var(--c-red)') + ';fill-opacity:' + (zero ? 1 : 0.15 + 0.85 * Math.abs(a)) }));
       });
       return g;
     }
@@ -88,7 +90,7 @@
       ['wh', 'we', 'u'].forEach((k) => defs.append(s('marker', { id: 'ru-head-' + k, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: 'ru-head-' + k }))));
       svg.append(defs);
       // h(0)
-      svg.append(sup('h', 0, X0, 280, 'ru-name mid'), cells(p.h0, X0, 240, 14, 'is-h'));
+      svg.append(sup('h', 0, X0, 280, 'ru-name mid'), s('text', { x: X0, y: 296, class: 'ru-name small mid', text: '全 0' }), cells(p.h0, X0, 240, 14, 'is-h'));
       r.steps.forEach((st, t) => {
         const x = X[t], on = t < shown, cur = t === shown - 1;
         const g = s('g', { class: 'ru-step' + (on ? '' : ' is-off') + (cur ? ' is-cur' : '') });
@@ -107,13 +109,17 @@
         const bw = 12, base = 168, top = 40, chartW = VOCAB.length * bw;
         const chart = s('g', { class: 'ru-chart' });
         chart.append(s('line', { x1: x - chartW / 2, y1: base, x2: x + chartW / 2, y2: base, class: 'ru-axis' }));
+        // 1/8: what guessing uniformly among the 8 words would give
+        chart.append(s('line', { x1: x - chartW / 2, y1: base - (base - top) / 8, x2: x + chartW / 2, y2: base - (base - top) / 8, class: 'ru-uniform' }));
         st.yhat.forEach((pv, w) => {
           const hgt = (base - top) * pv;
           chart.append(s('rect', { x: x - chartW / 2 + w * bw + 1, y: base - hgt, width: bw - 2, height: hgt, class: 'ru-bar' + (mode === 'train' && w === st.target ? ' is-target' : '') }));
         });
         if (mode === 'train') {
           chart.append(s('text', { x, y: 28, class: 'ru-target', text: '真实下一个词：' + VOCAB[st.target] }));
-          chart.append(s('text', { x, y: 14, class: 'ru-loss', text: 'P = ' + fmt(st.yhat[st.target], 2) + '，J(' + (t + 1) + ') = ' + fmt(st.loss, 2) }));
+          const lt = s('text', { x, y: 14, class: 'ru-loss' });
+          lt.append(document.createTextNode('P = ' + fmt(st.yhat[st.target], 2) + '，J'), s('tspan', { 'baseline-shift': 'super', 'font-size': '9' }, '(' + (t + 1) + ')'), document.createTextNode(' = ' + fmt(st.loss, 2)));
+          chart.append(lt);
         }
         g.append(chart);
         svg.append(g);
@@ -125,7 +131,7 @@
       cap.append(h('div.ru-cap-title', '第 ' + shown + ' 步：输入 “' + VOCAB[st.input] + '”'),
         h('div.ru-cap-text', { html: texHTML('h^{(' + shown + ')} = \\sigma\\big(W_h\\,h^{(' + (shown - 1) + ')} + W_e\\,e^{(' + shown + ')} + b_1\\big)') + '：把上一步的隐状态和这个词的嵌入合起来。' + texHTML('\\hat y^{(' + shown + ')} = \\mathrm{softmax}(U\\,h^{(' + shown + ')} + b_2)') + ' 是对下一个词的预测（上面的 8 根柱子，顺序是 ' + VOCAB.join('、') + '）。' }),
         mode === 'train'
-          ? h('div.ru-cap-text', '真实的下一个词是 “' + VOCAB[st.target] + '”，模型给了它 ' + fmt(st.yhat[st.target], 3) + '，这一步的损失 J(' + shown + ') = −log ' + fmt(st.yhat[st.target], 3) + ' = ' + fmt(st.loss, 3) + '。下一步输入的是真实的词 “' + VOCAB[st.target] + '”，不管模型猜了什么（teacher forcing）。')
+          ? h('div.ru-cap-text', '真实的下一个词是 “' + VOCAB[st.target] + '”，模型给了它 ' + fmt(st.yhat[st.target], 3) + '，这一步的损失 J⁽' + shown + '⁾ = −log ' + fmt(st.yhat[st.target], 3) + ' = ' + fmt(st.loss, 3) + '。下一步输入的是真实的词 “' + VOCAB[st.target] + '”，不管模型猜了什么（teacher forcing）。')
           : h('div.ru-cap-text', { html: '每一步用的都是同一组 ' + texHTML('W_h') + '、' + texHTML('W_e') + '、' + texHTML('U') + '（图里同色的箭头）。句子再长，也只是把这一步多重复几次，参数一个也不会多。' }));
       if (mode === 'train') {
         clear(stat);

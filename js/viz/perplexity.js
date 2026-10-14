@@ -30,10 +30,12 @@
       ps.forEach((p, i) => table.append(h('tr', h('td', WORDS[i]), h('td', fmt(p, 3)), h('td', fmt(1 / p, 2)), h('td', fmt(-Math.log(p), 3)))));
       const J = ps.reduce((s, p) => s - Math.log(p), 0) / ps.length, ppl = P.perplexity(ps);
       const prod = ps.reduce((s, p) => s / p, 1);
+      // beyond 10⁴ the product is easier to read as m × 10^e (100 guesses of 1/100 give 10⁸)
+      const bigTex = (v) => { if (v < 1e4) return fmt(v, 1); const e = Math.floor(Math.log10(v)); return fmt(v / Math.pow(10, e), 2) + '\\times 10^{' + e + '}'; };
       clear(sum);
       sum.append(
         h('div', { html: '平均交叉熵 ' + texHTML('J = \\tfrac{1}{4}\\sum_t (-\\ln P_t) = ' + fmt(J, 3)) }),
-        h('div', { html: '困惑度 ' + texHTML('e^{J} = ' + fmt(ppl, 3)) + '，也等于 ' + texHTML('\\big(\\prod_t 1/P_t\\big)^{1/4} = (' + fmt(prod, 1) + ')^{1/4} = ' + fmt(ppl, 3)) }),
+        h('div', { html: '困惑度 ' + texHTML('e^{J} = ' + fmt(ppl, 3)) + '，也等于 ' + texHTML('\\big(\\prod_t 1/P_t\\big)^{1/4} = (' + bigTex(prod) + ')^{1/4} = ' + fmt(ppl, 3)) }),
       );
       clear(die);
       die.append(h('span.pp-die-icon', '🎲'), h('span', '平均来说，模型每一步就像在 ', h('b', fmt(ppl, 1)), ' 个面的骰子里挑一个面' + (mode === 'uniform' ? '：在 ' + k + ' 个词里均匀乱猜，困惑度正好是 ' + k + '。' : '。概率给得越高，骰子的面越少，困惑度越低。')));

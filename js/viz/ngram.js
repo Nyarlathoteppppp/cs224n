@@ -8,11 +8,12 @@
   const { h, slider, button, segmented, fmt } = C.dom;
   const NG = C.core.ngram;
 
-  // L04 p14–p17: top five next words after each context (the rest of the mass is “其他词”)
+  // L04 p14–p17: top five next words after each context (the rest of the mass is “其他词”). Ordered [word, p] pairs:
+  // as object keys, “18” would jump to the front.
   const STEPS = [
-    { ctx: 'today the', dist: { company: 0.153, bank: 0.153, price: 0.077, italian: 0.039, emirate: 0.039 }, pick: 'price' },
-    { ctx: 'today the price', dist: { of: 0.308, for: 0.050, it: 0.046, to: 0.046, is: 0.031 }, pick: 'of' },
-    { ctx: 'today the price of', dist: { the: 0.072, 18: 0.043, oil: 0.043, its: 0.036, gold: 0.018 }, pick: 'gold' },
+    { ctx: 'today the', dist: [['company', 0.153], ['bank', 0.153], ['price', 0.077], ['italian', 0.039], ['emirate', 0.039]], pick: 'price' },
+    { ctx: 'today the price', dist: [['of', 0.308], ['for', 0.050], ['it', 0.046], ['to', 0.046], ['is', 0.031]], pick: 'of' },
+    { ctx: 'today the price of', dist: [['the', 0.072], ['18', 0.043], ['oil', 0.043], ['its', 0.036], ['gold', 0.018]], pick: 'gold' },
   ];
   const FULL = 'today the price of gold per ton , while production of shoe lasts and shoe industry , the bank intervened just after it considered and rejected an imf demand to rebuild depleted european stocks , sept 30 end primary 76 cts a share .';
 
@@ -43,7 +44,7 @@
     }
     const reset = button('恢复课件的数', () => { ctx = 1000; books = 400; exams = 100; sCtx.set(ctx); sBooks.set(books); sExams.set(exams); render(); });
     const pane = h('div.ng-pane',
-      h('p.viz-note', '语料里数出的次数（课件的原数：1000、400、100）。拖动滑块，看条件概率怎么变；把某个计数拖到 0 试试。'),
+      h('p.viz-note', '语料里数出的次数（课件的原数：1000、400、100）。拖动滑块，看条件概率怎么变；把某个计数拖到 0 试试。后面接 books 和接 exams 的次数加起来，不能超过前文出现的次数，所以拖动时另一个计数可能被自动调小。'),
       h('div.ng-sliders', sCtx, sBooks, sExams, reset), out, note);
     function render() {
       const table = { 'students opened their': ctx, 'students opened their books': books, 'students opened their exams': exams };
@@ -98,19 +99,17 @@
       text.innerHTML = '';
       ctxWords.forEach((w, i) => text.append(h('span.ng-w' + (i >= ctxWords.length - 2 ? '.is-ctx' : ''), w)));
       text.append(h('span.ng-blank', '___'));
-      const other = 1 - Object.values(st.dist).reduce((a, b) => a + b, 0);
-      Object.entries(st.dist).forEach(([w, p]) => bars.append(bar(w, p, w === st.pick ? 'is-a' : '')));
+      const other = 1 - st.dist.reduce((a, d) => a + d[1], 0);
+      st.dist.forEach(([w, p]) => bars.append(bar(w, p, w === st.pick ? 'is-a' : '')));
       bars.append(bar('其他词', other, 'is-c'));
       note.append('三元模型只看最近两个词：“' + ctxWords.slice(-2).join(' ') + '”。课件这一步抽到的是 “' + st.pick + '”。');
     }
     function simulate() {
-      const st = words(), dist = Object.assign({}, st.dist);
-      dist['其他词'] = 1 - Object.values(st.dist).reduce((a, b) => a + b, 0);
-      const tally = {};
-      Object.keys(dist).forEach((w) => { tally[w] = 0; });
-      for (let i = 0; i < 100; i++) tally[NG.sample(dist, Math.random())] += 1;
+      const st = words(), pairs = st.dist.concat([['其他词', 1 - st.dist.reduce((a, d) => a + d[1], 0)]]);
+      const dist = Object.fromEntries(pairs), tally = new Map(pairs.map(([w]) => [w, 0]));
+      for (let i = 0; i < 100; i++) { const w = NG.sample(dist, Math.random()); tally.set(w, tally.get(w) + 1); }
       sim.innerHTML = '';
-      sim.append(h('span.viz-note', '100 次里各抽到几次：'), ...Object.entries(tally).map(([w, n]) => h('span.ng-chip', w + ' × ' + n)));
+      sim.append(h('span.viz-note', '100 次里各抽到几次：'), ...[...tally].map(([w, n]) => h('span.ng-chip', w + ' × ' + n)));
       sim.append(h('span.viz-note', '　概率大的词抽到得多，但概率小的词也有机会。'));
     }
     render();
