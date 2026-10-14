@@ -59,7 +59,7 @@
             '',
             '$$W = \\begin{bmatrix} 0.5 & -1 & 0.2 \\\\ 1 & 0.3 & -0.5 \\end{bmatrix},\\quad b = \\begin{bmatrix} 0.1 \\\\ -0.2 \\end{bmatrix},\\quad u = \\begin{bmatrix} 2 \\\\ -1 \\end{bmatrix},\\quad x = \\begin{bmatrix} 1 \\\\ 2 \\\\ -1 \\end{bmatrix}$$',
             '',
-            '1. 前向：$z = Wx + b = [-1.6,\\ 1.9]$，$h = \\tanh(z) \\approx [-0.922,\\ 0.956]$，$s = u^\\top h \\approx -2.800$。',
+            '1. 前向（从输入一步步算到输出，第 2.3 章说过）：$z = Wx + b = [-1.6,\\ 1.9]$，$h = \\tanh(z) \\approx [-0.922,\\ 0.956]$，$s = u^\\top h \\approx -2.800$。',
             '2. 激活函数的导数：$f\'(z) = 1 - \\tanh^2(z) \\approx [0.151,\\ 0.086]$。',
             '3. $\\delta = u^\\top \\odot f\'(z) \\approx \\begin{bmatrix} 2\\times 0.151 & -1\\times 0.086 \\end{bmatrix} = \\begin{bmatrix} 0.301 & -0.086 \\end{bmatrix}$（一行）。',
             '',
@@ -97,7 +97,7 @@
             '',
             '$\\delta$ 叫**上游梯度**（“上游”指靠近输出 $s$ 的一侧；第 2.5 章会看到梯度从输出往输入一层层传下来），也叫**误差信号**：得分 $s$ 对 $z$ 有多敏感。算 $b$ 的梯度时已经算好了，算 $W$ 时直接拿来用：$\\frac{\\partial s}{\\partial W} = \\delta\\,\\frac{\\partial z}{\\partial W}$。这就是第 2.5 章“反向传播”的雏形：公共的部分只算一次。',
             '',
-            '剩下的 $\\partial z/\\partial W$ 有点麻烦：$z$ 是向量，$W$ 是矩阵，严格的“导数”是一个三维的数组（$n$ 个输出、$n\\times m$ 个输入，一张二维的表放不下，要摞成一叠表）。课件的办法是**一个一个权重看**：$W_{ij}$ 只出现在 $z_i = \\sum_k W_{ik}x_k + b_i$ 里，而且只和 $x_j$ 相乘。所以它只影响 $z_i$，而且 $\\partial z_i/\\partial W_{ij} = x_j$。于是',
+            '剩下的 $\\partial z/\\partial W$ 有点麻烦：$z$ 是向量，$W$ 是矩阵，严格的“导数”是一个三维的数表（像一叠摞起来的表格：$n$ 个输出、$n\\times m$ 个输入，一张二维的表放不下，要摞成一叠表）。课件的办法是**一个一个权重看**：$W_{ij}$ 只出现在 $z_i = \\sum_k W_{ik}x_k + b_i$ 里，而且只和 $x_j$ 相乘。所以它只影响 $z_i$，而且 $\\partial z_i/\\partial W_{ij} = x_j$。于是',
             '',
             '$$\\frac{\\partial s}{\\partial W_{ij}} = \\delta_i\\, x_j$$',
             '',
@@ -108,7 +108,7 @@
             latex: String.raw`\frac{\partial s}{\partial W} \;=\; \htmlClass{fx-delta}{\delta^\top}\,\htmlClass{fx-x}{x^\top} \;=\; \begin{bmatrix} \htmlClass{fx-delta}{\delta_1} \\ \vdots \\ \htmlClass{fx-delta}{\delta_n} \end{bmatrix}\begin{bmatrix} \htmlClass{fx-x}{x_1} & \cdots & \htmlClass{fx-x}{x_m} \end{bmatrix} \;=\; \begin{bmatrix} \delta_1x_1 & \cdots & \delta_1x_m \\ \vdots & \ddots & \vdots \\ \delta_nx_1 & \cdots & \delta_nx_m \end{bmatrix}`,
             parts: [
               { key: 'delta', label: '上游梯度（误差信号），复用', color: 'red', text: '$\\delta = u^\\top\\odot f\'(z)$，在上面的推导里是一行，转置成一列。第 $i$ 个数表示 $s$ 对 $z_i$ 有多敏感。' },
-              { key: 'x', label: '本层的输入（局部输入信号）', color: 'blue', text: '$x$ 是这一层接收的输入，转置成一行。$W_{ij}$ 把 $x_j$ 送进 $z_i$，所以它的梯度就是 $\\delta_i x_j$。' },
+              { key: 'x', label: '本层的输入（课件叫它“局部输入信号”：这个权重在本层直接接收到的那个输入值）', color: 'blue', text: '$x$ 是这一层接收的输入，转置成一行。$W_{ij}$ 把 $x_j$ 送进 $z_i$，所以它的梯度就是 $\\delta_i x_j$。' },
             ],
           }],
           math: [

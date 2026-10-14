@@ -6,7 +6,8 @@
   const { h, slider, texHTML } = C.dom;
   const L = C.core.linalg;
 
-  const DELTA = [0.3, -0.1, 0.5, 0.2, -0.4], X = [1, 2, -1, 0.5, 3, -2];
+  // δ₁, δ₂ and x₁…x₃ are the chapter's example (δ ≈ [0.301, −0.086], x = [1, 2, −1]); the rest are made up (课件外)
+  const DELTA = [0.301, -0.086, 0.5, 0.2, -0.4], X = [1, 2, -1, 0.5, 3, -2];
   const f = (v) => (Math.round(v * 100) / 100 || 0).toString().replace('-', '−');
 
   function mount(el) {
@@ -14,7 +15,8 @@
     const shapes = h('table.sc-table'), grid = h('div.sc-grid'), note = h('p.sc-note');
     const sn = slider('隐藏层大小 n', { min: 1, max: 5, step: 1, value: n, format: String, onInput: (v) => { n = v; sel = [0, 0]; render(); } });
     const sm = slider('输入长度 m', { min: 1, max: 6, step: 1, value: m, format: String, onInput: (v) => { m = v; sel = [0, 0]; render(); } });
-    el.append(h('div.viz-row', sn, sm), shapes, h('div.sc-head', { html: '外积 ' + texHTML('\\partial s/\\partial W = \\delta^\\top x^\\top') + '：点一个格子' }), grid, note);
+    el.append(h('div.viz-row', sn, sm), shapes, h('div.sc-head', { html: '外积 ' + texHTML('\\partial s/\\partial W = \\delta^\\top x^\\top') + '：点一个格子' }),
+      h('p.viz-note', 'n = 2、m = 3 时就是上一节的例子：δ ≈ [0.301, −0.086]（这里显示两位小数），x = [1, 2, −1]。把 n、m 调大后多出来的数是编的（课件外）。'), grid, note);
     function render() {
       const rows = [
         ['W', n + ' × ' + m, '参数'], ['x', m + ' × 1', '输入'], ['z = Wx + b', n + ' × 1', '（' + n + ' × ' + m + '）（' + m + ' × 1）→ ' + n + ' × 1'],

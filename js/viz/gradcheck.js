@@ -15,7 +15,8 @@
     if (v === 0) return '0';
     let e = Math.floor(Math.log10(Math.abs(v))), m = v / Math.pow(10, e);
     if (Math.abs(m) >= 9.95) { m /= 10; e += 1; }
-    return e === 0 ? m.toFixed(1) : m.toFixed(1) + ' × 10' + sup(e);
+    // 1 ≤ |v| < 100 reads better as a plain number (13, not 1.3 × 10¹)
+    return e === 0 || e === 1 ? String(+v.toPrecision(2)) : m.toFixed(1) + ' × 10' + sup(e);
   }
   const estimates = (hv) => ({ one: D.derivative(f, X0, hv, 'forward'), two: D.derivative(f, X0, hv) });
   const P_MAX = 11, LOG_MIN = -13, LOG_MAX = 1;
@@ -77,7 +78,7 @@
       s('polyline', { points: ptsTwo.join(' '), class: 'gc-two' }),
       s('text', { x: PX(2.5), y: PY(0.3), class: 'gc-lab one' }, '单侧：误差与 h 成正比'),
       s('text', { x: PX(0.3), y: PY(-9), class: 'gc-lab two' }, '双侧：误差与 h² 成正比'),
-      s('text', { x: PX(10.8), y: PY(-1.2), class: 'gc-lab note', 'text-anchor': 'end' }, 'h 太小：舍入误差让误差回升'),
+      s('text', { x: PX(10.8), y: PY(-1.2), class: 'gc-lab note', 'text-anchor': 'end' }, 'h 太小：相减丢掉有效数字，误差回升'),
       s('text', { x: PX(10.8), y: PY(-2.2), class: 'gc-lab note', 'text-anchor': 'end' }, '（课件外）'),
       s('text', { x: (R.l + W - R.r) / 2, y: H - 4, class: 'gc-axis-label' }, 'h（越往右越小）'),
       marker, mOne, mTwo);
@@ -119,9 +120,11 @@
       mOne.setAttribute('cx', PX(p)); mOne.setAttribute('cy', PY(logErr(e.one)));
       mTwo.setAttribute('cx', PX(p)); mTwo.setAttribute('cy', PY(logErr(e.two)));
 
-      rows.one[0].textContent = e.one.toFixed(10); rows.one[1].textContent = sci(Math.abs(e.one - TRUE));
-      rows.two[0].textContent = e.two.toFixed(10); rows.two[1].textContent = sci(Math.abs(e.two - TRUE));
-      note.textContent = p <= 5
+      // up to 10 decimals, without trailing zeros: 61, 48.0000300001
+      rows.one[0].textContent = String(+e.one.toFixed(10)); rows.one[1].textContent = sci(Math.abs(e.one - TRUE));
+      rows.two[0].textContent = String(+e.two.toFixed(10)); rows.two[1].textContent = sci(Math.abs(e.two - TRUE));
+      // from about h = 10^−4.3 on, the two-sided error stops shrinking: rounding takes over
+      note.textContent = p <= 4.3
         ? 'h 每缩小 10 倍，单侧差分的误差缩小约 10 倍，双侧差分的误差缩小约 100 倍。所以同一个 h 下，双侧准得多。'
         : 'h 太小了：计算机只保留大约 16 位有效数字，f(x+h) 和 f(x−h) 几乎一样，一相减有效数字就丢了，误差反而回升（课件外）。这也是 h 一般取 10⁻⁴ 到 10⁻⁵、不取更小的原因之一。';
     }

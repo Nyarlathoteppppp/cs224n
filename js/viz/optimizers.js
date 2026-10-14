@@ -19,15 +19,23 @@
     { key: 'adam', label: 'Adam', cls: 'adam' },
   ];
 
-  function run(key, lr, lrAdam, beta1) {
+  /* Each step's gradient gets the same seeded random error for all three methods: the “one small batch of data”
+   * of SGD (第 1.4 章). Without it, plain SGD is the steadiest of the three on this bowl. */
+  const SIGMA = 6;
+  function noiseFor(seed) {
+    const rand = O.rng(seed), out = [];
+    for (let i = 0; i < STEPS; i++) out.push([O.gaussian(rand) * SIGMA, O.gaussian(rand) * SIGMA]);
+    return out;
+  }
+  function run(key, lr, lrAdam, beta1, noise) {
     let p = START.slice(), st = {};
     const path = [p.slice()];
     for (let i = 0; i < STEPS; i++) {
-      const g = grad(p);
+      const g0 = grad(p), g = noise ? [g0[0] + noise[i][0], g0[1] + noise[i][1]] : g0;
       let r;
       if (key === 'sgd') r = O.sgd(p, g, lr);
       else if (key === 'mom') r = O.momentum(st, p, g, lr, beta1);
-      else r = O.adam(st, p, g, lrAdam, beta1, 0.99);
+      else r = O.adam(st, p, g, lrAdam, 0.9, 0.99);   // Adam keeps β₁ = 0.9: in this simplified Adam the first step is α(1 − β₁)/0.1
       p = r.theta; st = r.state || {};
       path.push(p.slice());
       if (!isFinite(p[0]) || Math.abs(p[0]) + Math.abs(p[1]) > 1e3) break;
@@ -36,7 +44,7 @@
   }
 
   function mount(el) {
-    let lr = 0.05, lrAdam = 0.15, beta1 = 0.9;
+    let lr = 0.05, lrAdam = 0.3, beta1 = 0.9, noisy = true, seed = 7;
     const contours = [0.5, 2, 5, 10, 18, 30].map((c) => {
       const pts = [];
       for (let i = 0; i <= 120; i++) {
@@ -57,17 +65,29 @@
     const table = h('div.op-table');
     const s1 = slider('SGD / 动量的学习率 α', { min: 0.005, max: 0.13, step: 0.005, value: lr, format: (v) => v.toFixed(3), onInput: (v) => { lr = v; render(); } });
     const s2 = slider('Adam 的学习率 α', { min: 0.02, max: 0.5, step: 0.01, value: lrAdam, format: (v) => v.toFixed(2), onInput: (v) => { lrAdam = v; render(); } });
-    const s3 = slider('β₁', { min: 0, max: 0.99, step: 0.01, value: beta1, format: (v) => v.toFixed(2), onInput: (v) => { beta1 = v; render(); } });
-    el.append(h('div.viz-row', s1, s2, s3), legend, svg, table,
-      h('p.viz-note', '碗在一个方向上很陡（等高线挤在一起），另一个方向很平缓。陡的方向梯度大，SGD 容易在那个方向上来回跳；平缓的方向梯度小，SGD 走得很慢。Adam 的学习率和 SGD 的含义不同（它的步长大致就是 α），所以单独调。也因为步长大致固定，Adam 走到谷底附近不会自动放慢，会在附近徘徊，所以这里它最后的损失反而偏大；把 Adam 的 α 调小就能看到它贴近谷底。实际训练中常配合学习率逐渐变小（课件外）。'));
+    const s3 = slider('动量的 β₁', { min: 0, max: 0.99, step: 0.01, value: beta1, format: (v) => v.toFixed(2), onInput: (v) => { beta1 = v; render(); } });
+    const noiseBox = h('input', { type: 'checkbox', checked: true });
+    noiseBox.addEventListener('change', () => { noisy = noiseBox.checked; render(); });
+    const reseed = C.dom.button('换一批随机误差', () => { seed += 1; render(); });
+    const status = h('p.viz-note.op-status');
+    el.append(h('div.viz-row', s1, s2, s3), h('div.viz-row', h('label.as-check', noiseBox, ' 每一步的梯度带随机误差（模拟每次只看一小批数据，编的，课件外）'), reseed), legend, svg, table, status,
+      h('p.viz-note', '碗在一个方向上很陡（等高线挤在一起），另一个方向很平缓。Adam 的学习率和 SGD 的含义不同（它每步大约走 α 那么远），所以单独调；它到了谷底附近不会自动放慢，会在附近徘徊，实际训练中常配合学习率逐渐变小（课件外）。'));
     function render() {
       table.innerHTML = '';
+      const noise = noisy ? noiseFor(seed) : null;
+      reseed.disabled = !noisy;
       METHODS.forEach((m) => {
-        const path = run(m.key, lr, lrAdam, beta1);
+        const path = run(m.key, lr, lrAdam, beta1, noise);
         lines[m.key].setAttribute('points', path.map((p) => X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(' '));
-        const last = path[path.length - 1], loss = f(last);
-        table.append(h('span.op-row.' + m.cls, m.label + '：走 ' + (path.length - 1) + ' 步后损失 ' + (isFinite(loss) && loss < 1e4 ? loss.toFixed(4) : '发散')));
+        const tail = path.slice(-20).map(f), avg = tail.reduce((a, b) => a + b, 0) / tail.length;
+        let len = 0;
+        for (let i = 1; i < path.length; i++) len += Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]);
+        table.append(h('span.op-row.' + m.cls, m.label + '：最后 20 步的平均损失 ' + (isFinite(avg) && avg < 1e4 ? avg.toFixed(2) : '发散') +
+          '，路线总长 ' + (isFinite(len) && len < 1e4 ? len.toFixed(1) : '—')));
       });
+      status.textContent = noisy
+        ? '路线越长、越弯，说明被误差推得越厉害。SGD 每一步都完全听这一次的梯度；动量把最近许多步平均起来，误差互相抵消，路线短而平稳。'
+        : '没有随机误差时，SGD 在这只碗上反而最稳；动量像有惯性的球，会冲过谷底再荡回来。把“SGD / 动量的学习率”调到 0.065 以上，SGD 也开始在陡的方向上来回跳。';
     }
     render();
   }

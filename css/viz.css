@@ -314,6 +314,7 @@
 /* why-nonlinear: 为什么必须有非线性 */
 .wl-layout { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 16px; align-items: center; }
 .wl-yes { fill: color-mix(in srgb, var(--c-blue) 18%, var(--surface)); } .wl-no { fill: var(--surface); }
+.wl-line { stroke: var(--c-blue); stroke-width: 1.6; }
 .wl-axis { stroke: var(--border-strong); }
 .wl-pyes { fill: var(--c-blue); stroke: var(--c-blue); stroke-width: 2; } .wl-pno { fill: var(--surface); stroke: var(--c-blue); stroke-width: 2.5; }
 .wl-pyes.wrong, .wl-pno.wrong { stroke: var(--c-red); stroke-width: 4; }

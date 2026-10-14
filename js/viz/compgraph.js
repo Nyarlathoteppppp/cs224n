@@ -191,7 +191,7 @@
 
       [...stageBar.children].forEach((c, i) => { c.classList.toggle('is-current', i === cur.stage); c.classList.toggle('is-done', i < cur.stage); });
       dots.forEach((b, i) => { b.classList.toggle('is-current', i === step); b.classList.toggle('is-done', i < step); });
-      counter.textContent = '第 ' + step + ' / ' + (STEPS.length - 1) + ' 步';
+      counter.textContent = step === 0 ? '准备（共 ' + (STEPS.length - 1) + ' 步）' : '第 ' + step + ' / ' + (STEPS.length - 1) + ' 步';
       prev.disabled = step === 0;
       next.disabled = step === STEPS.length - 1;
 

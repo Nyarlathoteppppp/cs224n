@@ -11,7 +11,8 @@
     tanh: { label: 'tanh', f: NN.activations.tanh.f, df: NN.activations.tanh.df, yd: [-1.2, 1.2] },
     relu: { label: 'ReLU', f: NN.activations.relu.f, df: NN.activations.relu.df, yd: [-1, 4] },
     leaky: { label: 'leaky ReLU（k = 0.1）', f: (z) => NN.activations.leakyRelu.f(z, 0.1), df: (z) => NN.activations.leakyRelu.df(z, 0.1), yd: [-1, 4] },
-    gelu: { label: 'GELU', f: NN.activations.gelu.f, df: (z) => CAL.derivative(NN.activations.gelu.f, z, 1e-5), yd: [-1, 4] },
+    // the form in the chapter's table, z·σ(1.702z), so the numbers can be checked against it
+    gelu: { label: 'GELU', f: NN.activations.geluLogistic.f, df: (z) => CAL.derivative(NN.activations.geluLogistic.f, z, 1e-5), yd: [-1, 4] },
     step: { label: '阈值函数', f: (z) => (z > 0 ? 1 : 0), df: () => 0, yd: [-0.2, 1.2] },
   };
   const W = 300, H = 210, P = { l: 32, r: 10, t: 10, b: 24 }, XD = [-4, 4];
@@ -47,8 +48,15 @@
       const F = FNS[key];
       draw(left, F.f, F.yd, z, 'f');
       draw(right, F.df, [-0.2, 1.2], z, 'df');
-      read.innerHTML = F.label + '：f(' + z.toFixed(2).replace('-', '−') + ') = <b>' + f2(F.f(z)) + '</b>，斜率 f′ = <b>' + f2(F.df(z)) + '</b>' +
-        (key === 'step' ? '。斜率处处是 0：梯度下降不知道往哪边走。' : Math.abs(F.df(z)) < 0.02 ? '。这里几乎是平的，梯度传到这里几乎就没了。' : '');
+      const at0 = Math.abs(z) < 1e-9, kinked = key === 'relu' || key === 'leaky' || key === 'step';
+      const slope = at0 && kinked ? '—' : f2(F.df(z));
+      let note = '';
+      if (key === 'step') note = at0 ? '。门槛处斜率没有定义；其他地方斜率都是 0：梯度下降不知道往哪边走。' : '。斜率处处是 0：梯度下降不知道往哪边走。';
+      else if (key === 'relu' && at0) note = '。这一点左右两边的斜率不同（左边 0，右边 1），斜率没有定义；程序里按惯例取 0（课件外）。';
+      else if (key === 'relu' && z < 0) note = '。斜率正好是 0：这一侧是“死区”，梯度传到这里就断了。';
+      else if (key === 'leaky' && at0) note = '。这一点左右两边的斜率不同（左边 0.1，右边 1），斜率没有定义。';
+      else if (Math.abs(F.df(z)) < 0.02) note = '。这里几乎是平的，梯度传到这里几乎就没了。';
+      read.innerHTML = F.label + '：f(' + z.toFixed(2).replace('-', '−') + ') = <b>' + f2(F.f(z)) + '</b>，斜率 f′ = <b>' + slope + '</b>' + note;
     }
     render();
   }

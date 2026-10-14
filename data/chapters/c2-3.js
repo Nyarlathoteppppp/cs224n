@@ -113,7 +113,7 @@
           example: [
             '一层 ReLU 网络：$W = \\begin{bmatrix} 1 & -1 \\\\ 2 & 0.5 \\end{bmatrix}$，$b = [0,\\ -1]$，$x = [1,\\ 2]$，$h = \\mathrm{ReLU}(Wx + b)$。',
             '',
-            '1. 前向：$z = Wx + b = [1 - 2 + 0,\\ \\ 2 + 1 - 1] = [-1,\\ 2]$。',
+            '1. 前向（从输入出发，一步步算出每一层的值，直到输出；第 2.5 章会正式讲）：$z = Wx + b = [1 - 2 + 0,\\ \\ 2 + 1 - 1] = [-1,\\ 2]$。',
             '2. ReLU 的导数：$z_1 < 0$ 处是 $0$，$z_2 > 0$ 处是 $1$，所以 $\\frac{\\partial h}{\\partial z} = \\mathrm{diag}([0, 1])$。',
             '3. 相乘：$\\frac{\\partial h}{\\partial x} = \\mathrm{diag}([0, 1])\\,W = \\begin{bmatrix} 0 & 0 \\\\ 2 & 0.5 \\end{bmatrix}$。',
             '',
