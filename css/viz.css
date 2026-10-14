@@ -549,7 +549,7 @@
 .at-link { fill: none; stroke: var(--border-strong); stroke-dasharray: 3 3; }
 .at-link.is-weight { stroke: var(--c-blue); stroke-dasharray: none; opacity: .75; }
 .at-attn { fill: color-mix(in srgb, var(--c-purple) 18%, var(--surface)); stroke: var(--c-purple); stroke-width: 1.6; }
-.at-concat { stroke: var(--c-purple); stroke-width: 2; stroke-dasharray: 4 3; }
+.at-concat { stroke: var(--c-green); stroke-width: 2; stroke-dasharray: 4 3; }
 .at-out { font: 700 14px var(--font); text-anchor: middle; fill: var(--c-green); }
 .at-cap { background: var(--surface-2); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; margin-top: 6px; min-height: 70px; }
 .at-cap-title { font-weight: 650; } .at-cap-text { font-size: .93rem; color: var(--text-2); margin-top: 2px; }
@@ -571,12 +571,15 @@
 .sl-w { font: 600 11.5px var(--font); fill: var(--text-2); font-variant-numeric: tabular-nums; }
 .sl-v { font: 12px var(--font); fill: var(--text-2); font-variant-numeric: tabular-nums; }
 .sl-sum { font: 650 13px var(--font); text-anchor: middle; fill: var(--c-orange); }
+.sl-head { font: 11.5px var(--font); fill: var(--muted); text-anchor: middle; }
 
 /* 自注意力 */
 .sa-grid { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: flex-start; margin: 8px 0; }
 .sa-fig { margin: 0; }
 .sa-fig figcaption { font-size: .82rem; color: var(--text-2); margin-bottom: 3px; }
 .sa-mat { border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: .82rem; }
+.sa-mat .is-sel2 { outline: 2px solid var(--c-teal); outline-offset: -2px; } .sa-mat th.is-sel2 { color: var(--c-teal); }
+.sa-mat td.sa-sum { color: var(--muted); font-style: italic; }
 .sa-mat th, .sa-mat td { border: 1px solid var(--border); padding: 2px 6px; text-align: right; min-width: 2.6em; }
 .sa-mat th { color: var(--text-2); font-weight: 600; background: var(--surface-2); text-align: center; }
 .sa-mat th.is-sel { color: var(--accent); }
@@ -617,4 +620,9 @@
 .tb-flow { stroke: var(--border-strong); stroke-width: 1.6; }
 .tb-cross { fill: none; stroke: var(--c-orange); stroke-width: 2.6; }
 .tb-headp { fill: var(--c-orange); }
+.tb-inp { fill: var(--border-strong); }
+.tb-in { font: 12px var(--font); text-anchor: middle; fill: var(--muted); }
+.tb-rep { font: 600 12px var(--font); text-anchor: end; fill: var(--text-2); } .tb-rep.small { font-weight: 400; fill: var(--muted); }
+.tb-res { fill: none; stroke: var(--c-teal); stroke-width: 1.4; } .tb-resp { fill: var(--c-teal); }
+.tb-res-label { font: 11px var(--font); fill: var(--c-teal); text-anchor: end; }
 .at-score.is-neg { fill: var(--c-red); opacity: .7; }

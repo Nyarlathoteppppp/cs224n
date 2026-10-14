@@ -1,7 +1,8 @@
 /* 为什么要除以 √d (L05 p59; T08 [56:27]; N07 p12): random query and key vectors with standard-normal entries
- * (fixed seed, 课件外). Left: the spread of their dot products grows like √d. Right: one query against 8 keys; the
- * softmax of the raw scores gets peakier as d grows, dividing by √d keeps it flat. Uses js/core/optim.js rng and
- * gaussian, js/core/prob.js softmax and std. */
+ * (fixed seed, 课件外). Left: the spread of 300 dot products grows like √d. Right: 300 queries, each against 8 keys;
+ * the average of the largest softmax weight rises with d unscaled and stays near 0.35 scaled. One query alone jumps
+ * around too much to show the trend. The bars show the query whose largest weights are closest to the averages.
+ * Uses js/core/optim.js rng and gaussian, js/core/prob.js softmax and std; the same numbers are in tests/core.test.js. */
 (function (root) {
   'use strict';
   const C = root.CS224N;
@@ -10,12 +11,20 @@
 
   const DIMS = [2, 4, 8, 16, 32, 64, 128, 256, 512];
 
+  const TRIALS = 300, cache = {};
+  const avg = (a) => a.reduce((x, y) => x + y, 0) / a.length;
   function sample(dim, seed) {
+    if (cache[dim]) return cache[dim];
     const r = OPT.rng(seed);
     const vec = () => Array.from({ length: dim }, () => OPT.gaussian(r));
     const pairs = Array.from({ length: 300 }, () => L.dot(vec(), vec()));
-    const q = vec(), keys = Array.from({ length: 8 }, vec);
-    return { pairs, scores: keys.map((k) => L.dot(q, k)) };
+    const trials = Array.from({ length: TRIALS }, () => { const q = vec(); return Array.from({ length: 8 }, () => L.dot(q, vec())); });
+    const top = trials.map((sc) => Math.max(...P.softmax(sc)));
+    const topS = trials.map((sc) => Math.max(...P.softmax(sc.map((v) => v / Math.sqrt(dim)))));
+    const mean = avg(top), meanS = avg(topS);
+    let best = 0;
+    top.forEach((t, i) => { if (Math.abs(t - mean) + Math.abs(topS[i] - meanS) < Math.abs(top[best] - mean) + Math.abs(topS[best] - meanS)) best = i; });
+    return (cache[dim] = { pairs, scores: trials[best], mean, meanS });
   }
 
   function mount(el) {
@@ -25,10 +34,11 @@
     const note = h('div.vg-note');
     const sd = slider('向量维数 d', { min: 0, max: DIMS.length - 1, step: 1, value: di, format: (v) => String(DIMS[v]), onInput: (v) => { di = v; render(); } });
     const cb = h('label.as-check', h('input', { type: 'checkbox', onchange: (e) => { scaled = e.target.checked; render(); } }), ' 分数除以 √(向量维数)（缩放）');
-    el.append(h('div.viz-row', sd, cb), h('div.sc2-grid', h('figure.sa-fig', h('figcaption', '300 对随机向量的点积（除以 √d 前）'), svgL), h('figure.sa-fig', h('figcaption', '一个 query 对 8 个 key：softmax 后的权重'), svgR)), note);
+    el.append(h('div.viz-row', sd, cb), h('div.sc2-grid', h('figure.sa-fig', h('figcaption', '300 对随机向量的点积（除以 √d 前）：横轴是点积的值，每根柱子管宽 4 的一小段，柱子越高，落在这一段的点积越多（按最高的一根缩放；超出 ±60 的几个画在最边上那一格）。柱子摊得越开，点积越容易离 0 很远。'), svgL),
+      h('figure.sa-fig', h('figcaption', '一个 query 对 8 个 key：softmax 后的权重（从 300 个随机 query 里挑最有代表性的一个画出来）'), svgR)), note);
 
     function render() {
-      const d = DIMS[di], { pairs, scores } = sample(d, 7);
+      const d = DIMS[di], { pairs, scores, mean, meanS } = sample(d, 7);
       const sdv = P.std(pairs);
       // left: histogram on a fixed axis −60 … 60
       clear(svgL);
@@ -48,12 +58,12 @@
         svgR.append(s('text', { x: 44 + k * 40, y: 206, class: 'vg-tick mid', style: 'fill:var(--muted)', text: 'k' + (k + 1) }));
       });
       svgR.append(s('line', { x1: 24, y1: 190, x2: 350, y2: 190, class: 'vg-grid is-one' }));
-      const top = Math.max(...w);
       clear(note);
-      note.append('d = ' + d + ' 时，随机向量点积的标准差约 ' + fmt(sdv, 1) + '，大约是 √d。');
+      note.append('d = ' + d + ' 时，随机向量点积的标准差约 ' + fmt(sdv, 1) + '，大约是 √d。300 个随机 query 里，最大的那个权重平均是 ' + fmt(scaled ? meanS : mean, 3) + '（' + (scaled ? '缩放后' : '不缩放') + '）。');
       note.append(scaled
-        ? '除以 √d 以后，分数的大小不再随维数变化，权重保持平缓（最大的一个是 ' + fmt(top, 2) + '）。'
-        : top > 0.75 ? '不缩放时，分数差距很大，softmax 把大部分权重给了一个 key（' + fmt(top, 2) + '），其他的接近 0：这时梯度很小，很难学。维数越大越严重。' : '维数还小，权重还算平缓；把 d 调大看看。');
+        ? '除以 √d 以后，分数的大小不再随维数变化，不管 d 多大，最大权重平均都在 0.35 左右，权重保持平缓。'
+        : d >= 16 ? '不缩放时，分数差距很大，softmax 把大部分权重给了一个 key，其他的接近 0：这时梯度很小，很难学。维数越大越严重（d = 512 时平均 0.95）。'
+        : '维数还小，最大权重还不算太大；把 d 调大，看它怎样一路升高。');
     }
     render();
   }

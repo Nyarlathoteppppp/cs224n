@@ -30,10 +30,11 @@
     const prev = button('← 上一步', () => go(-1));
     const next = button('下一步 →', () => go(1));
     const toHeat = button('看对齐热力图', () => { heat = !heat; render(); });
-    el.append(h('div.viz-row', prev, next, toHeat), stages, svg, heatBox, cap);
+    const legend = h('p.viz-note.at-legend', '格子里的 3 个小方块是这个隐状态的 3 个数：蓝正红负，颜色越深绝对值越大。');
+    el.append(h('div.viz-row', prev, next, toHeat), stages, svg, legend, heatBox, cap);
 
     function go(d) {
-      heat = false;
+      if (heat) { heat = false; render(); return; }   // from the heatmap, first go back to where the reader left off
       let k = t * 4 + stage + d;
       k = Math.max(0, Math.min(23, k));
       t = Math.floor(k / 4); stage = k % 4;
@@ -46,6 +47,7 @@
       svg.style.display = heat ? 'none' : '';
       heatBox.style.display = heat ? '' : 'none';
       toHeat.textContent = heat ? '回到逐步演示' : '看对齐热力图';
+      legend.style.display = heat ? 'none' : '';
       if (heat) { renderHeat(); prev.disabled = next.disabled = false; return; }
       STAGES.forEach((name, k) => stages.append(h('span.cg-stage' + (k < stage ? '.is-done' : k === stage ? '.is-current' : ''), name)));
       const alpha = WEIGHTS[t], score = SCORES[t];
@@ -104,7 +106,7 @@
       const table = h('table.at-table');
       table.append(h('tr', h('th', ''), OUT.map((w) => h('th', w))));
       SRC.forEach((w, j) => table.append(h('tr', h('th', w), OUT.map((_, i) => h('td', { style: { background: 'color-mix(in srgb, var(--c-blue) ' + Math.round(WEIGHTS[i][j] * 100) + '%, var(--surface))', color: WEIGHTS[i][j] > 0.5 ? 'var(--on-accent)' : 'var(--text)' } }, fmt(WEIGHTS[i][j], 2))))));
-      heatBox.append(h('p.viz-note', '每一列是解码器的一步，每一行是一个法语词，颜色越深权重越大。没人告诉模型哪个词对哪个词，它自己学出了这种对应（这里的解码器隐状态是我们设的，课件外，让权重大致符合课件热力图的明暗）。'), table);
+      heatBox.append(h('p.viz-note', '每一列是解码器的一步，每一行是一个法语词，颜色越深权重越大。没人告诉模型哪个词对哪个词，它自己学出了这种对应（这里的解码器隐状态是我们设的，课件外，让权重的明暗大致像真实模型学出来的对齐：il→he，m’→me，entarté→with a pie）。'), table);
       cap.append(h('div.at-cap-title', '对齐'), h('div.at-cap-text', 'il ↔ he，m’ ↔ me，entarté ↔ with a pie：一个法语词对应好几个英文词，模型也能看出来。'));
     }
     render();

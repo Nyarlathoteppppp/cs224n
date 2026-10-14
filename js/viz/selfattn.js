@@ -25,16 +25,17 @@
     function matrix(title, M, opts) {
       const o = opts || {};
       const t = h('table.sa-mat' + (o.cls ? '.' + o.cls : ''));
-      if (o.cols) t.append(h('tr', h('th', ''), o.cols.map((c, j) => h('th' + (o.selCol === j ? '.is-sel' : ''), c))));
+      if (o.cols) t.append(h('tr', h('th', ''), o.cols.map((c, j) => h('th' + (o.selCol === j ? '.is-sel' : ''), c)), o.rowSum ? h('th', '行和') : null));
       M.forEach((row, i) => {
-        const tr = h('tr', h('th' + (o.selRow === i ? '.is-sel' : ''), o.rows ? o.rows[i] : ''));
+        const tr = h('tr', h('th' + (o.selRow === i ? '.is-sel' : o.selRow2 === i ? '.is-sel2' : ''), o.rows ? o.rows[i] : ''));
         row.forEach((v, j) => {
           const on = (o.selRow === i && (o.selCol === undefined || o.selCol === j)) || (o.selCol === j && o.colHighlight);
           const heat = o.heat ? { background: 'color-mix(in srgb, var(--c-blue) ' + Math.round(Math.max(0, Math.min(1, o.heat(v))) * 100) + '%, var(--surface))' } : null;
-          const td = h('td' + (on ? '.is-sel' : ''), { style: heat }, fmt(v, 2));
+          const td = h('td' + (on ? '.is-sel' : o.selRow2 === i ? '.is-sel2' : ''), { style: heat }, fmt(v, o.digits || 2));
           if (o.click) td.addEventListener('click', () => o.click(i, j));
           tr.append(td);
         });
+        if (o.rowSum) tr.append(h('td.sa-sum', fmt(row.reduce((a, b) => a + b, 0), 2)));
         t.append(tr);
       });
       return h('figure.sa-fig', h('figcaption', { html: title }), t);
@@ -45,16 +46,16 @@
       clear(top); clear(bottom); clear(note);
       const dcols = ['1', '2', '3'];
       top.append(
-        matrix(texHTML('X') + '：每行一个词', X, { rows: WORDS, cols: dcols, selRow: i }),
+        matrix(texHTML('X') + '：每行一个词（第 ' + (i + 1) + ' 行出 query，第 ' + (j + 1) + ' 行出 key）', X, { rows: WORDS, cols: dcols, selRow: i, selRow2: i === j ? undefined : j }),
         matrix(texHTML('Q') + '（按行的写法）', Q, { rows: dcols, cols: dcols }),
-        matrix(texHTML('K'), K, { rows: dcols, cols: dcols }),
+        matrix(texHTML('K') + '（按行的写法）', K, { rows: dcols, cols: dcols }),
         matrix(texHTML('XQ') + '：每行是 query', R.queries, { rows: WORDS.map((w, k) => 'q' + (k + 1)), cols: dcols, selRow: i, cls: 'is-q' }),
         matrix(texHTML('XK') + '：每行是 key', R.keys, { rows: WORDS.map((w, k) => 'k' + (k + 1)), cols: dcols, selRow: j, cls: 'is-k' }),
         matrix(texHTML('XV') + '：每行是 value', R.values, { rows: WORDS.map((w, k) => 'v' + (k + 1)), cols: dcols, cls: 'is-v' }));
       const M = show === 'scores' ? R.scores : R.weights;
       const maxS = Math.max(...R.scores.flat());
       bottom.append(
-        matrix(show === 'scores' ? '分数：第 i 行第 j 列 = ' + texHTML('q_i^\\top k_j') : '权重：每一行 softmax，行和为 1', M, { rows: WORDS, cols: WORDS, selRow: i, selCol: j, click: (a, b) => { sel = [a, b]; render(); }, heat: show === 'scores' ? (v) => v / maxS : (v) => v, cls: 'is-big' }),
+        matrix(show === 'scores' ? '分数：第 i 行第 j 列 = ' + texHTML('q_i^\\top k_j') : '权重：每一行 softmax，行和为 1', M, { rows: WORDS, cols: WORDS, selRow: i, selCol: j, click: (a, b) => { sel = [a, b]; render(); }, heat: show === 'scores' ? (v) => v / maxS : (v) => v, cls: 'is-big', digits: show === 'scores' ? 2 : 3, rowSum: show !== 'scores' }),
         matrix('输出 = 权重 × ' + texHTML('XV') + '：每行是一个词的新表示', R.output, { rows: WORDS, cols: dcols, selRow: i, cls: 'is-o' }));
       const q = R.queries[i], k = R.keys[j];
       note.append(

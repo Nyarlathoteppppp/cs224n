@@ -32,16 +32,25 @@
     const note = h('div.vg-note');
     el.append(h('div.viz-row', segmented([{ value: 'decoder', label: '解码器' }, { value: 'encoder', label: '编码器' }, { value: 'enc-dec', label: '编码器-解码器' }], form, (v) => { form = v; sel = null; render(); }, '形态')), svg, note);
 
-    function stack(keys, x, title, blockFrom, blockTo) {
+    // the stack is drawn bottom-up from y0; labels go beside the dashed block, so no box can cover them
+    function stack(keys, x, title, blockFrom, blockTo, y0) {
       const g = s('g');
-      const bh = 34, gap = 10, y0 = 380;
+      const bh = 34, gap = 10;
       const ys = keys.map((_, i) => y0 - i * (bh + gap));
       g.append(s('text', { x: x + 110, y: 18, class: 'sl-title', style: 'text-anchor:middle', text: title }));
-      g.append(s('text', { x: x + 110, y: 412, class: 'vg-tick mid', style: 'fill:var(--muted)', text: '输入的词' }));
+      g.append(s('line', { x1: x + 110, y1: y0 + bh + 18, x2: x + 110, y2: y0 + bh + 2, class: 'tb-flow', 'marker-end': 'url(#tb-in)' }));
+      g.append(s('text', { x: x + 110, y: y0 + bh + 32, class: 'tb-in', text: '输入的词' }));
       // the repeated block
       const top = ys[blockTo] - 6, bottom = ys[blockFrom] + bh + 6;
       g.append(s('rect', { x: x - 10, y: top, width: 240, height: bottom - top, rx: 10, class: 'tb-block' }));
-      g.append(s('text', { x: x - 4, y: top - 4, class: 'vg-tick', style: 'text-anchor:start', text: '× N 层（每层参数各不相同）' }));
+      g.append(s('text', { x: x - 16, y: top + 16, class: 'tb-rep', text: '重复很多层' }), s('text', { x: x - 16, y: top + 32, class: 'tb-rep small', text: '（每层参数不同）' }));
+      // residual: the input of each sublayer also goes round it, straight into the Add & Norm above
+      keys.forEach((k, i) => {
+        if (k !== 'norm' || i < 1) return;
+        const y1 = ys[i - 1] + bh + gap / 2, y2 = ys[i] + bh / 2;
+        g.append(s('path', { d: 'M' + (x + 110) + ',' + y1 + ' H' + (x - 4) + ' V' + y2 + ' H' + (x - 1), class: 'tb-res', 'marker-end': 'url(#tb-res)' }));
+        if (i === keys.indexOf('norm')) g.append(s('text', { x: x - 8, y: (y1 + y2) / 2 + 4, class: 'tb-res-label', text: '残差' }));
+      });
       keys.forEach((k, i) => {
         if (i > 0) g.append(s('line', { x1: x + 110, y1: ys[i - 1], x2: x + 110, y2: ys[i] + bh, class: 'tb-flow' }));
         const cls = 'tb-box is-' + k + (sel === k ? ' is-sel' : '');
@@ -57,17 +66,21 @@
 
     function render() {
       clear(svg);
-      svg.append(s('defs', s('marker', { id: 'tb-head', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: 'tb-headp' }))));
+      const mk = (id, cls) => s('marker', { id, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto' }, s('path', { d: 'M0,0 L10,5 L0,10 z', class: cls }));
+      svg.append(s('defs', mk('tb-head', 'tb-headp'), mk('tb-in', 'tb-inp'), mk('tb-res', 'tb-resp')));
+      // the canvas is as tall as the tallest stack of this form
+      const n = form === 'enc-dec' ? STACK.dec2.length : STACK[form].length, y0 = 34 + (n - 1) * 44;
+      svg.setAttribute('viewBox', '0 0 760 ' + (y0 + 34 + 40));
       if (form === 'enc-dec') {
-        const e = stack(STACK.encoder, 40, '编码器', 1, 4);
-        const d = stack(STACK.dec2, 450, '解码器', 1, 6);
+        const e = stack(STACK.encoder, 120, '编码器', 1, 4, y0);
+        const d = stack(STACK.dec2, 500, '解码器', 1, 6, y0);
         svg.append(e.g, d.g);
         const fromY = e.ys[4] + 4, toY = d.ys[3] + d.bh / 2;
-        svg.append(s('path', { d: 'M260,' + fromY + ' C 360,' + (fromY - 60) + ' 380,' + toY + ' 448,' + toY, class: 'tb-cross', 'marker-end': 'url(#tb-head)' }));
-        svg.append(s('text', { x: 350, y: Math.min(fromY, toY) - 30, class: 'tb-tag is-cross', style: 'text-anchor:middle', text: '编码器的输出 → key、value' }));
+        svg.append(s('path', { d: 'M340,' + fromY + ' C 430,' + (fromY - 60) + ' 440,' + toY + ' 494,' + toY, class: 'tb-cross', 'marker-end': 'url(#tb-head)' }));
+        svg.append(s('text', { x: 417, y: Math.min(fromY, toY) - 30, class: 'tb-tag is-cross', style: 'text-anchor:middle', text: '编码器的输出 → key、value' }));
       } else {
         const keys = STACK[form];
-        const st = stack(keys, 270, form === 'decoder' ? '解码器' : '编码器', 1, 4);
+        const st = stack(keys, 270, form === 'decoder' ? '解码器' : '编码器', 1, 4, y0);
         svg.append(st.g);
       }
       clear(note);
