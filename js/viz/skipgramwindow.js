@@ -20,7 +20,7 @@
         const j = i - center, inWin = j !== 0 && Math.abs(j) <= m;
         b.classList.toggle('center', i === center);
         b.classList.toggle('ctx', inWin);
-        b.querySelector('.sg-tag').innerHTML = i === center ? '中心词 c' : inWin ? texHTML('w_{t' + (j > 0 ? '+' : '') + j + '}') : '';
+        b.querySelector('.sg-tag').innerHTML = i === center ? '中心词 ' + texHTML('w_t') + '（c）' : inWin ? texHTML('w_{t' + (j > 0 ? '+' : '') + j + '}') : '';
       });
       const mine = W2V.windowPairs(TOKENS, m).filter((p) => p.t === center);
       pairs.innerHTML = '';

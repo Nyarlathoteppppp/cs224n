@@ -19,16 +19,18 @@
     const dot = L.dot(a, b), cos = L.cosine(a, b);
     const max = Math.max(0.5, ...prod.map(Math.abs));
     const row = (label, v, cls) => h('div.od-row', h('span.od-name', label),
-      h('div.od-cells', v.map((x) => h('span.od-cell' + (cls ? '.' + cls : '') + (x !== 0 && p.digits === 0 ? '.one' : ''), f(x, p.digits)))));
+      h('div.od-cells', v.map((x) => h('span.od-cell' + (cls ? '.' + cls : '') + (cls && x < 0 ? '.neg' : '') + (x !== 0 && p.digits === 0 ? '.one' : ''), f(x, p.digits)))));
     const bars = h('div.od-cells', prod.map((x) => h('span.od-barcell',
       h('span.od-bar' + (x < 0 ? '.neg' : ''), { style: { height: (Math.abs(x) / max * 100).toFixed(1) + '%' }, title: f(x, 3) }))));
     return h('div.od-panel',
       h('div.od-title', p.title),
       row(p.a[0], a), row(p.b[0], b),
       h('div.od-row', h('span.od-name', '逐维相乘'), bars),
+      p.digits ? row('乘积', prod.map((x) => Math.round(x * 1000) / 1000), 'prod') : null,
+      p.digits ? h('div.od-legend', h('span.od-key'), '乘积为正　', h('span.od-key.neg'), '乘积为负（条的高度是乘积的大小）') : null,
       h('div.od-sum', '加起来：点积 = ', h('b', f(dot, 3)), '，余弦相似度 = ', h('b', f(cos, 3)),
         dot === 0 ? '：每一维至少有一个是 0，乘积全是 0。' : '：大多数维度的乘积是正的，两个词方向接近。'));
   }
 
-  C.viz.register('onehot-dense', { title: 'one-hot 与稠密向量', mount(el) { el.append(...PAIRS.map(panel)); } });
+  C.viz.register('onehot-dense', { title: '独热向量与稠密向量', mount(el) { el.append(...PAIRS.map(panel)); } });
 })(window);

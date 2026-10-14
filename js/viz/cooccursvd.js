@@ -33,6 +33,7 @@
           X[c][o] += 1; last.push([c, o]);
         }
       }
+      if (done === POS.length) last = [];   // finished: nothing is “just added” any more
       render();
     }
     function render() {
@@ -42,7 +43,7 @@
         td.classList.toggle('new', last.some(([a, b]) => a === i && b === j));
       }));
       sentEls.forEach((se) => [...se.children].forEach((t) => t.className = 'cs-tok'));
-      if (done > 0 && done <= POS.length) {
+      if (done > 0 && done < POS.length) {
         const [si, t] = POS[done - 1];
         const toks = sentEls[si].children;
         toks[t].classList.add('center');
@@ -50,7 +51,7 @@
       }
       status.textContent = done === 0 ? '还没开始数。' : done < POS.length
         ? '已经扫过 ' + done + ' / ' + POS.length + ' 个中心词。刚加 1 的格子是高亮的：中心词那一行，邻居那一列。'
-        : '数完了。和 CS224N 第 2 讲的表' + (m === 1 && sameAsCore() ? '完全一致' : '对照：窗口 2 时每个词的邻居更多') + '。';
+        : m === 1 && sameAsCore() ? '数完了。和上面正文里的表完全一致。' : '数完了。窗口 2 时每个词的邻居更多，表里的非零格也更多。';
       drawPlot();
     }
     function sameAsCore() { return JSON.stringify(CO.cooccurrence(SENTS, 1, VOCAB).X) === JSON.stringify(X); }
@@ -63,18 +64,26 @@
       const pad = (a) => { const lo = Math.min(...a, 0), hi = Math.max(...a, 0), d = (hi - lo) * 0.15 || 1; return [lo - d, hi + d]; };
       const xd = pad(xs), yd = pad(ys);
       const X_ = (v) => P + (v - xd[0]) / (xd[1] - xd[0]) * (W - 2 * P), Y_ = (v) => H - P - (v - yd[0]) / (yd[1] - yd[0]) * (H - 2 * P);
-      // labels sit above-right of their point; a label that would overlap an earlier one moves below its point
-      const labelY = [], placed = [];
+      // each label tries above-right, below-right, above-left, below-left of its point, and takes the first spot
+      // that covers neither an earlier label nor any other point
+      const pts = reduced.map((r) => [X_(r[0]), Y_(r[1])]), boxes = [], labs = [];
+      const hit = (b, c) => b[0] < c[2] && c[0] < b[2] && b[1] < c[3] && c[1] < b[3];
       reduced.forEach((r, i) => {
-        const x = X_(r[0]) + 8; let y = Y_(r[1]) - 7;
-        if (placed.some(([px, py]) => Math.abs(px - x) < 48 && Math.abs(py - y) < 14)) y = Y_(r[1]) + 17;
-        labelY[i] = y; placed.push([x, y]);
+        const [px, py] = pts[i], w = VOCAB[i].length * 7.5 + 4;
+        const cand = [[px + 8, py - 7, 'start'], [px + 8, py + 17, 'start'], [px - 8, py - 7, 'end'], [px - 8, py + 17, 'end']];
+        const box = ([x, y, a]) => (a === 'start' ? [x, y - 12, x + w, y + 2] : [x - w, y - 12, x, y + 2]);
+        const ok = (c) => !boxes.some((b) => hit(b, box(c))) && !pts.some((q, j) => j !== i && hit(box(c), [q[0] - 6, q[1] - 6, q[0] + 6, q[1] + 6]));
+        const c = cand.find(ok) || cand[0];
+        labs[i] = c; boxes.push(box(c));
       });
       const svg = s('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'viz-svg cs-svg', role: 'img', 'aria-label': 'SVD 降到两维后的词' },
         s('line', { x1: P, x2: W - P, y1: Y_(0), y2: Y_(0), class: 'cs-axis' }), s('line', { y1: P, y2: H - P, x1: X_(0), x2: X_(0), class: 'cs-axis' }),
-        reduced.map((r, i) => s('g', s('circle', { cx: X_(r[0]), cy: Y_(r[1]), r: 5, class: 'cs-pt' }),
-          s('text', { x: X_(r[0]) + 8, y: labelY[i], class: 'cs-lab' }, VOCAB[i]))));
-      plot.append(h('div.cs-plot-head', '每一行用 SVD 压成两维（前两个奇异值 ' + sigma.map((v) => v.toFixed(3)).join('、') + '）'), svg);
+        s('text', { x: W - P, y: Y_(0) - 6, class: 'cs-axname', 'text-anchor': 'end' }, '第 1 维'),
+        s('text', { x: X_(0) + 6, y: P - 6, class: 'cs-axname' }, '第 2 维'),
+        reduced.map((r, i) => s('g', s('title', VOCAB[i] + '：(' + r[0].toFixed(3) + ', ' + r[1].toFixed(3) + ')'),
+          s('circle', { cx: pts[i][0], cy: pts[i][1], r: 5, class: 'cs-pt' }),
+          s('text', { x: labs[i][0], y: labs[i][1], 'text-anchor': labs[i][2], class: 'cs-lab' }, VOCAB[i]))));
+      plot.append(h('div.cs-plot-head', '每一行用 SVD 压成两维（前两个奇异值 ' + sigma.map((v) => v.toFixed(3)).join('、') + '，奇异值是什么见下一节；鼠标停在点上可以看坐标）'), svg);
     }
     reset();
   }

@@ -26,7 +26,7 @@
     const rowNav = h('div.viz-row',
       button('◀ 上一行', () => { row = (row + 2) % 3; render(); }),
       button('下一行 ▶', () => { row = (row + 1) % 3; render(); }, 'primary'));
-    const views = segmented([{ value: 'rows', label: '看行：每一行和 x 做点积' }, { value: 'cols', label: '看列：用 x 给各列加权再相加' }], view,
+    const views = segmented([{ value: 'rows', label: '按行看：每一行和 x 做点积' }, { value: 'cols', label: '按列看：x 的每个数乘对应的一列，再相加' }], view,
       (v) => { view = v; render(); }, '两种看法');
     const sliders = [0, 1].map((j) => slider('x' + (j + 1), { min: -3, max: 3, step: 0.5, value: x[j], format: n, onInput: (v) => { x[j] = v; render(); } }));
 

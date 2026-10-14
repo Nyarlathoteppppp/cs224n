@@ -24,6 +24,7 @@
     const bLine = s('line', { class: 'dp-bline' });            // b extended through the origin
     const arc = s('path', { class: 'dp-arc' });
     const arcLabel = s('text', { class: 'dp-arc-label' });
+    const shadowLabel = s('text', { class: 'dp-shadow-label' });
     const arrows = {}, handles = {}, labels = {};
     ['a', 'b'].forEach((k) => {
       arrows[k] = s('line', { x1: O, y1: O, class: 'dp-vec ' + k, 'marker-end': 'url(#dp-head-' + k + ')' });
@@ -33,18 +34,18 @@
     const head = (k) => s('marker', { id: 'dp-head-' + k, viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto' },
       s('path', { d: 'M0,1 L9,5 L0,9 z', class: 'dp-headfill ' + k }));
     const svg = s('svg', { viewBox: '0 0 ' + SIZE + ' ' + SIZE, class: 'viz-svg dp-svg', role: 'img', 'aria-label': '两个可以拖动的二维向量' },
-      s('defs', head('a'), head('b')), grid, bLine, projLine, dropLine, arc, arcLabel,
+      s('defs', head('a'), head('b')), grid, bLine, projLine, dropLine, arc, arcLabel, shadowLabel,
       arrows.b, arrows.a, labels.a, labels.b, handles.b, handles.a);
 
     const out = {
-      alg: h('div.dp-row'), geo: h('div.dp-row'), proj: h('div.dp-row'), cos: h('div.dp-row'), verdict: h('div.dp-verdict'),
+      vecs: h('div.dp-row'), alg: h('div.dp-row'), geo: h('div.dp-row'), proj: h('div.dp-row'), cos: h('div.dp-row'), verdict: h('div.dp-verdict'),
     };
     const presets = h('div.viz-row',
       button('正文的例子', () => set([3, 1], [1, 2])),
       button('转到垂直', () => set([3, 1], [-1, 3])),
       button('转到反向', () => set([3, 1], [-2, -1])),
-      button('同方向、更长', () => set([3, 1], [4, 1.3])));
-    el.append(presets, h('div.dp-layout', svg, h('div.dp-panel', out.alg, out.geo, out.proj, out.cos, out.verdict)));
+      button('同方向、更长', () => set([3, 1], [3.9, 1.3])));
+    el.append(presets, h('div.dp-layout', svg, h('div.dp-panel', out.vecs, out.alg, out.geo, out.proj, out.cos, out.verdict)));
 
     function set(a, b) { vec.a = a; vec.b = b; render(); }
 
@@ -82,12 +83,11 @@
         const v = vec[k];
         arrows[k].setAttribute('x2', X(v[0])); arrows[k].setAttribute('y2', Y(v[1]));
         handles[k].setAttribute('cx', X(v[0])); handles[k].setAttribute('cy', Y(v[1]));
-        // keep the label inside the canvas: towards the centre horizontally, above or below the tip vertically
-        const side = v[0] > 1 ? 'end' : v[0] < -1 ? 'start' : 'middle';
-        labels[k].setAttribute('x', X(v[0]) + (side === 'end' ? -14 : side === 'start' ? 14 : 0));
-        labels[k].setAttribute('y', Y(v[1]) + (v[1] >= 0 ? -20 : 22));
-        labels[k].setAttribute('text-anchor', side);
-        labels[k].textContent = k + ' = [' + f1(v[0]) + ', ' + f1(v[1]) + ']';
+        // just the letter, a little beyond the tip (the coordinates are in the panel), so it never covers the other arrow
+        const len = Math.hypot(v[0], v[1]);
+        labels[k].setAttribute('x', X(v[0] + v[0] / len * 0.5)); labels[k].setAttribute('y', Y(v[1] + v[1] / len * 0.5));
+        labels[k].setAttribute('text-anchor', 'middle');
+        labels[k].textContent = k;
       });
       /* b's line through the origin, and the projection of a onto it */
       const ub = [b[0] / nb, b[1] / nb], t = dot / nb, foot = [ub[0] * t, ub[1] * t];
@@ -98,6 +98,11 @@
       projLine.classList.toggle('neg', dot < 0);
       dropLine.setAttribute('x1', X(a[0])); dropLine.setAttribute('y1', Y(a[1]));
       dropLine.setAttribute('x2', X(foot[0])); dropLine.setAttribute('y2', Y(foot[1]));
+      // name the shadow: halfway along it, on the side of b's line away from a
+      const nrm = [-ub[1], ub[0]], away = (a[0] * nrm[0] + a[1] * nrm[1]) > 0 ? -0.4 : 0.4;
+      shadowLabel.setAttribute('x', X(foot[0] / 2 + nrm[0] * away)); shadowLabel.setAttribute('y', Y(foot[1] / 2 + nrm[1] * away));
+      shadowLabel.textContent = Math.abs(t) > 0.5 ? '影子' : '';
+      shadowLabel.classList.toggle('neg', dot < 0);
       /* angle arc from a to b, radius 0.9 units, the short way round */
       const angA = Math.atan2(a[1], a[0]), angB = Math.atan2(b[1], b[0]);
       let d = angB - angA; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
@@ -107,14 +112,18 @@
       arcLabel.setAttribute('x', X(1.3 * Math.cos(mid))); arcLabel.setAttribute('y', Y(1.3 * Math.sin(mid)));
       arcLabel.textContent = 'θ = ' + (theta * 180 / Math.PI).toFixed(0) + '°';
 
+      out.vecs.innerHTML = '<span class="dp-v"><b class="dp-a">a = [' + f1(a[0]) + ', ' + f1(a[1]) + ']</b>　<b class="dp-b">b = [' + f1(b[0]) + ', ' + f1(b[1]) + ']</b></span>';
       out.alg.innerHTML = '<span class="dp-k">对应相乘再相加</span><span class="dp-v">' + f1(a[0]) + '×' + f1(b[0]) + ' + ' + f1(a[1]) + '×' + f1(b[1]) + ' = <b>' + f2(dot) + '</b></span>';
       out.geo.innerHTML = '<span class="dp-k">长度 × 长度 × cos θ</span><span class="dp-v">' + f2(na) + ' × ' + f2(nb) + ' × cos ' + (theta * 180 / Math.PI).toFixed(1) + '° = <b>' + f2(na * nb * cos) + '</b></span>';
       out.proj.innerHTML = '<span class="dp-k">a 在 b 方向上的影子</span><span class="dp-v">' + f2(t) + '，再乘 b 的长度 ' + f2(nb) + ' = <b>' + f2(t * nb) + '</b></span>';
       out.cos.innerHTML = '<span class="dp-k">余弦相似度</span><span class="dp-v"><b>' + f2(cos) + '</b>（只看方向）</span>';
-      const zero = Math.abs(cos) < 0.02;
+      // coordinates are multiples of 0.1, so a dot product of exactly 0 is reachable
+      const zero = Math.abs(dot) < 1e-9, near = !zero && Math.abs(cos) < 0.05;
       out.verdict.textContent = zero ? '垂直：点积为 0，两个方向“毫无关系”。'
-        : dot > 0 ? '夹角小于 90°：点积为正。方向越一致，点积越大。' : '夹角大于 90°：点积为负，方向相反。';
-      out.verdict.className = 'dp-verdict ' + (zero ? 'zero' : dot > 0 ? 'pos' : 'neg');
+        : near ? '接近垂直：点积接近 0。'
+        : cos < -0.9995 ? '方向正好相反（180°）：点积最负。'
+        : dot > 0 ? '夹角小于 90°：点积为正。方向越一致，点积越大。' : '夹角大于 90°：点积为负；越接近反方向（180°），点积越负。';
+      out.verdict.className = 'dp-verdict ' + (zero || near ? 'zero' : dot > 0 ? 'pos' : 'neg');
     }
     render();
   }

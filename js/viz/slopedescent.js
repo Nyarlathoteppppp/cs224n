@@ -14,6 +14,13 @@
     const Y = (y) => H - P.b - (y - yd[0]) / (yd[1] - yd[0]) * (H - P.t - P.b);
     return { X, Y };
   }
+  // large numbers as “1.2 × 10⁶” (the site never uses the programmer's 1.2e+6)
+  const SUP = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+  function big(v, d) {
+    if (Math.abs(v) < 1000) return fmt(v, d);
+    const e = Math.floor(Math.log10(Math.abs(v)));
+    return fmt(v / Math.pow(10, e), 1) + ' × 10' + String(e).split('').map((c) => SUP[c]).join('');
+  }
   const uid = () => Math.random().toString(36).slice(2, 8);
 
   /* ---------- mode 'slope' ---------- */
@@ -34,11 +41,12 @@
       s('line', { x1: P.l, y1: Y(0), x2: W - P.r, y2: Y(0), class: 'sd-axis' }),
       s('line', { x1: X(0), y1: P.t, x2: X(0), y2: H - P.b, class: 'sd-axis' }), ticks,
       s('g', { 'clip-path': 'url(#' + clip + ')' }, s('polyline', { points: pts.join(' '), class: 'sd-curve' }), tangent, rise),
-      dot, riseText, s('text', { x: X(4.45), y: Y(f(4.45)) + 4, class: 'sd-curve-label', 'text-anchor': 'end' }, 'f(x) = x³'));
+      dot, riseText, s('text', { x: X(4.1), y: Y(90), class: 'sd-curve-label', 'text-anchor': 'end' }, 'f(x) = x³'));
     let x = 1;
     const read = h('div.sd-read');
     const sx = slider('x', { min: -2, max: 4.5, step: 0.1, value: x, format: (v) => fmt(v, 1), onInput: (v) => { x = v; render(); } });
-    el.append(h('div.viz-row', sx, button('x = 1', () => { x = 1; sx.set(1); render(); }), button('x = 4', () => { x = 4; sx.set(4); render(); })), svg, read);
+    el.append(h('div.viz-row', sx, button('x = 1', () => { x = 1; sx.set(1); render(); }), button('x = 4', () => { x = 4; sx.set(4); render(); })), svg, read,
+      h('p.viz-note', '注意两条轴的刻度不同：横轴一格是 1，纵轴一格是 25。所以图上的陡峭程度只能互相比较（x = 4 处比 x = 1 处陡得多），不能直接读成斜率；斜率看下面的数。'));
     function render() {
       const y = f(x), m = df(x), span = 1.2;
       tangent.setAttribute('x1', X(x - span)); tangent.setAttribute('y1', Y(y - m * span));
@@ -47,9 +55,11 @@
       /* a "step 1 to the right, rise = slope" triangle on the tangent, drawn at a readable size */
       const run = 0.5;
       rise.setAttribute('d', 'M' + X(x) + ',' + Y(y) + ' H' + X(x + run) + ' V' + Y(y + m * run));
-      riseText.setAttribute('x', X(x + run) + 6); riseText.setAttribute('y', (Y(y) + Y(y + m * run)) / 2);
-      riseText.textContent = '右移 0.5，升高 ' + fmt(m * run, 2);
-      read.innerHTML = '斜率 <b>f′(' + fmt(x, 1) + ') = 3 × ' + fmt(x, 1) + '² = ' + fmt(m, 2) + '</b>。输入增加 0.01，输出大约增加 ' +
+      // the caption sits in the empty top-left corner: next to the triangle it would run off the right edge at x = 4
+      riseText.setAttribute('x', X(-2.1)); riseText.setAttribute('y', P.t + 14);
+      riseText.textContent = '切线上的小三角：右移 0.5，升高 ' + fmt(m * run, 2);
+      const xs = x < 0 ? '(' + fmt(x, 1) + ')' : fmt(x, 1);
+      read.innerHTML = '斜率 <b>f′(' + fmt(x, 1) + ') = 3 × ' + xs + '² = ' + fmt(m, 2) + '</b>。输入增加 0.01，输出大约增加 ' +
         fmt(m, 2) + ' × 0.01 = <b>' + fmt(m * 0.01, 4) + '</b>（实际是 ' + fmt(f(x + 0.01) - y, 4) + '）。';
     }
     render();
@@ -59,7 +69,7 @@
   function mountDescent(el) {
     let alpha = 0.1;
     const start1 = 3, start2 = [2, 1];
-    let path1 = [start1], path2 = [start2.slice()];
+    let path1 = [start1], path2 = [start2.slice()], stop1 = false, stop2 = false;
 
     /* left: J(θ) = θ² */
     const W = 330, H = 260, P = { l: 30, r: 10, t: 10, b: 26 }, xd = [-6, 6], yd = [0, 36];
@@ -97,13 +107,13 @@
     function step(n) {
       for (let i = 0; i < n; i++) {
         const t = path1[path1.length - 1];
-        if (Math.abs(t) < 1e6) path1.push(OPT.sgd([t], [2 * t], alpha).theta[0]);
+        if (Math.abs(t) < 1e6) path1.push(OPT.sgd([t], [2 * t], alpha).theta[0]); else stop1 = true;
         const [x, y] = path2[path2.length - 1];
-        if (Math.abs(x) + Math.abs(y) < 1e6) path2.push(OPT.sgd([x, y], [2 * x, 4 * y], alpha).theta);
+        if (Math.abs(x) + Math.abs(y) < 1e6) path2.push(OPT.sgd([x, y], [2 * x, 4 * y], alpha).theta); else stop2 = true;
       }
       render();
     }
-    function reset() { path1 = [start1]; path2 = [start2.slice()]; render(); }
+    function reset() { path1 = [start1]; path2 = [start2.slice()]; stop1 = stop2 = false; render(); }
 
     function render() {
       while (g1.firstChild) g1.removeChild(g1.firstChild);
@@ -117,15 +127,16 @@
         g2.append(s('circle', { cx: RR.X(p[0]), cy: RR.Y(p[1]), r: i === path2.length - 1 ? 6 : 3.5, class: 'sd-pt' + (i === path2.length - 1 ? ' cur' : '') }));
       });
       const t = path1[path1.length - 1], p = path2[path2.length - 1];
-      const verdict = (k) => (Math.abs(Math.abs(k) - 1) < 1e-9 ? (k < 0 ? '在谷底两边来回跳，永远到不了' : '原地不动')
+      const verdict = (k) => (Math.abs(k) < 1e-9 ? '一步就到谷底（这只碗正好如此）' : Math.abs(Math.abs(k) - 1) < 1e-9 ? (k < 0 ? '在谷底两边来回跳，永远到不了' : '原地不动')
         : Math.abs(k) > 1 ? '发散：每步都跨过谷底，而且越跳越远'
         : k < -0.8 ? '来回跳着，慢慢靠近谷底' : k < 0 ? '跨过谷底再跳回来，但在靠近'
         : k >= 0.9 ? '每步只挪一点，走得很慢' : '稳稳地靠近谷底');
       const k1 = 1 - 2 * alpha;   // θ ← (1 − 2α) θ
-      read1.innerHTML = '第 ' + (path1.length - 1) + ' 步：θ = <b>' + (Math.abs(t) > 999 ? t.toExponential(1) : fmt(t, 3)) + '</b>，J = ' + (t * t > 9999 ? (t * t).toExponential(1) : fmt(t * t, 3)) +
+      const STOP = '<br><span class="sd-stop">数已经大到画不下，不再往下走。</span>';
+      read1.innerHTML = '第 ' + (path1.length - 1) + ' 步：θ = <b>' + big(t, 3) + '</b>，J = ' + big(t * t, 3) + (stop1 ? STOP : '') +
         '<br>每步 θ 乘以 1 − 2α = ' + fmt(k1, 2) + '：' + verdict(k1);
       const kx = 1 - 2 * alpha, ky = 1 - 4 * alpha;   // x ← (1 − 2α) x,  y ← (1 − 4α) y
-      read2.innerHTML = '第 ' + (path2.length - 1) + ' 步：(x, y) = <b>(' + fmt(p[0], 3) + ', ' + fmt(p[1], 3) + ')</b>' +
+      read2.innerHTML = '第 ' + (path2.length - 1) + ' 步：(x, y) = <b>(' + big(p[0], 3) + ', ' + big(p[1], 3) + ')</b>' + (stop2 ? STOP : '') +
         '<br>x 方向每步乘 ' + fmt(kx, 2) + '，y 方向（更陡）每步乘 ' + fmt(ky, 2) + '：y 方向' + verdict(ky);
     }
     render();

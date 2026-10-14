@@ -13,9 +13,9 @@
   function mount(el) {
     const s = START.slice();
     const sliders = WORDS.map((w, i) => slider(w, { min: -3, max: 3, step: 0.05, value: s[i], format: (v) => f(v, 2), onInput: (v) => { s[i] = v; render(); } }));
-    const cols = ['① 点积（分数）', '② exp', '③ 除以总和 = 概率'].map((t) => h('div.sm-col', h('div.sm-head', t), h('div.sm-bars')));
+    const cols = ['① 点积（分数）', '② exp（最大的那根画满格）', '③ 除以总和 = 概率（满格是 1）'].map((t) => h('div.sm-col', h('div.sm-head', t), h('div.sm-bars')));
     const foot = h('p.viz-note');
-    el.append(h('div.sm-sliders', sliders), h('div.sm-cols', cols), foot);
+    el.append(h('p.viz-note', '中心词是 into，假设词表只有这 5 个词。初始分数就是上面表里那 5 个编出来的点积（课件外），可以随意拖动。'), h('div.sm-sliders', sliders), h('div.sm-cols', cols), foot);
 
     function bars(col, values, scale, signed, digits, cls) {
       const box = col.querySelector('.sm-bars');

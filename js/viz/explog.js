@@ -9,15 +9,17 @@
   const sup = (n) => String(n).split('').map((c) => SUP[c]).join('');
   function sci(v) {
     if (v === 0) return '0';
-    let e = Math.floor(Math.log10(Math.abs(v))), m = v / Math.pow(10, e);
+    // the mantissa from the logarithm: v / 10^e would divide by 0 below 1e-323
+    const lg = Math.log10(Math.abs(v));
+    let e = Math.floor(lg), m = Math.sign(v) * Math.pow(10, lg - e);
     if (Math.abs(m) >= 9.995) { m /= 10; e += 1; }
     return e >= -3 && e <= 3 ? String(+v.toPrecision(4)) : m.toFixed(2) + ' × 10' + sup(e);
   }
   const f3 = (v) => v.toFixed(3).replace('-', '−');
 
   /** A small function plot with a movable point. */
-  function plot({ fn, xd, yd, label, cls }) {
-    const W = 340, H = 220, P = { l: 34, r: 10, t: 10, b: 26 };
+  function plot({ fn, xd, yd, label, cls, xname, yname }) {
+    const W = 340, H = 236, P = { l: 34, r: 10, t: 10, b: 42 };
     const X = (x) => P.l + (x - xd[0]) / (xd[1] - xd[0]) * (W - P.l - P.r);
     const Y = (y) => H - P.b - (Math.min(Math.max(y, yd[0]), yd[1] * 1.2) - yd[0]) / (yd[1] - yd[0]) * (H - P.t - P.b);
     const pts = [];
@@ -33,7 +35,7 @@
       for (let v = Math.ceil(d[0]); v <= d[1]; v += (d[1] - d[0] > 8 ? 5 : 1)) {
         out.push(axis === 'x'
           ? s('text', { x: X(v), y: H - P.b + 16, class: 'el-tick' }, String(v).replace('-', '−'))
-          : s('text', { x: P.l - 6, y: Y(v), class: 'el-tick', 'text-anchor': 'end', 'dominant-baseline': 'central' }, String(v)));
+          : s('text', { x: X(Math.max(0, xd[0])) - 6, y: Y(v), class: 'el-tick', 'text-anchor': 'end', 'dominant-baseline': 'central' }, String(v)));
       }
       return out;
     };
@@ -43,6 +45,8 @@
       s('line', { x1: P.l, y1: Y(0), x2: W - P.r, y2: Y(0), class: 'el-axis' }),
       s('line', { x1: X(Math.max(0, xd[0])), y1: P.t, x2: X(Math.max(0, xd[0])), y2: H - P.b, class: 'el-axis' }),
       ticks(xd, 'x'), ticks(yd, 'y'),
+      s('text', { x: (P.l + W - P.r) / 2, y: H - 4, class: 'el-axname', 'text-anchor': 'middle' }, xname),
+      s('text', { x: X(Math.max(0, xd[0])) + 6, y: P.t + 4, class: 'el-axname', 'dominant-baseline': 'hanging' }, yname),
       s('g', { 'clip-path': 'url(#' + clip + ')' }, s('polyline', { points: pts.join(' '), class: 'el-curve ' + cls }), vx, hy),
       dot, txt);
     svg.place = (x, text) => {
@@ -67,7 +71,7 @@
     function renderProd() {
       let prod = 1, sum = 0;
       for (let i = 0; i < T; i++) { prod *= p; sum += Math.log(p); }   // literally what a computer would do
-      prodOut.innerHTML = '<span class="el-k">连乘 p × p × … × p</span><span class="el-v' + (prod === 0 ? ' under' : '') + '">' + (prod === 0 ? '0（下溢）' : sci(prod)) + '</span>';
+      prodOut.innerHTML = '<span class="el-k">连乘 p × p × … × p</span><span class="el-v' + (prod === 0 ? ' under' : '') + '">' + (prod === 0 ? '0（下溢）' : sci(prod) + (prod < 2.2e-308 ? '<small>（有效数字开始丢失）</small>' : '')) + '</span>';
       sumOut.innerHTML = '<span class="el-k">取 log 后连加 log p + … + log p</span><span class="el-v">' + f3(sum) + '</span>';
       verdict.textContent = prod === 0
         ? '连乘的结果小于计算机能表示的最小正数，被存成了 0：所有句子的概率都一样是 0，没法比较了。取 log 的那一边还是一个普通的数。'
@@ -76,13 +80,13 @@
 
     /* 2. exp makes everything positive */
     let x = 1;
-    const expPlot = plot({ fn: Math.exp, xd: [-4, 3], yd: [0, 20], label: 'y = exp(x) 的曲线', cls: 'exp' });
+    const expPlot = plot({ fn: Math.exp, xd: [-4, 3], yd: [0, 20], label: 'y = exp(x) 的曲线', cls: 'exp', xname: '分数 x', yname: 'exp(x)' });
     const sX = slider('分数 x', { min: -4, max: 3, step: 0.1, value: x, format: (v) => v.toFixed(1).replace('-', '−'), onInput: (v) => { x = v; renderExp(); } });
     function renderExp() { expPlot.place(x, 'exp(' + x.toFixed(1).replace('-', '−') + ') = ' + sci(Math.exp(x))); }
 
     /* 3. −log p as a penalty */
     let q = 0.5;
-    const nlPlot = plot({ fn: (v) => -Math.log(v), xd: [0, 1], yd: [0, 5], label: 'y = −log p 的曲线', cls: 'nll' });
+    const nlPlot = plot({ fn: (v) => -Math.log(v), xd: [0, 1], yd: [0, 5], label: 'y = −log p 的曲线', cls: 'nll', xname: '概率 p', yname: '−log p' });
     const sQ = slider('正确答案的概率 p', { min: 0.01, max: 1, step: 0.01, value: q, format: (v) => v.toFixed(2), onInput: (v) => { q = v; renderNll(); } });
     function renderNll() { nlPlot.place(q, '−log ' + q.toFixed(2) + ' = ' + f3(-Math.log(q) + 0)); }
 
