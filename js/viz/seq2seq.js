@@ -25,7 +25,7 @@
     const next = button('下一步 →', () => { k = Math.min(N, k + 1); render(); });
     const all = button('全部走完', () => { k = N; render(); });
     const reset = button('重来', () => { k = 0; render(); });
-    el.append(h('div.viz-row', segmented([{ value: 'test', label: '测试时：逐词生成' }, { value: 'train', label: '训练时：算损失' }], mode, (v) => { mode = v; k = 0; render(); }, '模式'), prev, next, all, reset), svg, cap);
+    el.append(h('p.viz-note', '这是计算流程示意，没有运行翻译模型。测试模式的英文词是预设的示例；训练模式上方列出的是真实译文，作为计算损失的监督目标，不代表模型已经预测正确。'), h('div.viz-row', segmented([{ value: 'test', label: '测试时：逐词生成' }, { value: 'train', label: '训练时：算损失' }], mode, (v) => { mode = v; k = 0; render(); }, '模式'), prev, next, all, reset), svg, cap);
 
     const ex = (i) => 40 + i * 64, dx = (j) => 330 + j * 60, cy = 150;
     function cell(x, y, cls, on) { return s('rect', { x: x - 20, y: y - 18, width: 40, height: 36, rx: 7, class: 's2-cell ' + cls + (on ? ' is-on' : '') }); }
@@ -49,6 +49,7 @@
       svg.append(s('path', { d: 'M' + (ex(3) + 21) + ',' + cy + ' C' + (ex(3) + 50) + ',' + (cy - 60) + ' ' + (dx(0) - 60) + ',' + (cy - 60) + ' ' + (dx(0) - 22) + ',' + cy, class: 's2-arrow bot' + (handed ? '' : ' is-off'), 'marker-end': 'url(#s2-head-bot)' }));
       svg.append(s('text', { x: dx(0) - 34, y: cy - 62, style: 'text-anchor:end', class: 's2-bot-label' + (handed ? '' : ' is-off'), text: '唯一的通道：最后一个隐状态' }));
       svg.append(s('text', { x: dx(0) - 20, y: 46, class: 's2-sub', text: mode === 'test' ? '输入行：上一步自己生成的词（粉色虚线送回来），对错都照用' : '输入行：平行语料里的真实译文，不管模型猜了什么' }));
+      if (mode === 'train') svg.append(s('text', { x: dx(0) - 20, y: 62, class: 's2-sub', text: '输出上方的词：监督目标；J 用模型给目标词的概率来算' }));
       const IN = mode === 'test' ? TEST_IN : TGT_IN, OUT = mode === 'test' ? TEST_OUT : TGT_OUT;
       // decoder
       IN.forEach((w, j) => {
@@ -78,7 +79,7 @@
       else {
         const j = k - SRC.length - 2;
         const IN = mode === 'test' ? TEST_IN : TGT_IN, OUT = mode === 'test' ? TEST_OUT : TGT_OUT;
-        title = '解码器第 ' + (j + 1) + ' 步：输入 “' + IN[j] + '”，输出 “' + OUT[j] + '”';
+        title = '解码器第 ' + (j + 1) + ' 步：输入 “' + IN[j] + '”，' + (mode === 'test' ? '输出' : '监督目标') + ' “' + OUT[j] + '”';
         text = mode === 'test'
           ? (j === 0 ? '第一个输入是表示“开始”的 <START>。' : OUT[j - 1] !== TGT_OUT[j - 1] ? '输入的是上一步自己生成的词，哪怕它是错的：上一步把 a 写成了 the（课件外的示意），这一步只能接着它往下写。' : OUT[j] !== TGT_OUT[j] ? '这一步生成错了：该是 a，却写成了 the（课件外的示意）。测试时没有正确答案可看，这个错词会成为下一步的输入。' : '输入的是上一步自己生成的词。') + '解码器是一个语言模型，但它的起点是法语的编码，所以叫条件语言模型。' + (TGT_OUT[j] === '<END>' ? '生成 <END>，翻译结束。' : '')
           : '训练时，输入的是平行语料里真实的英文词（teacher forcing）；输出处算一个损失 J' + (j + 1) + ' = −log P(真实的 “' + TGT_OUT[j] + '”)。' + (j === TGT_IN.length - 1 ? '七个损失取平均，就是这一句的损失。' : '');

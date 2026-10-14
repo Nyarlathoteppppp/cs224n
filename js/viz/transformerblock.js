@@ -85,7 +85,7 @@
       }
       clear(note);
       note.append(sel ? h('div', h('b', INFO[sel][0] + '：'), INFO[sel][1]) : h('div', NOTE[form]));
-      note.append(h('div.viz-note', '红色“掩码”和橙色“交叉”标出了三种形态之间仅有的两处不同（编码器上面接不接输出层看任务，不算结构上的区别）。点任意一个方块看说明。'));
+      note.append(h('div.viz-note', '这里按原始 Transformer 的 post-norm 顺序画：每个子层先加残差，再做 LayerNorm。图中“掩码”和“交叉”是本章对比三种结构的两处重点；实际模型还可能采用第 5.4 章讲的 pre-norm 等变体。编码器上面接什么输出层由任务决定。点任意一个方块看说明。'));
     }
     render();
   }

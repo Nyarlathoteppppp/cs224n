@@ -628,6 +628,26 @@ test('N06 p11–p12: a GRU with update gate z ≈ 1 copies the previous state', 
   nearAll(r.h, [0.3, -0.7], 1e-12);
 });
 
+test('Chapter 4.4 controlled sigmoid RNN: bounded states can still have exploding gradients', () => {
+  for (const scale of [0.5, 1, 2, 4]) {
+    const p = { E: [[0], [0]], Wh: [[4 * scale]], We: [[0]], b1: [-2 * scale], U: [[0], [1]], b2: [0, 0], h0: [0.5] };
+    const ids = Array.from({ length: 13 }, (_, i) => i % 2);
+    const fwd = RNN.forward(p, ids);
+    fwd.steps.forEach((st) => near(st.h[0], 0.5, 0, 'hidden state stays at sigmoid centre'));
+    const norms = RNN.gradientReach(p, ids), last = norms[norms.length - 1];
+    norms.forEach((n, k) => near(n / last, scale ** (11 - k), 1e-9));
+  }
+});
+
+test('Chapter 4.5: the LSTM direct memory path is only one contribution to the full derivative', () => {
+  const p = { Wi: [[0]], Ui: [[0]], Wf: [[0]], Uf: [[0]], Wo: [[0]], Uo: [[0]], Wc: [[0]], Uc: [[1]] };
+  const c0 = 0.7, hPrev = (c) => 0.5 * Math.tanh(c);
+  const direct = C.derivative((c) => G.lstmStep(p, [0], [hPrev(c0)], [c]).c[0], c0, 1e-5);
+  const full = C.derivative((c) => G.lstmStep(p, [0], [hPrev(c)], [c]).c[0], c0, 1e-5);
+  near(direct, 0.5, 1e-9, 'holding h_prev and gates fixed leaves only f');
+  ok(full > direct + 0.1, 'the path through h_prev and the candidate also contributes');
+});
+
 /* ───────── Part 5: attention and Transformers ───────── */
 
 test('Chapter 5.1 numbers: s₁ = [1.4, −0.6, −1.7] against four encoder states → scores, weights, attention output', () => {
@@ -778,6 +798,23 @@ test('Chapter 5.5 numbers: the n × n score table for n = 30 and n = 50,000 (T08
   eq(30 * 30, 900);
   eq(50000 * 50000, 2.5e9);
   eq(ATT.causalMask(30).flat().length, 900);
+});
+
+test('Chapter 5.4 sensitivity: softmax score derivatives shrink in the saturated regime', () => {
+  const jacobian = (scores) => {
+    const w = P.softmax(scores);
+    return w.map((a, i) => w.map((b, j) => a * ((i === j ? 1 : 0) - b)));
+  };
+  const scores = [0, 0, 10], analytic = jacobian(scores);
+  scores.forEach((_, j) => scores.forEach((_, i) => {
+    const numerical = C.derivative((v) => P.softmax(scores.map((s, k) => k === j ? v : s))[i], scores[j], 1e-5);
+    near(analytic[i][j], numerical, 1e-10);
+  }));
+  const trace = (J) => J.reduce((sum, row, i) => sum + row[i], 0);
+  near(trace(jacobian([0, 0, 0])), 2 / 3, 1e-12);
+  ok(trace(analytic) < 0.001, 'nearly one-hot weights respond weakly to scores');
+  const ln = ATT.layerNorm([2, -1, 4, 7], [2, 2, 2, 2], [1, 1, 1, 1], 0).output;
+  near(P.mean(ln), 1); near(P.std(ln), 2);
 });
 
 /* ───────── Part 6 preview: BPE (needed early because 6.1 uses it) ───────── */

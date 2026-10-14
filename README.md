@@ -69,6 +69,8 @@ tools/fetch_reference.sh all # 把官方材料下载到 reference/（不进仓�
 
 写作上的约定（术语第一次出现写成“中文（English）”、不默认读者懂没学过的东西、每个数字都要能复现等）见 `CLAUDE.md`。
 
+第 0–5 部分的可视化事实核对、修复和浏览器回归方法见 [2026-10-15 审查记录](docs/reviews/2026-10-15-visualizations.md)。上轮的三条 [可视化审查经验](可视化技巧/经验/claude-cs224n.md) 也已收录到仓库。
+
 ## 致谢
 
 课程内容来自 Stanford CS224N 的老师和助教（Christopher Manning、Diyi Yang、Yejin Choi 等）。页面用到的 KaTeX 和 markdown-it 放在 `vendor/` 下，各自附有许可证。

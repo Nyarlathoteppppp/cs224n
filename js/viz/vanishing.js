@@ -1,6 +1,7 @@
 /* 梯度消失与爆炸 (L04 p40–p49; N06 p6–p8): (1) the gradient of the last step's loss travelling back 12 steps,
  * either in the simplified picture (multiply by β at every step, N06's (β_W β_h)^{t−k}) or measured on a small RNN
- * whose W_h is scaled (js/core/rnn.js gradientReach); bars on a log scale. (2) gradient clipping by norm
+ * whose W_h is scaled, plus a controlled sigmoid-centre counterexample (js/core/rnn.js gradientReach);
+ * bars on a log scale. (2) gradient clipping by norm
  * (js/core/optim.js clipByNorm). Parameters of the small RNN are seeded random numbers (课件外). */
 (function (root) {
   'use strict';
@@ -10,13 +11,17 @@
 
   const T = 12;
   const sci = (v) => {
+    if (v === 0) return '0';
     if (!isFinite(v)) return '∞';
     if (v >= 0.01 && v < 1000) return fmt(v, v < 1 ? 3 : 1);
     const e = Math.floor(Math.log10(v)), m = v / Math.pow(10, e);
     return fmt(m, 1) + '×10' + String(e).replace('-', '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
   };
 
-  function smallRnn(scale) {
+  function smallRnn(scale, balanced) {
+    // A controlled counterexample: h = sigmoid(4s·h_prev − 2s) stays at 0.5,
+    // but dh/dh_prev = 4s·0.25 = s. This is a real RNN, not a hand-drawn gradient.
+    if (balanced) return { E: [[0], [0]], Wh: [[4 * scale]], We: [[0]], b1: [-2 * scale], U: [[0], [1]], b2: [0, 0], h0: [0.5] };
     const r = OPT.rng(11), u = () => (r() * 2 - 1);
     const M = (a, b) => Array.from({ length: a }, () => Array.from({ length: b }, u));
     const v = (a) => Array.from({ length: a }, u);
@@ -39,33 +44,35 @@
     const sg = slider('梯度的长度 ‖g‖', { min: 0.5, max: 20, step: 0.5, value: gLen, format: (v) => fmt(v, 1), onInput: (v) => { gLen = v; renderClip(); } });
     const st = slider('阈值', { min: 1, max: 20, step: 1, value: thr, format: String, onInput: (v) => { thr = v; renderClip(); } });
     el.append(
-      h('div.viz-row', segmented([{ value: 'beta', label: '简化：每一步乘 β' }, { value: 'rnn', label: '真实的小 RNN' }], mode, (v) => { mode = v; render(); }, '模式'), ctl),
+      h('div.viz-row', segmented([{ value: 'beta', label: '简化：每一步乘 β' }, { value: 'rnn', label: '真实 RNN：随机参数' }, { value: 'balanced', label: '真实 RNN：保持在 sigmoid 中央' }], mode, (v) => { mode = v; render(); }, '模式'), ctl),
       svg, legend, note,
       h('h4.vg-h', '梯度裁剪'),
       h('div.vg-clipwrap', clipSvg, h('div', h('div.viz-row', sg, st), clipNote)));
 
     function values() {
       if (mode === 'beta') return Array.from({ length: T }, (_, k) => Math.pow(beta, T - 1 - k));
-      const ids = Array.from({ length: T + 1 }, (_, i) => i % 5);
-      const norms = RNN.gradientReach(smallRnn(scale), ids);
+      const p = smallRnn(scale, mode === 'balanced');
+      const ids = Array.from({ length: T + 1 }, (_, i) => i % p.E.length);
+      const norms = RNN.gradientReach(p, ids);
       const last = norms[norms.length - 1];
       return norms.map((n) => n / last);
-    }
-    function y(v) {   // log scale: 10⁻⁶ … 10⁴
-      const l = Math.max(-6, Math.min(4, Math.log10(Math.max(v, 1e-12))));
-      return base - (l + 6) / 10 * (base - 20);
     }
     function render() {
       clear(ctl);
       ctl.append(mode === 'beta' ? sb : ss);
       const vals = values();
+      // Keep the whole measured range visible: the random RNN reaches far below 10⁻⁶.
+      const logs = vals.filter((v) => v > 0).map(Math.log10);
+      const low = Math.min(-6, 2 * Math.floor(Math.min(...logs) / 2));
+      const high = Math.max(4, 2 * Math.ceil(Math.max(...logs) / 2));
+      const y = (v) => base - (Math.log10(v) - low) / (high - low) * (base - 32);
       clear(svg);
-      [-6, -4, -2, 0, 2, 4].forEach((e) => {
+      for (let e = low; e <= high; e += 2) {
         svg.append(s('line', { x1: x0 - 10, y1: y(Math.pow(10, e)), x2: W - 20, y2: y(Math.pow(10, e)), class: 'vg-grid' + (e === 0 ? ' is-one' : '') }));
         svg.append(s('text', { x: x0 - 14, y: y(Math.pow(10, e)) + 4, class: 'vg-tick', text: e === 0 ? '1' : '10' + String(e).replace('-', '⁻').replace(/\d/g, (d) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]) }));
-      });
+      }
       vals.forEach((v, k) => {
-        const x = x0 + 10 + k * step, top = y(v), bottom = y(1e-6);
+        const x = x0 + 10 + k * step, top = v > 0 ? y(v) : base, bottom = base;
         const cls = v < 1e-3 ? 'is-tiny' : v > 1e3 ? 'is-huge' : '';
         svg.append(s('rect', { x, y: Math.min(top, bottom), width: step - 16, height: Math.abs(bottom - top), class: 'vg-bar ' + cls }));
         svg.append(s('text', { x: x + (step - 16) / 2, y: base + 18, class: 'vg-step', text: 'h(' + (k + 1) + ')' }));
@@ -78,9 +85,12 @@
       if (mode === 'beta') {
         note.append('从 h(' + T + ') 传回 h(1)，乘了 ' + (T - 1) + ' 次 β：β¹¹ = ' + sci(first) + '。');
         note.append(beta < 1 ? '每一步都小于 1，越往前越小：远处的词几乎收不到来自这个损失的梯度（梯度消失）。' : beta > 1 ? '每一步都大于 1，越往前越大（梯度爆炸）。' : '恰好是 1 时不增不减，但真实网络里很难一直这样。');
-      } else {
+      } else if (mode === 'rnn') {
         note.append('这是一个 4 维隐状态、sigmoid 激活的小 RNN 实际算出来的 ‖∂J/∂h(k)‖（以最后一步为 1，参数是随机设的，课件外）。传回 h(1) 时是最后一步的 ' + sci(first) + ' 倍。');
-        note.append('sigmoid 的斜率最大才 0.25（第 2.2 章），每往回一步都要乘上它，所以很容易消失。把 W_h 放大也没用：sigmoid 里面的数跟着变大，sigmoid 进入两端平坦的区域，斜率更接近 0，抵消了 W_h 的放大。所以用 sigmoid 的 RNN 几乎总是梯度消失；想看梯度爆炸，切回“简化：每一步乘 β”，把 β 拖到 1 以上。');
+        note.append('这组随机参数下，放大 W_h 会同时改变隐状态；sigmoid 可能进入两端平坦的区域，斜率更小。因此，单看 W_h 变大不能断言梯度一定变大，也不能从这一次实验推出 sigmoid RNN 不会梯度爆炸。切到“保持在 sigmoid 中央”可看反例。');
+      } else {
+        note.append('这里特意设一个 1 维 RNN（课件外）：h(t) = sigmoid(4s·h(t−1) − 2s)，初始 h(0) = 0.5，s 是上面滑块的倍数。每一步括号里都是 0，所以隐状态一直是 0.5；sigmoid 在这里的斜率是 0.25。');
+        note.append('相邻两步的导数 = 4s × 0.25 = s，因此传回 h(1) 的梯度是最后一步的 s¹¹ = ' + sci(first) + ' 倍。s < 1 时消失，s = 1 时不变，s > 1 时爆炸。隐状态始终有限，梯度仍能爆炸；这个刻意构造的例子只用来说明“可能发生”，不代表一般训练轨迹。');
       }
     }
 

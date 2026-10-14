@@ -120,9 +120,9 @@
       // coordinates are multiples of 0.1, so a dot product of exactly 0 is reachable
       const zero = Math.abs(dot) < 1e-9, near = !zero && Math.abs(cos) < 0.05;
       out.verdict.textContent = zero ? '垂直：点积为 0，两个方向“毫无关系”。'
-        : near ? '接近垂直：点积接近 0。'
-        : cos < -0.9995 ? '方向正好相反（180°）：点积最负。'
-        : dot > 0 ? '夹角小于 90°：点积为正。方向越一致，点积越大。' : '夹角大于 90°：点积为负；越接近反方向（180°），点积越负。';
+        : near ? '接近垂直：余弦相似度接近 0；点积的大小还受向量长度影响。'
+        : cos < -0.9995 ? '方向正好相反（180°）：在两向量长度固定时，点积最小。'
+        : dot > 0 ? '夹角小于 90°：点积为正。两向量长度固定时，方向越一致，点积越大。' : '夹角大于 90°：点积为负；两向量长度固定时，越接近反方向（180°），点积越小。';
       out.verdict.className = 'dp-verdict ' + (zero || near ? 'zero' : dot > 0 ? 'pos' : 'neg');
     }
     render();

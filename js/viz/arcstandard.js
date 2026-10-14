@@ -246,6 +246,7 @@
 
     function render() { drawSvg(); drawConfig(); drawCaption(); drawLog(); }
     load(key);
+    return stop;   // navigating away must stop the automatic walk as well
   }
 
   C.viz.register('arc-standard', { title: '转移式依存分析', mount });

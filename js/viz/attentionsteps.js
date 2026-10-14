@@ -1,6 +1,6 @@
 /* 注意力每一步算了什么 (L05 p25–p37): seq2seq with attention on “il a m’ entarté” → “he hit me with a pie”.
  * Each decoder step is shown in four stages: dot-product scores → softmax → weighted sum of encoder states →
- * output word; after the sixth step the weights form the alignment heatmap. The attention weights are made up
+ * preset output-word label; after the sixth step the computed weights form the alignment heatmap.
  * Encoder states h_j and decoder states s_t are made-up 3-number vectors (课件外); the scores are their real dot
  * products and the weights are softmax of those (js/core/prob.js). */
 (function (root) {
@@ -96,7 +96,7 @@
         '解码器当前的隐状态 s' + (t + 1) + ' = [' + S[t].map((v) => fmt(v, 1)).join(', ') + ']，和编码器的 4 个隐状态各做一次点积，得到 4 个分数（柱子上的数，可正可负）。比如和 h1 = [' + H[0].join(', ') + '] 的点积是 ' + fmt(score[0], 2) + '。分数越大，表示这个法语位置和“现在要写的词”越相关。',
         'softmax 把 4 个分数变成 4 个加起来是 1 的权重（第 1.3 章）。这一步权重最大的是 “' + SRC[top] + '”（' + fmt(alpha[top], 2) + '）。连线越粗，权重越大。',
         '按权重把 4 个编码器隐状态加起来：注意力输出 = ' + alpha.map((w, j) => fmt(w, 2) + '·h' + (j + 1)).join(' + ') + ' = [' + a.map((v) => fmt(v, 2)).join(', ') + ']。它主要包含权重大的那个位置的信息。',
-        '把注意力输出和解码器的隐状态拼起来，算出下一个词的概率分布，写出 “' + OUT[t] + '”。' + (t < 5 ? '下一步再重新打分，看原文的别处。' : '6 步走完，点“看对齐热力图”。'),
+        '真实模型会把注意力输出和解码器的隐状态拼起来，再通过输出层计算下一个词的概率分布。本实验只计算到注意力加权和，没有设置输出层参数；这里的 “' + OUT[t] + '” 是按例句预设的流程标签，不是从上面的向量计算出的预测。' + (t < 5 ? '下一步再重新打分，看原文的别处。' : '6 步走完，点“看对齐热力图”。'),
       ][stage];
       cap.append(h('div.at-cap-title', title), h('div.at-cap-text', text));
       prev.disabled = t === 0 && stage === 0; next.disabled = t === 5 && stage === 3;
@@ -107,7 +107,7 @@
       table.append(h('tr', h('th', ''), OUT.map((w) => h('th', w))));
       SRC.forEach((w, j) => table.append(h('tr', h('th', w), OUT.map((_, i) => h('td', { style: { background: 'color-mix(in srgb, var(--c-blue) ' + Math.round(WEIGHTS[i][j] * 100) + '%, var(--surface))', color: WEIGHTS[i][j] > 0.5 ? 'var(--on-accent)' : 'var(--text)' } }, fmt(WEIGHTS[i][j], 2))))));
       heatBox.append(h('p.viz-note', '每一列是解码器的一步，每一行是一个法语词，颜色越深权重越大。没人告诉模型哪个词对哪个词，它自己学出了这种对应（这里的解码器隐状态是我们设的，课件外，让权重的明暗大致像真实模型学出来的对齐：il→he，m’→me，entarté→with a pie）。'), table);
-      cap.append(h('div.at-cap-title', '对齐'), h('div.at-cap-text', 'il ↔ he，m’ ↔ me，entarté ↔ with a pie：一个法语词对应好几个英文词，模型也能看出来。'));
+      cap.append(h('div.at-cap-title', '对齐'), h('div.at-cap-text', 'il ↔ he，m’ ↔ me，entarté ↔ with a pie：一个法语词可以对应好几个英文词。本图的隐状态和英文词都是预设的；权重确实由点积和 softmax 算出，但这不是一次实际训练或翻译的结果。'));
     }
     render();
   }
