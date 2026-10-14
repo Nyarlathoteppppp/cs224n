@@ -18,7 +18,7 @@
   const f3 = (v) => v.toFixed(3).replace('-', '−');
 
   /** A small function plot with a movable point. */
-  function plot({ fn, xd, yd, label, cls, xname, yname }) {
+  function plot({ fn, xd, yd, label, cls, xname, yname, readAt }) {
     const W = 340, H = 236, P = { l: 34, r: 10, t: 10, b: 42 };
     const X = (x) => P.l + (x - xd[0]) / (xd[1] - xd[0]) * (W - P.l - P.r);
     const Y = (y) => H - P.b - (Math.min(Math.max(y, yd[0]), yd[1] * 1.2) - yd[0]) / (yd[1] - yd[0]) * (H - P.t - P.b);
@@ -54,9 +54,10 @@
       dot.setAttribute('cx', X(x)); dot.setAttribute('cy', cy);
       vx.setAttribute('x1', X(x)); vx.setAttribute('x2', X(x)); vx.setAttribute('y1', Y(0)); vx.setAttribute('y2', cy);
       hy.setAttribute('x1', X(Math.max(0, xd[0]))); hy.setAttribute('x2', X(x)); hy.setAttribute('y1', cy); hy.setAttribute('y2', cy);
-      const right = X(x) < W * 0.62;
-      txt.setAttribute('x', X(x) + (right ? 10 : -10)); txt.setAttribute('y', Math.max(P.t + 12, cy - 12));
-      txt.setAttribute('text-anchor', right ? 'start' : 'end');
+      // the reading sits in the plot's empty top corner (readAt), clear of the curve, the ticks and the axis name
+      const left = readAt === 'left';
+      txt.setAttribute('x', left ? X(xd[0]) + 6 : W - P.r - 4); txt.setAttribute('y', P.t + 34);
+      txt.style.textAnchor = left ? 'start' : 'end';
       txt.textContent = text;
     };
     return svg;
@@ -80,13 +81,13 @@
 
     /* 2. exp makes everything positive */
     let x = 1;
-    const expPlot = plot({ fn: Math.exp, xd: [-4, 3], yd: [0, 20], label: 'y = exp(x) 的曲线', cls: 'exp', xname: '分数 x', yname: 'exp(x)' });
+    const expPlot = plot({ fn: Math.exp, xd: [-4, 3], yd: [0, 20], label: 'y = exp(x) 的曲线', cls: 'exp', xname: '分数 x', yname: 'exp(x)', readAt: 'left' });
     const sX = slider('分数 x', { min: -4, max: 3, step: 0.1, value: x, format: (v) => v.toFixed(1).replace('-', '−'), onInput: (v) => { x = v; renderExp(); } });
     function renderExp() { expPlot.place(x, 'exp(' + x.toFixed(1).replace('-', '−') + ') = ' + sci(Math.exp(x))); }
 
     /* 3. −log p as a penalty */
     let q = 0.5;
-    const nlPlot = plot({ fn: (v) => -Math.log(v), xd: [0, 1], yd: [0, 5], label: 'y = −log p 的曲线', cls: 'nll', xname: '概率 p', yname: '−log p' });
+    const nlPlot = plot({ fn: (v) => -Math.log(v), xd: [0, 1], yd: [0, 5], label: 'y = −log p 的曲线', cls: 'nll', xname: '概率 p', yname: '−log p', readAt: 'right' });
     const sQ = slider('正确答案的概率 p', { min: 0.01, max: 1, step: 0.01, value: q, format: (v) => v.toFixed(2), onInput: (v) => { q = v; renderNll(); } });
     function renderNll() { nlPlot.place(q, '−log ' + q.toFixed(2) + ' = ' + f3(-Math.log(q) + 0)); }
 

@@ -7,7 +7,7 @@
       id: 'c1-5', part: 'p1', seq: 5, num: '1.5', lectures: '第 2 讲',
       title: '基于计数的方法：共现矩阵、SVD 与 GloVe', en: 'Count-based methods: co-occurrence, SVD, GloVe',
       hook: 'word2vec 要一遍遍扫过语料，一个窗口一个窗口地学。为什么不干脆一次把“谁和谁挨着”全数出来，直接从计数里得到词向量？',
-      background: '早在 word2vec 之前，就有直接对计数做矩阵分解（把一个大矩阵拆成几个小矩阵相乘）的方法，比如潜在语义分析（LSA）。2014 年，斯坦福的 Pennington、Socher 和 Manning 提出 GloVe，想把两条路线的长处合在一起：既用上全局（把整个语料一次数完）的计数统计，又像 word2vec 那样学出能做类比题（king − man + woman ≈ queen，第 1.6 章会讲）的向量。作业 1 用的现成词向量（别人已经在大量文本上训练好的）就是 GloVe。',
+      background: '早在 word2vec 之前，就有直接对计数做矩阵分解（把一个大矩阵拆成几个小矩阵相乘）的方法，比如潜在语义分析（LSA，对“词 × 文章”的计数表做矩阵分解的老方法）。2014 年，斯坦福的 Pennington、Socher 和 Manning 提出 GloVe，想把两条路线的长处合在一起：既用上全局（把整个语料一次数完）的计数统计，又像 word2vec 那样学出能做类比题（king − man + woman ≈ queen，第 1.6 章会讲）的向量。作业 1 用的现成词向量（别人已经在大量文本上训练好的）就是 GloVe。',
       goals: [
         '手算一个小语料的窗口共现矩阵，并说出窗口计数和文档计数各自捕捉什么',
         '用直觉说出 SVD 降维（把每个词的向量从几万、几十万维压到几十、几百维）在做什么，以及为什么要先处理原始计数',

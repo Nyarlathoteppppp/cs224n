@@ -65,7 +65,7 @@
       const r = W2V.naiveSoftmax(vc, o, U), ex = r.expected, stepVec = L.scale(r.gradCenter, -alpha);
       vArrow.setAttribute('x2', X(vc[0])); vArrow.setAttribute('y2', Y(vc[1]));
       vHandle.setAttribute('cx', X(vc[0])); vHandle.setAttribute('cy', Y(vc[1]));
-      vLabel.setAttribute('x', X(vc[0]) + 14); vLabel.setAttribute('y', Y(vc[1]) + 22);
+      vLabel.setAttribute('x', Math.min(SIZE_W - 22, X(vc[0]) + 14)); vLabel.setAttribute('y', Math.max(16, Math.min(SIZE_H - 6, Y(vc[1]) + 22)));
       expDot.setAttribute('cx', X(ex[0])); expDot.setAttribute('cy', Y(ex[1]));
       expLabel.setAttribute('x', X(ex[0]) - 10); expLabel.setAttribute('y', Y(ex[1]) + 4);
       pull.setAttribute('x1', X(ex[0])); pull.setAttribute('y1', Y(ex[1])); pull.setAttribute('x2', X(U[o][0])); pull.setAttribute('y2', Y(U[o][1]));

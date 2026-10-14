@@ -85,7 +85,7 @@
       if (Math.abs(yl - yr) < 15) { const mid = (yl + yr) / 2, up = lstm[N - 1] >= rnn[N - 1]; yl = mid + (up ? -8 : 8); yr = mid + (up ? 8 : -8); }
       chart.append(s('text', { x: x0 + (N - 1) * dx + 10, y: yl, class: 'lc-legend is-lstm', text: 'LSTM：' + fmt(lstm[N - 1], 3) }));
       chart.append(s('text', { x: x0 + (N - 1) * dx + 10, y: yr, class: 'lc-legend is-rnn', text: '普通 RNN：' + fmt(rnn[N - 1], 3) }));
-      chart.append(s('text', { x: x0 - 30, y: 10, class: 'lc-ytitle', text: '这条信息还剩多少（第 1 步写入时为 1）' }));
+      chart.append(s('text', { x: x0 - 30, y: 13, class: 'lc-ytitle', text: '这条信息还剩多少（第 1 步写入时为 1）' }));
       clear(chartNote);
       chartNote.append('第 20 步时，LSTM 还剩 ' + fmt(lstm[N - 1], 3) + '（就是 f 的 19 次方），普通 RNN 剩 ' + fmt(rnn[N - 1], 3) + '。');
       chartNote.append(keepF === 1 ? '遗忘门是 1 时，记忆一点不少地一直传下去。' : w > 1

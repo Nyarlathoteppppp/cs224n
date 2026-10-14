@@ -72,7 +72,7 @@
         svg.append(s('text', { x: x + (step - 16) / 2, y: Math.max(14, top - 6), class: 'vg-val', text: sci(v) }));
       });
       svg.append(s('text', { x: W - 20, y: base + 36, class: 'vg-axis', text: '← 梯度从最后一步的损失往回传' }));
-      svg.append(s('text', { x: 6, y: 10, class: 'vg-axis', style: 'text-anchor:start', text: '梯度大小（最后一步 = 1；纵轴是对数刻度，每一格差 100 倍）' }));
+      svg.append(s('text', { x: 6, y: 13, class: 'vg-axis', style: 'text-anchor:start', text: '梯度大小（最后一步 = 1；纵轴是对数刻度，每一格差 100 倍）' }));
       clear(note);
       const first = vals[0];
       if (mode === 'beta') {
