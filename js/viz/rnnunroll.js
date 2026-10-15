@@ -116,8 +116,11 @@
           chart.append(s('rect', { x: x - chartW / 2 + w * bw + 1, y: base - hgt, width: bw - 2, height: hgt, class: 'ru-bar' + (mode === 'train' && w === st.target ? ' is-target' : '') }));
         });
         if (mode === 'train') {
-          chart.append(s('text', { x, y: 28, class: 'ru-target', text: '真实下一个词：' + VOCAB[st.target] }));
-          const lt = s('text', { x, y: 14, class: 'ru-loss' });
+          // y = 18 / 35, not 14 / 28: on Windows the line J⁽ᵗ⁾ reached ~15 above its baseline and was cut off by the
+          // top edge of the svg. Measured over several CJK fonts: top margin >= 2.2, the two lines never overlap, and
+          // the target line ends above y = 40, the highest a bar can reach.
+          chart.append(s('text', { x, y: 35, class: 'ru-target', text: '真实下一个词：' + VOCAB[st.target] }));
+          const lt = s('text', { x, y: 18, class: 'ru-loss' });
           lt.append(document.createTextNode('P = ' + fmt(st.yhat[st.target], 2) + '，J'), s('tspan', { 'baseline-shift': 'super', 'font-size': '9' }, '(' + (t + 1) + ')'), document.createTextNode(' = ' + fmt(st.loss, 2)));
           chart.append(lt);
         }
