@@ -76,7 +76,7 @@
       probs.innerHTML = '';
       r.yhat.forEach((p, i) => probs.append(h('div.wg-prow' + (i === o ? '.true' : ''),
         h('span.wg-pw', WORDS[i], i === o ? h('small', '（真实）') : null), h('span.wg-ptrack', h('span.wg-pbar', { style: { width: (p * 100).toFixed(1) + '%' } })), h('span.wg-pv', f(p, 3)))));
-      read.innerHTML = 'v<sub>c</sub> = [' + f(vc[0], 3) + ', ' + f(vc[1], 3) + ']　损失 −log P(' + WORDS[o] + '|c) = <b>' + f(r.loss, 3) + '</b><br>' +
+      read.innerHTML = 'v<sub>c</sub> = [' + f(vc[0], 3) + ', ' + f(vc[1], 3) + ']　P(' + WORDS[o] + '|c) = ' + f(r.yhat[o], 3) + '，损失 −log ' + f(r.yhat[o], 3) + ' = <b>' + f(r.loss, 3) + '</b><br>' +
         '观察到的 − 期望的 = [' + f(U[o][0] - ex[0], 3) + ', ' + f(U[o][1] - ex[1], 3) + ']，乘以 α 就是绿色箭头（下一步）。<br>' +
         (stopped ? '<span class="sd-stop">再走一步 v<sub>c</sub> 就要走出画面了，停在这里。点“重来”或调小学习率。</span><br>' : '') +
         '<span class="viz-note">红色虚线：从“期望的”指向真实的上下文词（观察到的）。更新方向和它一样。圆点是向量箭头的终点，箭头都从原点出发，图上省略了。</span>';

@@ -115,7 +115,7 @@
       out.vecs.innerHTML = '<span class="dp-v"><b class="dp-a">a = [' + f1(a[0]) + ', ' + f1(a[1]) + ']</b>　<b class="dp-b">b = [' + f1(b[0]) + ', ' + f1(b[1]) + ']</b></span>';
       out.alg.innerHTML = '<span class="dp-k">对应相乘再相加</span><span class="dp-v">' + f1(a[0]) + '×' + f1(b[0]) + ' + ' + f1(a[1]) + '×' + f1(b[1]) + ' = <b>' + f2(dot) + '</b></span>';
       out.geo.innerHTML = '<span class="dp-k">长度 × 长度 × cos θ</span><span class="dp-v">' + f2(na) + ' × ' + f2(nb) + ' × cos ' + (theta * 180 / Math.PI).toFixed(1) + '° = <b>' + f2(na * nb * cos) + '</b></span>';
-      out.proj.innerHTML = '<span class="dp-k">a 在 b 方向上的影子</span><span class="dp-v">' + f2(t) + '，再乘 b 的长度 ' + f2(nb) + ' = <b>' + f2(t * nb) + '</b></span>';
+      out.proj.innerHTML = '<span class="dp-k">a 在 b 方向上的影子</span><span class="dp-v">' + f2(t) + '，再乘 b 的长度 ' + f2(nb) + (Math.abs(Math.abs(t) - nb) < 0.005 ? '（两个数碰巧相等）' : '') + ' = <b>' + f2(t * nb) + '</b></span>';
       out.cos.innerHTML = '<span class="dp-k">余弦相似度</span><span class="dp-v"><b>' + f2(cos) + '</b>（只看方向）</span>';
       // coordinates are multiples of 0.1, so a dot product of exactly 0 is reachable
       const zero = Math.abs(dot) < 1e-9, near = !zero && Math.abs(cos) < 0.05;
